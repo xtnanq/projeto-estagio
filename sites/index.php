@@ -273,8 +273,8 @@ $conn->close();
 <nav class="navbar-site">
     <div class="container d-flex justify-content-between align-items-center">
         <div class="d-flex align-items-center gap-3">
-            <?php if (!empty($website['logotipo']) && file_exists('../' . $website['logotipo'])): ?>
-                <img src="../<?php echo htmlspecialchars($website['logotipo']); ?>"
+            <?php if (!empty($website['logotipo'])): ?>
+                <img src="<?php echo htmlspecialchars($website['logotipo']); ?>"
                      alt="Logo" class="logo">
             <?php endif; ?>
             <span class="nome-empresa"><?php echo htmlspecialchars($empresa['nome_empresa']); ?></span>
@@ -293,8 +293,8 @@ $conn->close();
 </nav>
 
 <!-- CAPA -->
-<?php if (!empty($website['capa_empresa']) && file_exists('../' . $website['capa_empresa'])): ?>
-    <img src="../<?php echo htmlspecialchars($website['capa_empresa']); ?>"
+<?php if (!empty($website['capa_empresa'])): ?>
+    <img src="<?php echo htmlspecialchars($website['capa_empresa']); ?>"
          alt="Capa" class="capa">
 <?php else: ?>
     <div class="capa-placeholder">
@@ -373,7 +373,7 @@ $conn->close();
             <?php foreach ($portfolio as $item): ?>
                 <div class="col-md-4">
                     <div class="portfolio-item">
-                        <img src="../<?php echo htmlspecialchars($item['imagem']); ?>"
+                        <img src="<?php echo htmlspecialchars($item['imagem']); ?>"
                              alt="<?php echo htmlspecialchars($item['descricao_imagem']); ?>">
                         <?php if (!empty($item['descricao_imagem'])): ?>
                             <div class="portfolio-overlay">
@@ -488,7 +488,6 @@ $conn->close();
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    // Scroll suave para as secções
     document.querySelectorAll('a[href^="#"]').forEach(function(anchor) {
         anchor.addEventListener('click', function(e) {
             e.preventDefault();

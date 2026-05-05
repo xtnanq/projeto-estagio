@@ -62,9 +62,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $upload_dir = '../imagens/' . $empresa_id . '/';
         if (!is_dir($upload_dir)) mkdir($upload_dir, 0777, true);
 
-        $ext      = pathinfo($_FILES['logotipo']['name'], PATHINFO_EXTENSION);
-        $logotipo = $upload_dir . 'logotipo.' . $ext;
-        move_uploaded_file($_FILES['logotipo']['tmp_name'], $logotipo);
+        $ext = pathinfo($_FILES['logotipo']['name'], PATHINFO_EXTENSION);
+        move_uploaded_file($_FILES['logotipo']['tmp_name'], $upload_dir . 'logotipo.' . $ext);
+        $logotipo = '/projeto/imagens/' . $empresa_id . '/logotipo.' . $ext;
     }
 
     // Upload da capa
@@ -86,9 +86,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $upload_dir = '../imagens/' . $empresa_id . '/';
         if (!is_dir($upload_dir)) mkdir($upload_dir, 0777, true);
 
-        $ext          = pathinfo($_FILES['capa_empresa']['name'], PATHINFO_EXTENSION);
-        $capa_empresa = $upload_dir . 'capa.' . $ext;
-        move_uploaded_file($_FILES['capa_empresa']['tmp_name'], $capa_empresa);
+        $ext = pathinfo($_FILES['capa_empresa']['name'], PATHINFO_EXTENSION);
+        move_uploaded_file($_FILES['capa_empresa']['tmp_name'], $upload_dir . 'capa.' . $ext);
+        $capa_empresa = '/projeto/imagens/' . $empresa_id . '/capa.' . $ext;
     }
 
     // Inserir ou atualizar
@@ -141,6 +141,16 @@ include '../admin/includes/header_admin.php';
         padding: 4px;
     }
 
+    /* ── Modais animados ── */
+    @keyframes modalEntrada {
+        from { opacity: 0; transform: scale(0.85); }
+        to   { opacity: 1; transform: scale(1); }
+    }
+    @keyframes fundoFade {
+        from { background-color: rgba(0,0,0,0); }
+        to   { background-color: rgba(0,0,0,0.4); }
+    }
+
     .modal {
         display: none;
         position: fixed;
@@ -150,20 +160,25 @@ include '../admin/includes/header_admin.php';
         width: 100%;
         height: 100%;
         background-color: rgba(0, 0, 0, 0.4);
+        animation: fundoFade 0.3s ease;
     }
 
     .modal-content {
         background-color: #fefefe;
         margin: 15% auto;
-        padding: 20px;
-        border: 1px solid #888;
+        padding: 30px;
+        border: none;
         width: 80%;
         max-width: 500px;
         text-align: center;
+        border-radius: 8px;
+        box-shadow: 0 5px 30px rgba(0,0,0,0.2);
+        animation: modalEntrada 0.3s ease;
     }
 
     #okButton {
         margin-top: 20px;
+        width: 100%;
     }
 </style>
 
@@ -240,7 +255,7 @@ include '../admin/includes/header_admin.php';
 
                     <div class="form-group mt-4">
                         <label for="logotipo"><i class="fas fa-image"></i> Logotipo da Empresa</label>
-                        <?php if (!empty($website['logotipo']) && file_exists($website['logotipo'])): ?>
+                        <?php if (!empty($website['logotipo'])): ?>
                             <div>
                                 <img src="<?php echo htmlspecialchars($website['logotipo']); ?>"
                                     alt="Logotipo atual" class="preview-img">
@@ -254,7 +269,7 @@ include '../admin/includes/header_admin.php';
 
                     <div class="form-group mt-4">
                         <label for="capa_empresa"><i class="fas fa-panorama"></i> Imagem de Capa</label>
-                        <?php if (!empty($website['capa_empresa']) && file_exists($website['capa_empresa'])): ?>
+                        <?php if (!empty($website['capa_empresa'])): ?>
                             <div>
                                 <img src="<?php echo htmlspecialchars($website['capa_empresa']); ?>"
                                     alt="Capa atual" class="preview-img">
@@ -318,6 +333,7 @@ include '../admin/includes/header_admin.php';
     </div>
 </div>
 
+<!-- Modal de mensagem de sucesso/erro -->
 <div id="messageModal" class="modal">
     <div class="modal-content">
         <h2 id="modalTitle"></h2>
@@ -327,7 +343,7 @@ include '../admin/includes/header_admin.php';
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         var urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get('show_message') === '1') {
             var modal = document.getElementById('messageModal');
@@ -347,7 +363,7 @@ include '../admin/includes/header_admin.php';
 
             modal.style.display = 'block';
 
-            okButton.onclick = function() {
+            okButton.onclick = function () {
                 modal.style.display = 'none';
                 window.history.replaceState({}, document.title,
                     window.location.pathname + '?id=<?php echo $empresa_id; ?>');

@@ -3,7 +3,7 @@ session_start();
 require_once '../config/database.php';
 require_once '../includes/functions.php';
 
-if(isset($_GET['id'])) {
+if (isset($_GET['id'])) {
     $empresa_id = intval($_GET['id']);
 } else {
     header("Location: ../admin/dashboard.php");
@@ -19,7 +19,7 @@ $result = $stmt->get_result();
 $empresa = $result->fetch_assoc();
 $stmt->close();
 
-if(!$empresa) {
+if (!$empresa) {
     header("Location: ../admin/dashboard.php");
     exit();
 }
@@ -44,13 +44,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['adicionar_portfolio'])
             exit();
         }
 
-        $upload_dir = 'imagens/' . $empresa_id . '/';
+        $upload_dir = '../imagens/' . $empresa_id . '/';
         if (!is_dir($upload_dir)) mkdir($upload_dir, 0777, true);
 
         $ext = pathinfo($_FILES['portfolio_imagem']['name'], PATHINFO_EXTENSION);
-        $uploaded_file = $upload_dir . uniqid() . '.' . $ext;
+        $filename = uniqid() . '.' . $ext;
+        $uploaded_file = '/projeto/imagens/' . $empresa_id . '/' . $filename;
 
-        if (move_uploaded_file($_FILES['portfolio_imagem']['tmp_name'], $uploaded_file)) {
+        if (move_uploaded_file($_FILES['portfolio_imagem']['tmp_name'], $upload_dir . $filename)) {
             $insert_sql = "INSERT INTO portfolio (empresa_id, imagem, descricao_imagem) VALUES (?, ?, ?)";
             $insert_stmt = $conn->prepare($insert_sql);
             $insert_stmt->bind_param("iss", $empresa_id, $uploaded_file, $descricao_imagem);
@@ -85,19 +86,46 @@ include '../admin/includes/header_admin.php';
 ?>
 
 <style>
-    .button-container_left { display: flex; justify-content: flex-end; }
-    .button-container_left .btn { margin-left: 10px; }
-    .img-thumbnail { width: 100px; height: 100px; object-fit: cover; margin-right: 5px; }
+    .button-container_left {
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    .button-container_left .btn {
+        margin-left: 10px;
+    }
+
+    .img-thumbnail {
+        width: 100px;
+        height: 100px;
+        object-fit: cover;
+        margin-right: 5px;
+    }
+
     .modal {
-        display: none; position: fixed; z-index: 1000;
-        left: 0; top: 0; width: 100%; height: 100%;
-        background-color: rgba(0,0,0,0.4);
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.4);
     }
+
     .modal-content {
-        background-color: #fefefe; margin: 15% auto; padding: 20px;
-        border: 1px solid #888; width: 80%; max-width: 500px; text-align: center;
+        background-color: #fefefe;
+        margin: 15% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+        max-width: 500px;
+        text-align: center;
     }
-    #okButton { margin-top: 20px; }
+
+    #okButton {
+        margin-top: 20px;
+    }
 </style>
 
 <div class="white-background">
@@ -127,25 +155,25 @@ include '../admin/includes/header_admin.php';
             <ul class="nav flex-column">
                 <li class="nav-item">
                     <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'empresa_informacoes.php' ? 'active' : ''; ?>"
-                       href="empresa_informacoes.php?id=<?php echo $empresa_id; ?>">
+                        href="empresa_informacoes.php?id=<?php echo $empresa_id; ?>">
                         <i class="fas fa-circle-info"></i> Informações
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'empresa_servicos.php' ? 'active' : ''; ?>"
-                       href="empresa_servicos.php?id=<?php echo $empresa_id; ?>">
+                        href="empresa_servicos.php?id=<?php echo $empresa_id; ?>">
                         <i class="fas fa-handshake"></i> Serviços
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'empresa_portfolio.php' ? 'active' : ''; ?>"
-                       href="empresa_portfolio.php?id=<?php echo $empresa_id; ?>">
+                        href="empresa_portfolio.php?id=<?php echo $empresa_id; ?>">
                         <i class="fas fa-image"></i> Portfólio
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'empresa_website.php' ? 'active' : ''; ?>"
-                       href="empresa_website.php?id=<?php echo $empresa_id; ?>">
+                        href="empresa_website.php?id=<?php echo $empresa_id; ?>">
                         <i class="fas fa-globe"></i> Website
                     </a>
                 </li>
@@ -174,7 +202,7 @@ include '../admin/includes/header_admin.php';
                             <div class="form-group">
                                 <label for="portfolio_imagem">Imagem</label>
                                 <input type="file" class="form-control-file" id="portfolio_imagem"
-                                       name="portfolio_imagem" accept="image/*" required>
+                                    name="portfolio_imagem" accept="image/*" required>
                             </div>
                             <div class="form-group mt-3">
                                 <label for="descricao_imagem">Descrição</label>
@@ -192,17 +220,17 @@ include '../admin/includes/header_admin.php';
                 <?php while ($portfolio = $portfolio_result->fetch_assoc()):
                     $imagemPath = $portfolio['imagem'];
                 ?>
-                <div class="card mt-3">
-                    <div class="card-body p-2">
-                        <img src="<?php echo htmlspecialchars($imagemPath); ?>"
-                             alt="Imagem do Portfólio" class="img-thumbnail mb-1">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <p class="mb-0"><?php echo htmlspecialchars($portfolio['descricao_imagem']); ?></p>
-                            <button class="btn btn-danger btn-sm eliminar-portfolio"
+                    <div class="card mt-3">
+                        <div class="card-body p-2">
+                            <img src="<?php echo htmlspecialchars($imagemPath); ?>"
+                                alt="Imagem do Portfólio" class="img-thumbnail mb-1">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <p class="mb-0"><?php echo htmlspecialchars($portfolio['descricao_imagem']); ?></p>
+                                <button class="btn btn-danger btn-sm eliminar-portfolio"
                                     data-id="<?php echo $portfolio['id']; ?>">Eliminar</button>
+                            </div>
                         </div>
                     </div>
-                </div>
                 <?php endwhile; ?>
             </div>
         </div>
@@ -232,61 +260,61 @@ include '../admin/includes/header_admin.php';
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script>
-$(document).ready(function() {
-    $('#mostrarFormularioPortfolio').on('click', function() {
-        $('#formularioPortfolio').toggle();
-    });
+    $(document).ready(function() {
+        $('#mostrarFormularioPortfolio').on('click', function() {
+            $('#formularioPortfolio').toggle();
+        });
 
-    $('#cancelarFormularioPortfolio').on('click', function() {
-        $('#formularioPortfolio').hide();
-    });
+        $('#cancelarFormularioPortfolio').on('click', function() {
+            $('#formularioPortfolio').hide();
+        });
 
-    $('.eliminar-portfolio').on('click', function(e) {
-        e.preventDefault();
-        var imagemId = $(this).data('id');
-        $('#confirmarEliminacaoPortfolio').data('id', imagemId);
-        $('#eliminarPortfolioModal').show();
-    });
+        $('.eliminar-portfolio').on('click', function(e) {
+            e.preventDefault();
+            var imagemId = $(this).data('id');
+            $('#confirmarEliminacaoPortfolio').data('id', imagemId);
+            $('#eliminarPortfolioModal').show();
+        });
 
-    $('#cancelarEliminacaoPortfolio').on('click', function() {
-        $('#eliminarPortfolioModal').hide();
-    });
+        $('#cancelarEliminacaoPortfolio').on('click', function() {
+            $('#eliminarPortfolioModal').hide();
+        });
 
-    $('#confirmarEliminacaoPortfolio').on('click', function() {
-        var imagemId = $(this).data('id');
-        window.location.href = 'eliminar_portfolio.php?id=' + imagemId;
+        $('#confirmarEliminacaoPortfolio').on('click', function() {
+            var imagemId = $(this).data('id');
+            window.location.href = 'eliminar_portfolio.php?id=' + imagemId;
+        });
     });
-});
 </script>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    var urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('show_message') === '1') {
-        var modal      = document.getElementById('messageModal');
-        var modalTitle = document.getElementById('modalTitle');
-        var modalMsg   = document.getElementById('modalMessage');
-        var okButton   = document.getElementById('okButton');
+    document.addEventListener('DOMContentLoaded', function() {
+        var urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('show_message') === '1') {
+            var modal = document.getElementById('messageModal');
+            var modalTitle = document.getElementById('modalTitle');
+            var modalMsg = document.getElementById('modalMessage');
+            var okButton = document.getElementById('okButton');
 
-        <?php if (isset($_SESSION['success_message'])): ?>
-            modalTitle.textContent = 'Sucesso';
-            modalMsg.textContent   = '<?php echo addslashes($_SESSION['success_message']); ?>';
-            <?php unset($_SESSION['success_message']); ?>
-        <?php elseif (isset($_SESSION['error_message'])): ?>
-            modalTitle.textContent = 'Erro';
-            modalMsg.textContent   = '<?php echo addslashes($_SESSION['error_message']); ?>';
-            <?php unset($_SESSION['error_message']); ?>
-        <?php endif; ?>
+            <?php if (isset($_SESSION['success_message'])): ?>
+                modalTitle.textContent = 'Sucesso';
+                modalMsg.textContent = '<?php echo addslashes($_SESSION['success_message']); ?>';
+                <?php unset($_SESSION['success_message']); ?>
+            <?php elseif (isset($_SESSION['error_message'])): ?>
+                modalTitle.textContent = 'Erro';
+                modalMsg.textContent = '<?php echo addslashes($_SESSION['error_message']); ?>';
+                <?php unset($_SESSION['error_message']); ?>
+            <?php endif; ?>
 
-        modal.style.display = 'block';
+            modal.style.display = 'block';
 
-        okButton.onclick = function() {
-            modal.style.display = 'none';
-            window.history.replaceState({}, document.title,
-                window.location.pathname + '?id=<?php echo $empresa_id; ?>');
-        };
-    }
-});
+            okButton.onclick = function() {
+                modal.style.display = 'none';
+                window.history.replaceState({}, document.title,
+                    window.location.pathname + '?id=<?php echo $empresa_id; ?>');
+            };
+        }
+    });
 </script>
 
 <?php include '../includes/footer.php'; ?>
