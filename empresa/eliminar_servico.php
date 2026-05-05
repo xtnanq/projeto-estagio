@@ -3,23 +3,23 @@ session_start();
 require_once '../config/database.php';
 require_once '../includes/functions.php';
 
-// Verificar se o usuário está autenticado
+// Verificar autenticação
 if (!isset($_SESSION['usuario_id'])) {
-    header("Location: login.php");
+    header("Location: ../login.php");
     exit();
 }
 
-// Verificar se o ID do serviço foi passado via GET
+// Validar ID
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
     $_SESSION['error_message'] = "ID do serviço inválido.";
-    header("Location: dashboard.php");
+    header("Location: ../admin/dashboard.php");
     exit();
 }
 
 $servico_id = intval($_GET['id']);
 $usuario_id = $_SESSION['usuario_id'];
 
-// Buscar informações do serviço e verificar se pertence ao usuário
+// Buscar serviço e verificar permissão
 if ($_SESSION['tipo_usuario'] == 'admin') {
     $sql = "SELECT s.*, e.id as empresa_id FROM servicos s
             JOIN empresas e ON s.empresa_id = e.id
@@ -37,25 +37,16 @@ if ($_SESSION['tipo_usuario'] == 'admin') {
 $stmt->execute();
 $result = $stmt->get_result();
 $servico = $result->fetch_assoc();
+$stmt->close();
 
 if (!$servico) {
-    $_SESSION['error_message'] = "Serviço não encontrado ou você não tem permissão para eliminá-lo.";
-    header("Location: configurar_empresa.php");
+    $_SESSION['error_message'] = "Serviço não encontrado ou sem permissão.";
+    header("Location: ../admin/dashboard.php");
     exit();
 }
 
-// Verificação final e tentativa de exclusão
-if ($servico || $_SESSION['tipo_usuario'] == 'admin') {
-    $delete_sql = "DELETE FROM servicos WHERE id = ?";
-    $delete_stmt = $conn->prepare($delete_sql);
-    $delete_stmt->bind_param("i", $servico_id);
-    $delete_stmt->close();
-} else {
-     $_SESSION['error_message'] = "Erro ao eliminar o serviço: " . $conn->error;
-}
-// Eliminar o serviço
-$delete_sql = "DELETE FROM servicos WHERE id = ?";
-$delete_stmt = $conn->prepare($delete_sql);
+// CORRIGIDO: apenas um DELETE com execute() correto
+$delete_stmt = $conn->prepare("DELETE FROM servicos WHERE id = ?");
 $delete_stmt->bind_param("i", $servico_id);
 
 if ($delete_stmt->execute()) {
@@ -64,12 +55,9 @@ if ($delete_stmt->execute()) {
     $_SESSION['error_message'] = "Erro ao eliminar o serviço: " . $conn->error;
 }
 
+$delete_stmt->close();
 $conn->close();
 
-// Em vez de redirecionar imediatamente, vamos passar uma flag na URL
-header("Location: configurar_empresa.php?id=" . $servico['empresa_id'] . "&show_message=1#servicos");
-
+header("Location: empresa_informacoes.php?id=" . $servico['empresa_id'] . "&show_message=1");
 exit();
 ?>
-
-
