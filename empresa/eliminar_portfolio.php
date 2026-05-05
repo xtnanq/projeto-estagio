@@ -63,7 +63,5 @@ if ($delete_stmt->execute()) {
 $conn->close();
 
 // Redirecionar de volta para a página de configuração da empresa
-header("Location: configurar_empresa.php?id=" . $imagem['empresa_id'] . "&show_message=1#portfolio");
-
-exit();
+header("Location: empresa_portfolio.php?id=" . $imagem['empresa_id'] . "&show_message=1");
 ?>
