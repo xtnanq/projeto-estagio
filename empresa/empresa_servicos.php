@@ -1,3 +1,15 @@
+<?php if (isset($_GET['success'])): ?>
+    <div class="alert alert-success">
+        Serviço adicionado com sucesso!
+    </div>
+<?php endif; ?>
+
+<?php if (isset($_GET['error'])): ?>
+    <div class="alert alert-danger">
+        Erro ao adicionar serviço!
+    </div>
+<?php endif; ?>
+
 <?php
 session_start();
 require_once '../config/database.php';
@@ -31,29 +43,6 @@ $servicos_stmt->bind_param("i", $empresa_id);
 $servicos_stmt->execute();
 $servicos_result = $servicos_stmt->get_result();
 
-// Processar o formulário quando enviado
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    if (isset($_POST['adicionar_servico'])) {
-        // Tratamento da seção de serviços
-        $nome_servico = $_POST['nome_servico'] ?? '';
-        $titulo_servico = $_POST['titulo_servico'] ?? '';
-        $descricao_servico = $_POST['descricao_servico'] ?? '';
-
-        $insert_servico_sql = "INSERT INTO servicos (empresa_id, nome_servico, titulo_servico, descricao_servico) VALUES (?, ?, ?, ?)";
-        $insert_servico_stmt = $conn->prepare($insert_servico_sql);
-        $insert_servico_stmt->bind_param("isss", $empresa_id, $nome_servico, $titulo_servico, $descricao_servico);
-
-        if ($insert_servico_stmt->execute()) {
-            $_SESSION['success_message'] = "Serviço adicionado com sucesso!";
-            header("Location: configurar_empresa.php?id=" . $empresa_id . "&show_message=1#servicos");
-            exit();
-        } else {
-            $_SESSION['error_message'] = "Erro ao adicionar serviço: " . $conn->error;
-            header("Location: configurar_empresa.php?id=" . $empresa_id . "&show_message=1#servicos");
-            exit();
-        }
-    }
-}
 
 include '../includes/header.php';
 include '../admin/includes/header_admin.php';
@@ -155,7 +144,8 @@ include '../admin/includes/header_admin.php';
                 <div class="card mt-4" id="formularioServico" style="display:none;">
                     <div class="card-body">
                         <h5 class="card-title">Adicionar Novo Serviço</h5>
-                        <form method="POST" action="">
+                        <form method="POST" action="adicionar_servico.php">
+                            <input type="hidden" name="empresa_id" value="<?php echo $empresa_id; ?>">
                             <div class="form-group">
                                 <label for="nome_servico">Nome do Serviço</label>
                                 <input type="text" class="form-control" id="nome_servico" name="nome_servico" required>
