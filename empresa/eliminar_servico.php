@@ -57,7 +57,5 @@ if ($delete_stmt->execute()) {
 
 $delete_stmt->close();
 $conn->close();
-
-header("Location: empresa_informacoes.php?id=" . $servico['empresa_id'] . "&show_message=1");
-exit();
+header("Location: empresa_servicos.php?id=" . $servico['empresa_id'] . "&show_message=1");
 ?>

@@ -1,15 +1,3 @@
-<?php if (isset($_GET['success'])): ?>
-    <div class="alert alert-success">
-        Serviço adicionado com sucesso!
-    </div>
-<?php endif; ?>
-
-<?php if (isset($_GET['error'])): ?>
-    <div class="alert alert-danger">
-        Erro ao adicionar serviço!
-    </div>
-<?php endif; ?>
-
 <?php
 session_start();
 require_once '../config/database.php';
@@ -43,11 +31,10 @@ $servicos_stmt->bind_param("i", $empresa_id);
 $servicos_stmt->execute();
 $servicos_result = $servicos_stmt->get_result();
 
-
 include '../includes/header.php';
 include '../admin/includes/header_admin.php';
-// include '../admin/includes/functions_admin.php';
 ?>
+
 <style>
     .button-container_left {
         display: flex;
@@ -63,9 +50,49 @@ include '../admin/includes/header_admin.php';
         height: 100px;
         object-fit: cover;
         margin-right: 5px;
-        /* Adiciona espaço entre a imagem e o texto */
+    }
+
+    /* ── Modais animados ── */
+    @keyframes modalEntrada {
+        from { opacity: 0; transform: scale(0.85); }
+        to   { opacity: 1; transform: scale(1); }
+    }
+    @keyframes fundoFade {
+        from { background-color: rgba(0,0,0,0); }
+        to   { background-color: rgba(0,0,0,0.4); }
+    }
+
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.4);
+        animation: fundoFade 0.3s ease;
+    }
+
+    .modal-content {
+        background-color: #fefefe;
+        margin: 15% auto;
+        padding: 30px;
+        border: none;
+        width: 80%;
+        max-width: 500px;
+        text-align: center;
+        border-radius: 8px;
+        box-shadow: 0 5px 30px rgba(0,0,0,0.2);
+        animation: modalEntrada 0.3s ease;
+    }
+
+    #okButton {
+        margin-top: 20px;
+        width: 100%;
     }
 </style>
+
 <div class="white-background">
     <div class="container-fluid">
         <div class="header-container">
@@ -121,14 +148,6 @@ include '../admin/includes/header_admin.php';
             </ul>
         </div>
         <div class="col-md-9">
-            <?php
-            if (isset($success_message)) {
-                echo "<div class='alert alert-success'>" . $success_message . "</div>";
-            }
-            if (isset($error_message)) {
-                echo "<div class='alert alert-danger'>" . $error_message . "</div>";
-            }
-            ?>
 
             <div id="servicos" class="config-section">
                 <div class="text-center">
@@ -183,9 +202,10 @@ include '../admin/includes/header_admin.php';
     </div>
 </div>
 
+<!-- Modal de confirmação de eliminação -->
 <div id="eliminarServicoModal" class="modal">
     <div class="modal-content">
-        <h2 id="modalTitle"></h2>
+        <h2 id="eliminarModalTitle"></h2>
         <p>Tem certeza que deseja eliminar este serviço? Esta ação não pode ser desfeita.</p>
         <div class="button-container mt-4">
             <button id="cancelarEliminacao" class="btn btn-secondary">Cancelar</button>
@@ -194,10 +214,10 @@ include '../admin/includes/header_admin.php';
     </div>
 </div>
 
-
+<!-- Modal de mensagem de sucesso/erro -->
 <div id="messageModal" class="modal">
     <div class="modal-content">
-        <h2 id="modalTitle"></h2>
+        <h2 id="messageModalTitle"></h2>
         <p id="modalMessage"></p>
         <button id="okButton" class="btn btn-success">Ok</button>
     </div>
@@ -206,12 +226,13 @@ include '../admin/includes/header_admin.php';
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-<script>
-    $(document).ready(function() {
-        $('.nav-link').on('click', function(e) {
-            var href = $(this).attr('href');
 
-            // Só intercepta links com #
+<script>
+    $(document).ready(function () {
+
+        // Navegação lateral
+        $('.nav-link').on('click', function (e) {
+            var href = $(this).attr('href');
             if (href.startsWith('#')) {
                 e.preventDefault();
                 $('.config-section').hide();
@@ -219,67 +240,44 @@ include '../admin/includes/header_admin.php';
             }
         });
 
-        $('#mostrarFormularioServico').on('click', function() {
+        // Mostrar/esconder formulário
+        $('#mostrarFormularioServico').on('click', function () {
             $('#formularioServico').toggle();
         });
 
-        $('#cancelarFormulario').on('click', function() {
+        $('#cancelarFormulario').on('click', function () {
             $('#formularioServico').hide();
         });
 
-        // Novo código para o modal de eliminação
-        $('.btn-danger').on('click', function(e) {
+        // Modal de eliminação
+        $('.btn-danger').on('click', function (e) {
             e.preventDefault();
             var servicoId = $(this).data('id');
             var servicoNome = $(this).data('nome');
-            $('#modalTitle').text('Eliminar ' + servicoNome);
+            $('#eliminarModalTitle').text('Eliminar ' + servicoNome);
             $('#confirmarEliminacao').data('id', servicoId);
             $('#eliminarServicoModal').show();
         });
 
-        $('#cancelarEliminacao').on('click', function() {
+        $('#cancelarEliminacao').on('click', function () {
             $('#eliminarServicoModal').hide();
         });
 
-        $('#confirmarEliminacao').on('click', function() {
+        $('#confirmarEliminacao').on('click', function () {
             var servicoId = $(this).data('id');
             window.location.href = 'eliminar_servico.php?id=' + servicoId;
         });
     });
 </script>
-<style>
-    .modal {
-        display: none;
-        position: fixed;
-        z-index: 1000;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.4);
-    }
-
-    .modal-content {
-        background-color: #fefefe;
-        margin: 15% auto;
-        padding: 20px;
-        border: 1px solid #888;
-        width: 80%;
-        max-width: 500px;
-        text-align: center;
-    }
-
-    #okButton {
-        margin-top: 20px;
-    }
-</style>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
+
+        // ── Modal de mensagem (show_message=1) ──
         var urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get('show_message') === '1') {
             var modal = document.getElementById('messageModal');
-            var modalTitle = document.getElementById('modalTitle');
+            var modalTitle = document.getElementById('messageModalTitle');
             var modalMessage = document.getElementById('modalMessage');
             var okButton = document.getElementById('okButton');
 
@@ -295,37 +293,24 @@ include '../admin/includes/header_admin.php';
 
             modal.style.display = 'block';
 
-            okButton.onclick = function() {
+            okButton.onclick = function () {
                 modal.style.display = 'none';
-                // Remove a flag da URL
                 window.history.replaceState({}, document.title, window.location.pathname + '?id=<?php echo $empresa_id; ?>');
-            }
+            };
         }
-    });
-</script>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Código existente...
 
-        // Adicione este novo código
+        // ── Hash na URL (ex: #servicos) ──
         var hash = window.location.hash;
         if (hash) {
-            // Remove o '#' do início
             var targetId = hash.substring(1);
             var targetElement = document.getElementById(targetId);
             if (targetElement) {
-                // Oculta todas as seções
                 var sections = document.getElementsByClassName('config-section');
                 for (var i = 0; i < sections.length; i++) {
                     sections[i].style.display = 'none';
                 }
-                // Mostra a seção alvo
                 targetElement.style.display = 'block';
-                // Rola até a seção
-                targetElement.scrollIntoView({
-                    behavior: 'smooth'
-                });
-                // Atualiza a navegação
+                targetElement.scrollIntoView({ behavior: 'smooth' });
                 var navLinks = document.getElementsByClassName('nav-link');
                 for (var i = 0; i < navLinks.length; i++) {
                     navLinks[i].classList.remove('active');
@@ -337,37 +322,6 @@ include '../admin/includes/header_admin.php';
         }
     });
 </script>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        var hash = window.location.hash;
-        if (hash) {
-            // Remove o '#' do início
-            var targetId = hash.substring(1);
-            var targetElement = document.getElementById(targetId);
-            if (targetElement) {
-                // Oculta todas as seções
-                var sections = document.getElementsByClassName('config-section');
-                for (var i = 0; i < sections.length; i++) {
-                    sections[i].style.display = 'none';
-                }
-                // Mostra a seção alvo
-                targetElement.style.display = 'block';
-                // Rola até a seção
-                targetElement.scrollIntoView({
-                    behavior: 'smooth'
-                });
-                // Atualiza a navegação
-                var navLinks = document.getElementsByClassName('nav-link');
-                for (var i = 0; i < navLinks.length; i++) {
-                    navLinks[i].classList.remove('active');
-                    if (navLinks[i].getAttribute('href') === hash) {
-                        navLinks[i].classList.add('active');
-                    }
-                }
-            }
-        }
-    });
-</script>
+
 </body>
-
 </html>
