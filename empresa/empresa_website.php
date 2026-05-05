@@ -25,8 +25,8 @@ if (!$empresa) {
     exit();
 }
 
-// CORRIGIDO: Buscar dados do website da BD
-$website_sql = "SELECT * FROM website WHERE empresa_id = ?";
+// Buscar dados do website da BD
+$website_sql = "SELECT * FROM website_config WHERE empresa_id = ?";
 $website_stmt = $conn->prepare($website_sql);
 $website_stmt->bind_param("i", $empresa_id);
 $website_stmt->execute();
@@ -37,16 +37,16 @@ $website_stmt->close();
 // Processar o formulário quando enviado
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $descricao_empresa = trim($_POST['descricao_empresa'] ?? '');
-    $link_facebook = trim($_POST['link_facebook'] ?? '');
-    $link_instagram = trim($_POST['link_instagram'] ?? '');
-    $link_x = trim($_POST['link_x'] ?? '');
+    $link_facebook     = trim($_POST['link_facebook'] ?? '');
+    $link_instagram    = trim($_POST['link_instagram'] ?? '');
+    $link_x            = trim($_POST['link_x'] ?? '');
 
-    $logotipo = $website['logotipo'] ?? '';
+    $logotipo     = $website['logotipo'] ?? '';
     $capa_empresa = $website['capa_empresa'] ?? '';
 
     // Upload do logotipo
     if (isset($_FILES['logotipo']) && $_FILES['logotipo']['error'] == UPLOAD_ERR_OK) {
-        $allowed = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+        $allowed   = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
         $file_type = mime_content_type($_FILES['logotipo']['tmp_name']);
 
         if (!in_array($file_type, $allowed)) {
@@ -66,14 +66,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             mkdir($upload_dir, 0777, true);
         }
 
-        $ext = pathinfo($_FILES['logotipo']['name'], PATHINFO_EXTENSION);
+        $ext      = pathinfo($_FILES['logotipo']['name'], PATHINFO_EXTENSION);
         $logotipo = $upload_dir . 'logotipo.' . $ext;
         move_uploaded_file($_FILES['logotipo']['tmp_name'], $logotipo);
     }
 
     // Upload da capa
     if (isset($_FILES['capa_empresa']) && $_FILES['capa_empresa']['error'] == UPLOAD_ERR_OK) {
-        $allowed = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+        $allowed   = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
         $file_type = mime_content_type($_FILES['capa_empresa']['tmp_name']);
 
         if (!in_array($file_type, $allowed)) {
@@ -93,21 +93,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             mkdir($upload_dir, 0777, true);
         }
 
-        $ext = pathinfo($_FILES['capa_empresa']['name'], PATHINFO_EXTENSION);
+        $ext          = pathinfo($_FILES['capa_empresa']['name'], PATHINFO_EXTENSION);
         $capa_empresa = $upload_dir . 'capa.' . $ext;
         move_uploaded_file($_FILES['capa_empresa']['tmp_name'], $capa_empresa);
     }
 
-    // Inserir ou atualizar (INSERT ... ON DUPLICATE KEY UPDATE)
-    $save_sql = "INSERT INTO website (empresa_id, descricao_empresa, logotipo, capa_empresa, link_facebook, link_instagram, link_x)
+    // Inserir ou atualizar
+    $save_sql = "INSERT INTO website_config (empresa_id, descricao_empresa, logotipo, capa_empresa, link_facebook, link_instagram, link_x)
                  VALUES (?, ?, ?, ?, ?, ?, ?)
                  ON DUPLICATE KEY UPDATE
                  descricao_empresa = VALUES(descricao_empresa),
-                 logotipo = VALUES(logotipo),
-                 capa_empresa = VALUES(capa_empresa),
-                 link_facebook = VALUES(link_facebook),
-                 link_instagram = VALUES(link_instagram),
-                 link_x = VALUES(link_x)";
+                 logotipo          = VALUES(logotipo),
+                 capa_empresa      = VALUES(capa_empresa),
+                 link_facebook     = VALUES(link_facebook),
+                 link_instagram    = VALUES(link_instagram),
+                 link_x            = VALUES(link_x)";
 
     $save_stmt = $conn->prepare($save_sql);
     $save_stmt->bind_param("issssss", $empresa_id, $descricao_empresa, $logotipo, $capa_empresa, $link_facebook, $link_instagram, $link_x);
@@ -261,7 +261,8 @@ include '../admin/includes/header_admin.php';
 
                     <div class="form-group mt-4">
                         <label for="descricao_empresa"><i class="fas fa-align-left"></i> Descrição da Empresa</label>
-                        <textarea class="form-control" id="descricao_empresa" name="descricao_empresa" rows="4"><?php echo htmlspecialchars($website['descricao_empresa'] ?? ''); ?></textarea>
+                        <textarea class="form-control" id="descricao_empresa" name="descricao_empresa"
+                                  rows="4"><?php echo htmlspecialchars($website['descricao_empresa'] ?? ''); ?></textarea>
                     </div>
 
                     <div class="form-group mt-4">
@@ -292,7 +293,10 @@ include '../admin/includes/header_admin.php';
                                     width="100%" height="300" style="border:0; border-radius:8px;"
                                     allowfullscreen="" loading="lazy"></iframe>
                         <?php else: ?>
-                            <p class="text-muted">Preencha a morada nas <a href="empresa_informacoes.php?id=<?php echo $empresa_id; ?>">Informações da Empresa</a> para ver o mapa.</p>
+                            <p class="text-muted">Preencha a morada nas
+                                <a href="empresa_informacoes.php?id=<?php echo $empresa_id; ?>">Informações da Empresa</a>
+                                para ver o mapa.
+                            </p>
                         <?php endif; ?>
                     </div>
 
@@ -320,18 +324,18 @@ include '../admin/includes/header_admin.php';
 document.addEventListener('DOMContentLoaded', function () {
     var urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('show_message') === '1') {
-        var modal = document.getElementById('messageModal');
+        var modal      = document.getElementById('messageModal');
         var modalTitle = document.getElementById('modalTitle');
-        var modalMessage = document.getElementById('modalMessage');
-        var okButton = document.getElementById('okButton');
+        var modalMsg   = document.getElementById('modalMessage');
+        var okButton   = document.getElementById('okButton');
 
         <?php if (isset($_SESSION['success_message'])): ?>
             modalTitle.textContent = 'Sucesso';
-            modalMessage.textContent = '<?php echo addslashes($_SESSION['success_message']); ?>';
+            modalMsg.textContent   = '<?php echo addslashes($_SESSION['success_message']); ?>';
             <?php unset($_SESSION['success_message']); ?>
         <?php elseif (isset($_SESSION['error_message'])): ?>
             modalTitle.textContent = 'Erro';
-            modalMessage.textContent = '<?php echo addslashes($_SESSION['error_message']); ?>';
+            modalMsg.textContent   = '<?php echo addslashes($_SESSION['error_message']); ?>';
             <?php unset($_SESSION['error_message']); ?>
         <?php endif; ?>
 

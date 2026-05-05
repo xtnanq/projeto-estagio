@@ -1,16 +1,16 @@
-<?php
-// logout.php - Script para encerrar a sessão do usuário
+    <?php
+    // logout.php - Script para encerrar a sessão do usuário
 
-// Iniciar a sessão
-session_start();
+    // Iniciar a sessão
+    session_start();
 
-// Limpar todas as variáveis de sessão
-$_SESSION = array();
+    // Limpar todas as variáveis de sessão
+    $_SESSION = array();
 
-// Destruir a sessão
-session_destroy();
+    // Destruir a sessão
+    session_destroy();
 
-// Redirecionar para a página de login
-header("Location: login.php");
-exit;
-?>
+    // Redirecionar para a página de login
+    header("Location: login.php");
+    exit;
+    ?>
