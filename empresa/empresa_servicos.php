@@ -219,10 +219,14 @@ include '../admin/includes/header_admin.php';
 <script>
     $(document).ready(function() {
         $('.nav-link').on('click', function(e) {
-            e.preventDefault();
-            var target = $(this).attr('href');
-            $('.config-section').hide();
-            $(target).show();
+            var href = $(this).attr('href');
+
+            // Só intercepta links com #
+            if (href.startsWith('#')) {
+                e.preventDefault();
+                $('.config-section').hide();
+                $(href).show();
+            }
         });
 
         $('#mostrarFormularioServico').on('click', function() {
