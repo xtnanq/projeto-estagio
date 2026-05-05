@@ -4,7 +4,7 @@ require_once '../config/database.php';
 require_once '../includes/functions.php';
 
 // Verificar se o ID da empresa foi passado via GET
-if(isset($_GET['id'])) {
+if (isset($_GET['id'])) {
     $empresa_id = $_GET['id'];
 } else {
     header("Location: dashboard.php");
@@ -19,7 +19,7 @@ $stmt->execute();
 $result = $stmt->get_result();
 $empresa = $result->fetch_assoc();
 
-if(!$empresa) {
+if (!$empresa) {
     header("Location: dashboard.php");
     exit();
 }
@@ -45,10 +45,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                    telefone_contato = ?, 
                    email_contato = ? 
                    WHERE id = ?";
-    
+
     $update_stmt = $conn->prepare($update_sql);
     $update_stmt->bind_param("ssssssssi", $nome_empresa, $morada, $codigo_postal, $telefone, $email_empresa, $nome_contato, $telefone_contato, $email_contato, $empresa_id);
-    
+
     if ($update_stmt->execute()) {
         $_SESSION['success_message'] = "Informações da empresa atualizadas com sucesso!";
         header("Location: empresa_informacoes.php?id=" . $empresa_id . "&show_message=1");
@@ -70,9 +70,11 @@ include '../admin/includes/header_admin.php';
         display: flex;
         justify-content: flex-end;
     }
+
     .button-container_left .btn {
         margin-left: 10px;
     }
+
     .modal {
         display: none;
         position: fixed;
@@ -81,7 +83,7 @@ include '../admin/includes/header_admin.php';
         top: 0;
         width: 100%;
         height: 100%;
-        background-color: rgba(0,0,0,0.4);
+        background-color: rgba(0, 0, 0, 0.4);
     }
 
     .modal-content {
@@ -124,20 +126,34 @@ include '../admin/includes/header_admin.php';
             <h3>Configurações</h3>
             <ul class="nav flex-column">
                 <li class="nav-item">
-                    <a class="nav-link active " href="empresa_informacoes.php?id=<?php echo $empresa_id; ?>"><i class="fas fa-circle-info"></i> Informações</a>
+                    <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'empresa_informacoes.php' ? 'active' : ''; ?>"
+                        href="empresa_informacoes.php?id=<?php echo $empresa_id; ?>">
+                        <i class="fas fa-circle-info"></i> Informações
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="empresa_servicos.php?id=<?php echo $empresa_id; ?>"><i class="fas fa-handshake"></i> Serviços</a>
+                    <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'empresa_servicos.php' ? 'active' : ''; ?>"
+                        href="empresa_servicos.php?id=<?php echo $empresa_id; ?>">
+                        <i class="fas fa-handshake"></i> Serviços
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="empresa_portfolio.php?id=<?php echo $empresa_id; ?>"><i class="fas fa-image"></i> Portfólio</a>
+                    <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'empresa_portfolio.php' ? 'active' : ''; ?>"
+                        href="empresa_portfolio.php?id=<?php echo $empresa_id; ?>">
+                        <i class="fas fa-image"></i> Portfólio
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="empresa_website.php?id=<?php echo $empresa_id; ?>"><i class="fas fa-globe"></i> Website</a>
+                    <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'empresa_website.php' ? 'active' : ''; ?>"
+                        href="empresa_website.php?id=<?php echo $empresa_id; ?>">
+                        <i class="fas fa-globe"></i> Website
+                    </a>
                 </li>
-                <li class="nav-item_2">
-                    <a class="nav-link_2" href="/projeto/admin/dashboard.php"><i class="fas fa-house"></i> Dashboard</a>
-                </li>                
+                <li class="nav-item">
+                    <a class="nav-link" href="/projeto/admin/dashboard.php">
+                        <i class="fas fa-house"></i> Dashboard
+                    </a>
+                </li>
             </ul>
         </div>
         <div class="col-md-9">
@@ -152,7 +168,7 @@ include '../admin/includes/header_admin.php';
             <div id="informacoes" class="config-section">
                 <div class="text-center">
                     <h4>Informações da Empresa</h4>
-                </div>    
+                </div>
                 <form method="POST" action="">
                     <div class="form-group mt-4">
                         <label for="nome_empresa"><i class="fas fa-building"></i> Nome da Empresa</label>
@@ -186,7 +202,7 @@ include '../admin/includes/header_admin.php';
                         <label for="email_contato"><i class="fas fa-envelope"></i> Email de Contato</label>
                         <input type="email" class="form-control" id="email_contato" name="email_contato" value="<?php echo htmlspecialchars($empresa['email_contato']); ?>">
                     </div>
-                    <div class="button-container_left mt-4">    
+                    <div class="button-container_left mt-4">
                         <button type="submit" class="btn btn-success">Guardar Informações</button>
                     </div>
                 </form>
@@ -239,34 +255,33 @@ include '../admin/includes/header_admin.php';
 
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    var urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('show_message') === '1') {
-        var modal = document.getElementById('messageModal');
-        var modalTitle = document.getElementById('modalTitle');
-        var modalMessage = document.getElementById('modalMessage');
-        var okButton = document.getElementById('okButton');
-    
-        <?php if (isset($_SESSION['success_message'])): ?>
-            modalTitle.textContent = 'Sucesso';
-            modalMessage.textContent = '<?php echo $_SESSION['success_message']; ?>';
-            <?php unset($_SESSION['success_message']); ?>
-        <?php elseif (isset($_SESSION['error_message'])): ?>
-            modalTitle.textContent = 'Erro';
-            modalMessage.textContent = '<?php echo $_SESSION['error_message']; ?>';
-            <?php unset($_SESSION['error_message']); ?>
-        <?php endif; ?>
+    document.addEventListener('DOMContentLoaded', function() {
+        var urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('show_message') === '1') {
+            var modal = document.getElementById('messageModal');
+            var modalTitle = document.getElementById('modalTitle');
+            var modalMessage = document.getElementById('modalMessage');
+            var okButton = document.getElementById('okButton');
 
-        modal.style.display = 'block';
+            <?php if (isset($_SESSION['success_message'])): ?>
+                modalTitle.textContent = 'Sucesso';
+                modalMessage.textContent = '<?php echo $_SESSION['success_message']; ?>';
+                <?php unset($_SESSION['success_message']); ?>
+            <?php elseif (isset($_SESSION['error_message'])): ?>
+                modalTitle.textContent = 'Erro';
+                modalMessage.textContent = '<?php echo $_SESSION['error_message']; ?>';
+                <?php unset($_SESSION['error_message']); ?>
+            <?php endif; ?>
 
-        okButton.onclick = function() {
-            modal.style.display = 'none';
-            // Remove a flag da URL
-            window.history.replaceState({}, document.title, window.location.pathname + '?id=<?php echo $empresa_id; ?>');
+            modal.style.display = 'block';
+
+            okButton.onclick = function() {
+                modal.style.display = 'none';
+                // Remove a flag da URL
+                window.history.replaceState({}, document.title, window.location.pathname + '?id=<?php echo $empresa_id; ?>');
+            }
         }
-    }
-});
-
+    });
 </script>
 <!--<script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -362,4 +377,3 @@ $(document).ready(function() {
 <?php
 include '../includes/footer.php';
 ?>
-

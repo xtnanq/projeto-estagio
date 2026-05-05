@@ -4,7 +4,7 @@ require_once '../config/database.php';
 require_once '../includes/functions.php';
 
 // Verificar se o ID da empresa foi passado via GET
-if(isset($_GET['id'])) {
+if (isset($_GET['id'])) {
     $empresa_id = $_GET['id'];
 } else {
     header("Location: dashboard.php");
@@ -19,7 +19,7 @@ $stmt->execute();
 $result = $stmt->get_result();
 $empresa = $result->fetch_assoc();
 
-if(!$empresa) {
+if (!$empresa) {
     header("Location: dashboard.php");
     exit();
 }
@@ -64,16 +64,18 @@ include '../admin/includes/header_admin.php';
         display: flex;
         justify-content: flex-end;
     }
+
     .button-container_left .btn {
         margin-left: 10px;
     }
+
     .img-thumbnail {
         width: 100px;
         height: 100px;
         object-fit: cover;
-        margin-right: 5px; /* Adiciona espaço entre a imagem e o texto */
+        margin-right: 5px;
+        /* Adiciona espaço entre a imagem e o texto */
     }
-    
 </style>
 <div class="white-background">
     <div class="container-fluid">
@@ -99,20 +101,34 @@ include '../admin/includes/header_admin.php';
             <h3>Configurações</h3>
             <ul class="nav flex-column">
                 <li class="nav-item">
-                    <a class="nav-link active " href="empresa_informacoes.php?id=<?php echo $empresa_id; ?>"><i class="fas fa-circle-info"></i> Informações</a>
+                    <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'empresa_informacoes.php' ? 'active' : ''; ?>"
+                        href="empresa_informacoes.php?id=<?php echo $empresa_id; ?>">
+                        <i class="fas fa-circle-info"></i> Informações
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#servicos"><i class="fas fa-handshake"></i> Serviços</a>
+                    <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'empresa_servicos.php' ? 'active' : ''; ?>"
+                        href="empresa_servicos.php?id=<?php echo $empresa_id; ?>">
+                        <i class="fas fa-handshake"></i> Serviços
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#portfolio"><i class="fas fa-image"></i> Portfólio</a>
+                    <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'empresa_portfolio.php' ? 'active' : ''; ?>"
+                        href="empresa_portfolio.php?id=<?php echo $empresa_id; ?>">
+                        <i class="fas fa-image"></i> Portfólio
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#website"><i class="fas fa-globe"></i> Website</a>
+                    <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'empresa_website.php' ? 'active' : ''; ?>"
+                        href="empresa_website.php?id=<?php echo $empresa_id; ?>">
+                        <i class="fas fa-globe"></i> Website
+                    </a>
                 </li>
-                <li class="nav-item_2">
-                    <a class="nav-link_2" href="/projeto/admin/dashboard.php"><i class="fas fa-house"></i> Dashboard</a>
-                </li>                
+                <li class="nav-item">
+                    <a class="nav-link" href="/projeto/admin/dashboard.php">
+                        <i class="fas fa-house"></i> Dashboard
+                    </a>
+                </li>
             </ul>
         </div>
         <div class="col-md-9">
@@ -134,7 +150,7 @@ include '../admin/includes/header_admin.php';
                 <div class="mt-4">
                     <button id="mostrarFormularioServico" class="btn btn-freebox-blue">Adicionar Serviço</button>
                 </div>
-    
+
                 <!-- Formulário para adicionar novo serviço -->
                 <div class="card mt-4" id="formularioServico" style="display:none;">
                     <div class="card-body">
@@ -187,7 +203,7 @@ include '../admin/includes/header_admin.php';
         </div>
     </div>
 </div>
-            
+
 
 <div id="messageModal" class="modal">
     <div class="modal-content">
@@ -201,24 +217,24 @@ include '../admin/includes/header_admin.php';
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script>
-    $(document).ready(function(){
-        $('.nav-link').on('click', function(e){
+    $(document).ready(function() {
+        $('.nav-link').on('click', function(e) {
             e.preventDefault();
             var target = $(this).attr('href');
             $('.config-section').hide();
             $(target).show();
         });
 
-        $('#mostrarFormularioServico').on('click', function(){
+        $('#mostrarFormularioServico').on('click', function() {
             $('#formularioServico').toggle();
         });
 
-        $('#cancelarFormulario').on('click', function(){
+        $('#cancelarFormulario').on('click', function() {
             $('#formularioServico').hide();
         });
 
         // Novo código para o modal de eliminação
-        $('.btn-danger').on('click', function(e){
+        $('.btn-danger').on('click', function(e) {
             e.preventDefault();
             var servicoId = $(this).data('id');
             var servicoNome = $(this).data('nome');
@@ -227,132 +243,137 @@ include '../admin/includes/header_admin.php';
             $('#eliminarServicoModal').show();
         });
 
-        $('#cancelarEliminacao').on('click', function(){
+        $('#cancelarEliminacao').on('click', function() {
             $('#eliminarServicoModal').hide();
         });
 
-        $('#confirmarEliminacao').on('click', function(){
+        $('#confirmarEliminacao').on('click', function() {
             var servicoId = $(this).data('id');
             window.location.href = 'eliminar_servico.php?id=' + servicoId;
         });
     });
 </script>
 <style>
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0,0,0,0.4);
-}
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.4);
+    }
 
-.modal-content {
-    background-color: #fefefe;
-    margin: 15% auto;
-    padding: 20px;
-    border: 1px solid #888;
-    width: 80%;
-    max-width: 500px;
-    text-align: center;
-}
+    .modal-content {
+        background-color: #fefefe;
+        margin: 15% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+        max-width: 500px;
+        text-align: center;
+    }
 
-#okButton {
-    margin-top: 20px;
-}
+    #okButton {
+        margin-top: 20px;
+    }
 </style>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    var urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('show_message') === '1') {
-        var modal = document.getElementById('messageModal');
-        var modalTitle = document.getElementById('modalTitle');
-        var modalMessage = document.getElementById('modalMessage');
-        var okButton = document.getElementById('okButton');
+    document.addEventListener('DOMContentLoaded', function() {
+        var urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('show_message') === '1') {
+            var modal = document.getElementById('messageModal');
+            var modalTitle = document.getElementById('modalTitle');
+            var modalMessage = document.getElementById('modalMessage');
+            var okButton = document.getElementById('okButton');
 
-        <?php if (isset($_SESSION['success_message'])): ?>
-            modalTitle.textContent = 'Sucesso';
-            modalMessage.textContent = '<?php echo $_SESSION['success_message']; ?>';
-            <?php unset($_SESSION['success_message']); ?>
-        <?php elseif (isset($_SESSION['error_message'])): ?>
-            modalTitle.textContent = 'Erro';
-            modalMessage.textContent = '<?php echo $_SESSION['error_message']; ?>';
-            <?php unset($_SESSION['error_message']); ?>
-        <?php endif; ?>
+            <?php if (isset($_SESSION['success_message'])): ?>
+                modalTitle.textContent = 'Sucesso';
+                modalMessage.textContent = '<?php echo $_SESSION['success_message']; ?>';
+                <?php unset($_SESSION['success_message']); ?>
+            <?php elseif (isset($_SESSION['error_message'])): ?>
+                modalTitle.textContent = 'Erro';
+                modalMessage.textContent = '<?php echo $_SESSION['error_message']; ?>';
+                <?php unset($_SESSION['error_message']); ?>
+            <?php endif; ?>
 
-        modal.style.display = 'block';
+            modal.style.display = 'block';
 
-        okButton.onclick = function() {
-            modal.style.display = 'none';
-            // Remove a flag da URL
-            window.history.replaceState({}, document.title, window.location.pathname + '?id=<?php echo $empresa_id; ?>');
+            okButton.onclick = function() {
+                modal.style.display = 'none';
+                // Remove a flag da URL
+                window.history.replaceState({}, document.title, window.location.pathname + '?id=<?php echo $empresa_id; ?>');
+            }
         }
-    }
-});
+    });
 </script>
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Código existente...
+    document.addEventListener('DOMContentLoaded', function() {
+        // Código existente...
 
-    // Adicione este novo código
-    var hash = window.location.hash;
-    if (hash) {
-        // Remove o '#' do início
-        var targetId = hash.substring(1);
-        var targetElement = document.getElementById(targetId);
-        if (targetElement) {
-            // Oculta todas as seções
-            var sections = document.getElementsByClassName('config-section');
-            for (var i = 0; i < sections.length; i++) {
-                sections[i].style.display = 'none';
-            }
-            // Mostra a seção alvo
-            targetElement.style.display = 'block';
-            // Rola até a seção
-            targetElement.scrollIntoView({behavior: 'smooth'});
-            // Atualiza a navegação
-            var navLinks = document.getElementsByClassName('nav-link');
-            for (var i = 0; i < navLinks.length; i++) {
-                navLinks[i].classList.remove('active');
-                if (navLinks[i].getAttribute('href') === hash) {
-                    navLinks[i].classList.add('active');
+        // Adicione este novo código
+        var hash = window.location.hash;
+        if (hash) {
+            // Remove o '#' do início
+            var targetId = hash.substring(1);
+            var targetElement = document.getElementById(targetId);
+            if (targetElement) {
+                // Oculta todas as seções
+                var sections = document.getElementsByClassName('config-section');
+                for (var i = 0; i < sections.length; i++) {
+                    sections[i].style.display = 'none';
+                }
+                // Mostra a seção alvo
+                targetElement.style.display = 'block';
+                // Rola até a seção
+                targetElement.scrollIntoView({
+                    behavior: 'smooth'
+                });
+                // Atualiza a navegação
+                var navLinks = document.getElementsByClassName('nav-link');
+                for (var i = 0; i < navLinks.length; i++) {
+                    navLinks[i].classList.remove('active');
+                    if (navLinks[i].getAttribute('href') === hash) {
+                        navLinks[i].classList.add('active');
+                    }
                 }
             }
         }
-    }
-});
+    });
 </script>
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    var hash = window.location.hash;
-    if (hash) {
-        // Remove o '#' do início
-        var targetId = hash.substring(1);
-        var targetElement = document.getElementById(targetId);
-        if (targetElement) {
-            // Oculta todas as seções
-            var sections = document.getElementsByClassName('config-section');
-            for (var i = 0; i < sections.length; i++) {
-                sections[i].style.display = 'none';
-            }
-            // Mostra a seção alvo
-            targetElement.style.display = 'block';
-            // Rola até a seção
-            targetElement.scrollIntoView({behavior: 'smooth'});
-            // Atualiza a navegação
-            var navLinks = document.getElementsByClassName('nav-link');
-            for (var i = 0; i < navLinks.length; i++) {
-                navLinks[i].classList.remove('active');
-                if (navLinks[i].getAttribute('href') === hash) {
-                    navLinks[i].classList.add('active');
+    document.addEventListener('DOMContentLoaded', function() {
+        var hash = window.location.hash;
+        if (hash) {
+            // Remove o '#' do início
+            var targetId = hash.substring(1);
+            var targetElement = document.getElementById(targetId);
+            if (targetElement) {
+                // Oculta todas as seções
+                var sections = document.getElementsByClassName('config-section');
+                for (var i = 0; i < sections.length; i++) {
+                    sections[i].style.display = 'none';
+                }
+                // Mostra a seção alvo
+                targetElement.style.display = 'block';
+                // Rola até a seção
+                targetElement.scrollIntoView({
+                    behavior: 'smooth'
+                });
+                // Atualiza a navegação
+                var navLinks = document.getElementsByClassName('nav-link');
+                for (var i = 0; i < navLinks.length; i++) {
+                    navLinks[i].classList.remove('active');
+                    if (navLinks[i].getAttribute('href') === hash) {
+                        navLinks[i].classList.add('active');
+                    }
                 }
             }
         }
-    }
-});
+    });
 </script>
 </body>
+
 </html>

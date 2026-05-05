@@ -122,22 +122,49 @@ include '../admin/includes/header_admin.php';
 ?>
 
 <style>
-    .button-container_left { display: flex; justify-content: flex-end; }
-    .button-container_left .btn { margin-left: 10px; }
+    .button-container_left {
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    .button-container_left .btn {
+        margin-left: 10px;
+    }
+
     .preview-img {
-        max-width: 200px; max-height: 100px; object-fit: contain;
-        margin-top: 8px; border: 1px solid #ddd; border-radius: 4px; padding: 4px;
+        max-width: 200px;
+        max-height: 100px;
+        object-fit: contain;
+        margin-top: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        padding: 4px;
     }
+
     .modal {
-        display: none; position: fixed; z-index: 1000;
-        left: 0; top: 0; width: 100%; height: 100%;
-        background-color: rgba(0,0,0,0.4);
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.4);
     }
+
     .modal-content {
-        background-color: #fefefe; margin: 15% auto; padding: 20px;
-        border: 1px solid #888; width: 80%; max-width: 500px; text-align: center;
+        background-color: #fefefe;
+        margin: 15% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+        max-width: 500px;
+        text-align: center;
     }
-    #okButton { margin-top: 20px; }
+
+    #okButton {
+        margin-top: 20px;
+    }
 </style>
 
 <div class="white-background">
@@ -166,22 +193,26 @@ include '../admin/includes/header_admin.php';
             <h3>Configurações</h3>
             <ul class="nav flex-column">
                 <li class="nav-item">
-                    <a class="nav-link" href="empresa_informacoes.php?id=<?php echo $empresa_id; ?>">
+                    <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'empresa_informacoes.php' ? 'active' : ''; ?>"
+                        href="empresa_informacoes.php?id=<?php echo $empresa_id; ?>">
                         <i class="fas fa-circle-info"></i> Informações
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="empresa_servicos.php?id=<?php echo $empresa_id; ?>">
+                    <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'empresa_servicos.php' ? 'active' : ''; ?>"
+                        href="empresa_servicos.php?id=<?php echo $empresa_id; ?>">
                         <i class="fas fa-handshake"></i> Serviços
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="empresa_portfolio.php?id=<?php echo $empresa_id; ?>">
+                    <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'empresa_portfolio.php' ? 'active' : ''; ?>"
+                        href="empresa_portfolio.php?id=<?php echo $empresa_id; ?>">
                         <i class="fas fa-image"></i> Portfólio
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active" href="empresa_website.php?id=<?php echo $empresa_id; ?>">
+                    <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'empresa_website.php' ? 'active' : ''; ?>"
+                        href="empresa_website.php?id=<?php echo $empresa_id; ?>">
                         <i class="fas fa-globe"></i> Website
                     </a>
                 </li>
@@ -204,7 +235,7 @@ include '../admin/includes/header_admin.php';
                     <div class="form-group mt-4">
                         <label for="endereco_url"><i class="fas fa-globe"></i> Endereço URL</label>
                         <input type="text" class="form-control" id="endereco_url" readonly
-                               value="<?php echo htmlspecialchars($empresa['nome_empresa']); ?>.projeto.pt">
+                            value="<?php echo htmlspecialchars($empresa['nome_empresa']); ?>.projeto.pt">
                     </div>
 
                     <div class="form-group mt-4">
@@ -212,12 +243,12 @@ include '../admin/includes/header_admin.php';
                         <?php if (!empty($website['logotipo']) && file_exists($website['logotipo'])): ?>
                             <div>
                                 <img src="<?php echo htmlspecialchars($website['logotipo']); ?>"
-                                     alt="Logotipo atual" class="preview-img">
+                                    alt="Logotipo atual" class="preview-img">
                                 <small class="text-muted d-block">Logotipo atual</small>
                             </div>
                         <?php endif; ?>
                         <input type="file" class="form-control-file mt-2" id="logotipo" name="logotipo"
-                               accept="image/jpeg,image/png,image/gif,image/webp">
+                            accept="image/jpeg,image/png,image/gif,image/webp">
                         <small class="text-muted">JPG, PNG, GIF ou WEBP. Máx. 2MB.</small>
                     </div>
 
@@ -226,48 +257,48 @@ include '../admin/includes/header_admin.php';
                         <?php if (!empty($website['capa_empresa']) && file_exists($website['capa_empresa'])): ?>
                             <div>
                                 <img src="<?php echo htmlspecialchars($website['capa_empresa']); ?>"
-                                     alt="Capa atual" class="preview-img">
+                                    alt="Capa atual" class="preview-img">
                                 <small class="text-muted d-block">Capa atual</small>
                             </div>
                         <?php endif; ?>
                         <input type="file" class="form-control-file mt-2" id="capa_empresa" name="capa_empresa"
-                               accept="image/jpeg,image/png,image/gif,image/webp">
+                            accept="image/jpeg,image/png,image/gif,image/webp">
                         <small class="text-muted">JPG, PNG, GIF ou WEBP. Máx. 5MB.</small>
                     </div>
 
                     <div class="form-group mt-4">
                         <label for="descricao_empresa"><i class="fas fa-align-left"></i> Descrição da Empresa</label>
                         <textarea class="form-control" id="descricao_empresa" name="descricao_empresa"
-                                  rows="4"><?php echo htmlspecialchars($website['descricao_empresa'] ?? ''); ?></textarea>
+                            rows="4"><?php echo htmlspecialchars($website['descricao_empresa'] ?? ''); ?></textarea>
                     </div>
 
                     <div class="form-group mt-4">
                         <label for="link_facebook"><i class="fab fa-facebook"></i> Facebook</label>
                         <input type="url" class="form-control" id="link_facebook" name="link_facebook"
-                               placeholder="https://facebook.com/suaempresa"
-                               value="<?php echo htmlspecialchars($website['link_facebook'] ?? ''); ?>">
+                            placeholder="https://facebook.com/suaempresa"
+                            value="<?php echo htmlspecialchars($website['link_facebook'] ?? ''); ?>">
                     </div>
 
                     <div class="form-group mt-4">
                         <label for="link_instagram"><i class="fab fa-instagram"></i> Instagram</label>
                         <input type="url" class="form-control" id="link_instagram" name="link_instagram"
-                               placeholder="https://instagram.com/suaempresa"
-                               value="<?php echo htmlspecialchars($website['link_instagram'] ?? ''); ?>">
+                            placeholder="https://instagram.com/suaempresa"
+                            value="<?php echo htmlspecialchars($website['link_instagram'] ?? ''); ?>">
                     </div>
 
                     <div class="form-group mt-4">
                         <label for="link_x"><i class="fab fa-x-twitter"></i> X (Twitter)</label>
                         <input type="url" class="form-control" id="link_x" name="link_x"
-                               placeholder="https://x.com/suaempresa"
-                               value="<?php echo htmlspecialchars($website['link_x'] ?? ''); ?>">
+                            placeholder="https://x.com/suaempresa"
+                            value="<?php echo htmlspecialchars($website['link_x'] ?? ''); ?>">
                     </div>
 
                     <div class="form-group mt-4">
                         <label><i class="fas fa-map-marker-alt"></i> Localização</label>
                         <?php if (!empty($empresa['morada'])): ?>
                             <iframe src="https://maps.google.com/maps?q=<?php echo urlencode($empresa['morada']); ?>&output=embed"
-                                    width="100%" height="300" style="border:0; border-radius:8px;"
-                                    allowfullscreen="" loading="lazy"></iframe>
+                                width="100%" height="300" style="border:0; border-radius:8px;"
+                                allowfullscreen="" loading="lazy"></iframe>
                         <?php else: ?>
                             <p class="text-muted">Preencha a morada nas
                                 <a href="empresa_informacoes.php?id=<?php echo $empresa_id; ?>">Informações da Empresa</a>
@@ -296,33 +327,33 @@ include '../admin/includes/header_admin.php';
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    var urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('show_message') === '1') {
-        var modal      = document.getElementById('messageModal');
-        var modalTitle = document.getElementById('modalTitle');
-        var modalMsg   = document.getElementById('modalMessage');
-        var okButton   = document.getElementById('okButton');
+    document.addEventListener('DOMContentLoaded', function() {
+        var urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('show_message') === '1') {
+            var modal = document.getElementById('messageModal');
+            var modalTitle = document.getElementById('modalTitle');
+            var modalMsg = document.getElementById('modalMessage');
+            var okButton = document.getElementById('okButton');
 
-        <?php if (isset($_SESSION['success_message'])): ?>
-            modalTitle.textContent = 'Sucesso';
-            modalMsg.textContent   = '<?php echo addslashes($_SESSION['success_message']); ?>';
-            <?php unset($_SESSION['success_message']); ?>
-        <?php elseif (isset($_SESSION['error_message'])): ?>
-            modalTitle.textContent = 'Erro';
-            modalMsg.textContent   = '<?php echo addslashes($_SESSION['error_message']); ?>';
-            <?php unset($_SESSION['error_message']); ?>
-        <?php endif; ?>
+            <?php if (isset($_SESSION['success_message'])): ?>
+                modalTitle.textContent = 'Sucesso';
+                modalMsg.textContent = '<?php echo addslashes($_SESSION['success_message']); ?>';
+                <?php unset($_SESSION['success_message']); ?>
+            <?php elseif (isset($_SESSION['error_message'])): ?>
+                modalTitle.textContent = 'Erro';
+                modalMsg.textContent = '<?php echo addslashes($_SESSION['error_message']); ?>';
+                <?php unset($_SESSION['error_message']); ?>
+            <?php endif; ?>
 
-        modal.style.display = 'block';
+            modal.style.display = 'block';
 
-        okButton.onclick = function () {
-            modal.style.display = 'none';
-            window.history.replaceState({}, document.title,
-                window.location.pathname + '?id=<?php echo $empresa_id; ?>');
-        };
-    }
-});
+            okButton.onclick = function() {
+                modal.style.display = 'none';
+                window.history.replaceState({}, document.title,
+                    window.location.pathname + '?id=<?php echo $empresa_id; ?>');
+            };
+        }
+    });
 </script>
 
 <?php include '../includes/footer.php'; ?>
