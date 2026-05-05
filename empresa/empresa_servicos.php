@@ -141,7 +141,7 @@ include '../admin/includes/header_admin.php';
             }
             ?>
 
-            <div id="servicos" class="config-section" style="display:none;">
+            <div id="servicos" class="config-section">
                 <div class="text-center">
                     <h4>Serviços</h4>
                 </div>
