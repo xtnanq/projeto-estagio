@@ -63,7 +63,7 @@ include '../admin/includes/functions_admin.php';
                                     <a href="editar_empresa.php?id=<?php echo $row['id']; ?>" class="btn btn-sm btn-success">Editar</a>
                                     <a href="/projeto/empresa/empresa_informacoes.php?id=<?php echo $row['id']; ?>" class="btn btn-sm btn-freebox-blue">Configurar</a>
                                     <a href="/projeto/sites/index.php?id=<?php echo $row['id']; ?>" class="btn btn-sm btn-info" target="_blank">Ver Website</a>
-                                    <button class="btn btn-sm btn-danger" onclick="confirmarExclusao(<?php echo $row['id']; ?>, <?php echo json_encode($row['nome_empresa']); ?>)">Eliminar</button>
+                                    <button class="btn btn-sm btn-danger" onclick="confirmarExclusao(<?php echo (int)$row['id']; ?>, '<?php echo addslashes(htmlspecialchars($row['nome_empresa'])); ?>')">Eliminar</button>
                                 </div>
                             </td>
                         </tr>
