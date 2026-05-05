@@ -4,10 +4,17 @@ require_once '../config/database.php';
 $response = array('success' => false);
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $empresa_id = $_POST['empresa_id'];
-    $nome_servico = $_POST['nome_servico'];
-    $titulo_servico = $_POST['titulo_servico'];
-    $descricao_servico = $_POST['descricao_servico'];
+    $empresa_id = intval($_POST['empresa_id']);
+    $nome_servico = trim($_POST['nome_servico'] ?? '');
+    $titulo_servico = trim($_POST['titulo_servico'] ?? '');
+    $descricao_servico = trim($_POST['descricao_servico'] ?? '');
+
+    // Validação básica
+    if (empty($nome_servico) || empty($titulo_servico)) {
+        $response['error'] = 'Nome e título são obrigatórios.';
+        echo json_encode($response);
+        exit;
+    }
 
     $insert_servico_sql = "INSERT INTO servicos (empresa_id, nome_servico, titulo_servico, descricao_servico) VALUES (?, ?, ?, ?)";
     $stmt = $conn->prepare($insert_servico_sql);
@@ -17,9 +24,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $response['success'] = true;
         $response['id'] = $stmt->insert_id;
         $response['nome_servico'] = htmlspecialchars($nome_servico);
+    } else {
+        $response['error'] = 'Erro ao inserir serviço.';
     }
     $stmt->close();
 }
 
 echo json_encode($response);
 $conn->close();
+?>
