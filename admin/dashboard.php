@@ -39,7 +39,7 @@ include '../admin/includes/functions_admin.php';
 
 <div class="container-fluid mt-4">
     <div class="dashboard-container dashboard-blue-container">
-       <div class="row mb-3">
+        <div class="row mb-3">
             <div class="col-md-12 text-right">
                 <a href="/projeto/register.php" class="btn btn-freebox-blue" onclick="window.location.href='/projeto/register.php'; return false;">Adicionar Empresa</a>
             </div>
@@ -55,17 +55,18 @@ include '../admin/includes/functions_admin.php';
                 </thead>
                 <tbody>
                     <?php while ($row = $result->fetch_assoc()): ?>
-                    <tr>
-                        <td><?php echo htmlspecialchars($row['nome_empresa']); ?></td>
-                        <td><?php echo htmlspecialchars($row['email']); ?></td>
-                        <td>
-                            <div class="action-buttons">
-                                <a href="editar_empresa.php?id=<?php echo $row['id']; ?>" class="btn btn-sm btn btn-success">Editar</a>
-                                <a href="/projeto/empresa/empresa_informacoes.php?id=<?php echo $row['id']; ?>" class="btn btn-sm btn-freebox-blue">Configurar</a>
-                                <button class="btn btn-sm btn-danger" onclick="confirmarExclusao(<?php echo $row['id']; ?>, '<?php echo htmlspecialchars($row['nome_empresa'], ENT_QUOTES); ?>')">Eliminar</button>
-                            </div>
-                        </td>
-                    </tr>
+                        <tr>
+                            <td><?php echo htmlspecialchars($row['nome_empresa']); ?></td>
+                            <td><?php echo htmlspecialchars($row['email']); ?></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <a href="editar_empresa.php?id=<?php echo $row['id']; ?>" class="btn btn-sm btn-success">Editar</a>
+                                    <a href="/projeto/empresa/empresa_informacoes.php?id=<?php echo $row['id']; ?>" class="btn btn-sm btn-freebox-blue">Configurar</a>
+                                    <a href="/projeto/sites/index.php?id=<?php echo $row['id']; ?>" class="btn btn-sm btn-info" target="_blank">Ver Website</a>
+                                    <button class="btn btn-sm btn-danger" onclick="confirmarExclusao(<?php echo $row['id']; ?>, <?php echo json_encode($row['nome_empresa']); ?>)">Eliminar</button>
+                                </div>
+                            </td>
+                        </tr>
                     <?php endwhile; ?>
                 </tbody>
             </table>
