@@ -102,6 +102,15 @@ include '../admin/includes/header_admin.php';
         margin-right: 5px;
     }
 
+    @keyframes modalEntrada {
+        from { opacity: 0; transform: scale(0.85); }
+        to   { opacity: 1; transform: scale(1); }
+    }
+    @keyframes fundoFade {
+        from { background-color: rgba(0,0,0,0); }
+        to   { background-color: rgba(0,0,0,0.4); }
+    }
+
     .modal {
         display: none;
         position: fixed;
@@ -111,20 +120,25 @@ include '../admin/includes/header_admin.php';
         width: 100%;
         height: 100%;
         background-color: rgba(0, 0, 0, 0.4);
+        animation: fundoFade 0.3s ease;
     }
 
     .modal-content {
         background-color: #fefefe;
         margin: 15% auto;
-        padding: 20px;
-        border: 1px solid #888;
+        padding: 30px;
+        border: none;
         width: 80%;
         max-width: 500px;
         text-align: center;
+        border-radius: 8px;
+        box-shadow: 0 5px 30px rgba(0,0,0,0.2);
+        animation: modalEntrada 0.3s ease;
     }
 
     #okButton {
         margin-top: 20px;
+        width: 100%;
     }
 </style>
 
@@ -224,10 +238,13 @@ include '../admin/includes/header_admin.php';
                         <div class="card-body p-2">
                             <img src="<?php echo htmlspecialchars($imagemPath); ?>"
                                 alt="Imagem do Portfólio" class="img-thumbnail mb-1">
-                            <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex justify-content-between align-items-center mt-2">
                                 <p class="mb-0"><?php echo htmlspecialchars($portfolio['descricao_imagem']); ?></p>
-                                <button class="btn btn-danger btn-sm eliminar-portfolio"
-                                    data-id="<?php echo $portfolio['id']; ?>">Eliminar</button>
+                                <div class="button-container">
+                                    <a href="editar_portfolio.php?id=<?php echo $portfolio['id']; ?>" class="btn btn-success">Editar</a>
+                                    <button class="btn btn-danger eliminar-portfolio"
+                                        data-id="<?php echo $portfolio['id']; ?>">Eliminar</button>
+                                </div>
                             </div>
                         </div>
                     </div>
