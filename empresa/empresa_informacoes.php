@@ -6,8 +6,8 @@ require_once '../includes/functions.php';
 if (isset($_GET['id'])) {
     $empresa_id = $_GET['id'];
 } else {
-    header("Location: dashboard.php");
-    exit();
+   header("Location: index.php");
+   exit();
 }
 
 $sql = "SELECT * FROM empresas WHERE id = ?";
