@@ -40,9 +40,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $link_facebook     = trim($_POST['link_facebook'] ?? '');
     $link_instagram    = trim($_POST['link_instagram'] ?? '');
     $link_x            = trim($_POST['link_x'] ?? '');
-
-    $logotipo     = $website['logotipo'] ?? '';
-    $capa_empresa = $website['capa_empresa'] ?? '';
+    $logotipo          = $website['logotipo'] ?? '';
+    $capa_empresa      = $website['capa_empresa'] ?? '';
 
     // Upload do logotipo
     if (isset($_FILES['logotipo']) && $_FILES['logotipo']['error'] == UPLOAD_ERR_OK) {
@@ -54,7 +53,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             header("Location: empresa_website.php?id=" . $empresa_id . "&show_message=1");
             exit();
         }
-
         if ($_FILES['logotipo']['size'] > 2 * 1024 * 1024) {
             $_SESSION['error_message'] = "Logotipo: o ficheiro não pode ter mais de 2MB.";
             header("Location: empresa_website.php?id=" . $empresa_id . "&show_message=1");
@@ -62,9 +60,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         $upload_dir = '../imagens/' . $empresa_id . '/';
-        if (!is_dir($upload_dir)) {
-            mkdir($upload_dir, 0777, true);
-        }
+        if (!is_dir($upload_dir)) mkdir($upload_dir, 0777, true);
 
         $ext      = pathinfo($_FILES['logotipo']['name'], PATHINFO_EXTENSION);
         $logotipo = $upload_dir . 'logotipo.' . $ext;
@@ -81,7 +77,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             header("Location: empresa_website.php?id=" . $empresa_id . "&show_message=1");
             exit();
         }
-
         if ($_FILES['capa_empresa']['size'] > 5 * 1024 * 1024) {
             $_SESSION['error_message'] = "Capa: o ficheiro não pode ter mais de 5MB.";
             header("Location: empresa_website.php?id=" . $empresa_id . "&show_message=1");
@@ -89,9 +84,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         $upload_dir = '../imagens/' . $empresa_id . '/';
-        if (!is_dir($upload_dir)) {
-            mkdir($upload_dir, 0777, true);
-        }
+        if (!is_dir($upload_dir)) mkdir($upload_dir, 0777, true);
 
         $ext          = pathinfo($_FILES['capa_empresa']['name'], PATHINFO_EXTENSION);
         $capa_empresa = $upload_dir . 'capa.' . $ext;
@@ -99,15 +92,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     // Inserir ou atualizar
-    $save_sql = "INSERT INTO website_config (empresa_id, descricao_empresa, logotipo, capa_empresa, link_facebook, link_instagram, link_x)
+    $save_sql = "INSERT INTO website_config 
+                    (empresa_id, descricao_empresa, logotipo, capa_empresa, link_facebook, link_instagram, link_x)
                  VALUES (?, ?, ?, ?, ?, ?, ?)
                  ON DUPLICATE KEY UPDATE
-                 descricao_empresa = VALUES(descricao_empresa),
-                 logotipo          = VALUES(logotipo),
-                 capa_empresa      = VALUES(capa_empresa),
-                 link_facebook     = VALUES(link_facebook),
-                 link_instagram    = VALUES(link_instagram),
-                 link_x            = VALUES(link_x)";
+                    descricao_empresa = VALUES(descricao_empresa),
+                    logotipo          = VALUES(logotipo),
+                    capa_empresa      = VALUES(capa_empresa),
+                    link_facebook     = VALUES(link_facebook),
+                    link_instagram    = VALUES(link_instagram),
+                    link_x            = VALUES(link_x)";
 
     $save_stmt = $conn->prepare($save_sql);
     $save_stmt->bind_param("issssss", $empresa_id, $descricao_empresa, $logotipo, $capa_empresa, $link_facebook, $link_instagram, $link_x);
@@ -128,38 +122,20 @@ include '../admin/includes/header_admin.php';
 ?>
 
 <style>
-    .button-container_left {
-        display: flex;
-        justify-content: flex-end;
-    }
-    .button-container_left .btn {
-        margin-left: 10px;
-    }
+    .button-container_left { display: flex; justify-content: flex-end; }
+    .button-container_left .btn { margin-left: 10px; }
     .preview-img {
-        max-width: 200px;
-        max-height: 100px;
-        object-fit: contain;
-        margin-top: 8px;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        padding: 4px;
+        max-width: 200px; max-height: 100px; object-fit: contain;
+        margin-top: 8px; border: 1px solid #ddd; border-radius: 4px; padding: 4px;
     }
     .modal {
-        display: none;
-        position: fixed;
-        z-index: 1000;
-        left: 0; top: 0;
-        width: 100%; height: 100%;
+        display: none; position: fixed; z-index: 1000;
+        left: 0; top: 0; width: 100%; height: 100%;
         background-color: rgba(0,0,0,0.4);
     }
     .modal-content {
-        background-color: #fefefe;
-        margin: 15% auto;
-        padding: 20px;
-        border: 1px solid #888;
-        width: 80%;
-        max-width: 500px;
-        text-align: center;
+        background-color: #fefefe; margin: 15% auto; padding: 20px;
+        border: 1px solid #888; width: 80%; max-width: 500px; text-align: center;
     }
     #okButton { margin-top: 20px; }
 </style>
@@ -311,7 +287,6 @@ include '../admin/includes/header_admin.php';
     </div>
 </div>
 
-<!-- Modal de mensagem -->
 <div id="messageModal" class="modal">
     <div class="modal-content">
         <h2 id="modalTitle"></h2>
