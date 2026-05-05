@@ -28,7 +28,7 @@ form {
     background: #fff;
     padding: 20px;
     border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 label {
@@ -89,11 +89,14 @@ table {
     margin-top: 20px;
 }
 
-table, th, td {
+table,
+th,
+td {
     border: 1px solid #ddd;
 }
 
-th, td {
+th,
+td {
     padding: 12px;
     text-align: left;
 }
@@ -110,20 +113,64 @@ tr:nth-child(even) {
 tr:hover {
     background-color: #f5f5f5;
 }
+
 .dashboard-container {
     background-color: white;
     border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     padding: 20px;
     margin-top: 20px;
-    max-width: 900px; /* Reduz a largura máxima */
+    max-width: 900px;
+    /* Reduz a largura máxima */
     margin-left: auto;
     margin-right: auto;
 }
+
 .admin-buttons {
     text-align: right;
     padding-right: 15px;
 }
+
 .modal {
-    z-index: 1050; /* Assure que o índice está correto */
+    z-index: 1050;
+    /* Assure que o índice está correto */
+}
+
+.custom-card {
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+    background: #ffffff;
+    padding: 15px;
+}
+
+.config-section h4 {
+    font-weight: 600;
+    margin-bottom: 25px;
+}
+
+.form-control {
+    border-radius: 10px;
+    padding: 10px 14px;
+    border: 1px solid #e0e0e0;
+    transition: 0.2s;
+}
+
+.form-control:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+}
+
+label {
+    font-weight: 500;
+}
+
+.form-group {
+    margin-bottom: 18px;
+}
+
+.custom-btn {
+    border-radius: 10px;
+    padding: 10px 20px;
+    font-weight: 500;
 }

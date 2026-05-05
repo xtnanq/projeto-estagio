@@ -3,15 +3,14 @@ session_start();
 require_once '../config/database.php';
 require_once '../includes/functions.php';
 
-// Verificar se o ID da empresa foi passado via GET
 if (isset($_GET['id'])) {
-    $empresa_id = $_GET['id'];
+    $empresa_id = intval($_GET['id']);
 } else {
     header("Location: dashboard.php");
     exit();
 }
 
-// Buscar informações da empresa
+// Empresa
 $sql = "SELECT * FROM empresas WHERE id = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $empresa_id);
@@ -24,7 +23,7 @@ if (!$empresa) {
     exit();
 }
 
-// Buscar serviços para a empresa
+// Serviços
 $servicos_sql = "SELECT * FROM servicos WHERE empresa_id = ?";
 $servicos_stmt = $conn->prepare($servicos_sql);
 $servicos_stmt->bind_param("i", $empresa_id);
@@ -35,75 +34,60 @@ include '../includes/header.php';
 include '../admin/includes/header_admin.php';
 ?>
 
+<!-- FONT AWESOME -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
 <style>
-    .button-container_left {
-        display: flex;
-        justify-content: flex-end;
-    }
+.button-container_left {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
 
-    .button-container_left .btn {
-        margin-left: 10px;
-    }
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+}
 
-    .img-thumbnail {
-        width: 100px;
-        height: 100px;
-        object-fit: cover;
-        margin-right: 5px;
-    }
+.modal-content {
+    background: #fff;
+    margin: 15% auto;
+    padding: 25px;
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+    border-radius: 12px;
+}
 
-    /* ── Modais animados ── */
-    @keyframes modalEntrada {
-        from { opacity: 0; transform: scale(0.85); }
-        to   { opacity: 1; transform: scale(1); }
-    }
-    @keyframes fundoFade {
-        from { background-color: rgba(0,0,0,0); }
-        to   { background-color: rgba(0,0,0,0.4); }
-    }
+.modal-content h4 {
+    color: #16a34a;
+}
 
-    .modal {
-        display: none;
-        position: fixed;
-        z-index: 1000;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.4);
-        animation: fundoFade 0.3s ease;
-    }
-
-    .modal-content {
-        background-color: #fefefe;
-        margin: 15% auto;
-        padding: 30px;
-        border: none;
-        width: 80%;
-        max-width: 500px;
-        text-align: center;
-        border-radius: 8px;
-        box-shadow: 0 5px 30px rgba(0,0,0,0.2);
-        animation: modalEntrada 0.3s ease;
-    }
-
-    #okButton {
-        margin-top: 20px;
-        width: 100%;
-    }
+.modal-content p {
+    margin-top: 10px;
+}
 </style>
 
+<!-- HEADER -->
 <div class="white-background">
     <div class="container-fluid">
         <div class="header-container">
             <div class="logo-container">
-                <img src="../imagens/Logotipo_freebox.png" alt="Logotipo" style="height: 75px;">
+                <img src="../imagens/Logotipo_freebox.png" style="height:75px;">
             </div>
             <div class="title-container">
-                <h4><?php echo htmlspecialchars($empresa['nome_empresa']); ?></h4>
+                <h4><?= htmlspecialchars($empresa['nome_empresa']); ?></h4>
             </div>
             <div class="buttons-container">
-                <a href="../logout.php" class="btn btn-outline-danger custom-logout" id="logoutBtn"><i class="fas fa-power-off"></i> Logout</a>
+                <a href="../logout.php" class="btn btn-outline-danger">
+                    <i class="fas fa-power-off"></i> Logout
+                </a>
             </div>
         </div>
     </div>
@@ -113,215 +97,123 @@ include '../admin/includes/header_admin.php';
 
 <div class="container-fluid mt-4">
     <div class="row">
+
+        <!-- MENU -->
         <div class="col-md-3">
-            <h3>Configurações</h3>
-            <ul class="nav flex-column">
-                <li class="nav-item">
-                    <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'empresa_informacoes.php' ? 'active' : ''; ?>"
-                        href="empresa_informacoes.php?id=<?php echo $empresa_id; ?>">
-                        <i class="fas fa-circle-info"></i> Informações
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'empresa_servicos.php' ? 'active' : ''; ?>"
-                        href="empresa_servicos.php?id=<?php echo $empresa_id; ?>">
-                        <i class="fas fa-handshake"></i> Serviços
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'empresa_portfolio.php' ? 'active' : ''; ?>"
-                        href="empresa_portfolio.php?id=<?php echo $empresa_id; ?>">
-                        <i class="fas fa-image"></i> Portfólio
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'empresa_website.php' ? 'active' : ''; ?>"
-                        href="empresa_website.php?id=<?php echo $empresa_id; ?>">
-                        <i class="fas fa-globe"></i> Website
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/projeto/admin/dashboard.php">
-                        <i class="fas fa-house"></i> Dashboard
-                    </a>
-                </li>
-            </ul>
+            <?php include __DIR__ . '/empresa_menu.php'; ?>
         </div>
+
+        <!-- CONTEÚDO -->
         <div class="col-md-9">
+            <div class="card custom-card">
+                <div class="card-body">
 
-            <div id="servicos" class="config-section">
-                <div class="text-center">
-                    <h4>Serviços</h4>
-                </div>
-
-                <!-- Botão para mostrar formulário de adição -->
-                <div class="mt-4">
-                    <button id="mostrarFormularioServico" class="btn btn-freebox-blue">Adicionar Serviço</button>
-                </div>
-
-                <!-- Formulário para adicionar novo serviço -->
-                <div class="card mt-4" id="formularioServico" style="display:none;">
-                    <div class="card-body">
-                        <h5 class="card-title">Adicionar Novo Serviço</h5>
-                        <form method="POST" action="adicionar_servico.php">
-                            <input type="hidden" name="empresa_id" value="<?php echo $empresa_id; ?>">
-                            <div class="form-group">
-                                <label for="nome_servico">Nome do Serviço</label>
-                                <input type="text" class="form-control" id="nome_servico" name="nome_servico" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="titulo_servico">Título do Serviço</label>
-                                <input type="text" class="form-control" id="titulo_servico" name="titulo_servico" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="descricao_servico">Descrição do Serviço</label>
-                                <textarea class="form-control" id="descricao_servico" name="descricao_servico"></textarea>
-                            </div>
-                            <div class="button-container_left mt-4">
-                                <button type="button" id="cancelarFormulario" class="btn btn-secondary">Cancelar</button>
-                                <button type="submit" name="adicionar_servico" class="btn btn-success">Guardar</button>
-                            </div>
-                        </form>
+                    <div class="text-center">
+                        <h4><i class="fas fa-briefcase"></i> Serviços</h4>
                     </div>
-                </div>
 
-                <!-- Listar serviços existentes -->
-                <?php while ($servico = $servicos_result->fetch_assoc()): ?>
-                    <div class="card mt-3">
-                        <div class="card-body d-flex justify-content-between align-items-center">
-                            <span><?php echo htmlspecialchars($servico['nome_servico']); ?></span>
-                            <div class="button-container">
-                                <a href="editar_servico.php?id=<?php echo $servico['id']; ?>" class="btn btn-success">Editar</a>
-                                <button class="btn btn-danger" data-id="<?php echo $servico['id']; ?>" data-nome="<?php echo htmlspecialchars($servico['nome_servico']); ?>">Eliminar</button>
-                            </div>
+                    <div class="mt-4">
+                        <button id="mostrarFormularioServico" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Adicionar Serviço
+                        </button>
+                    </div>
+
+                    <!-- FORM -->
+                    <div class="card mt-4" id="formularioServico" style="display:none;">
+                        <div class="card-body">
+                            <form method="POST" action="adicionar_servico.php">
+                                <input type="hidden" name="empresa_id" value="<?= $empresa_id; ?>">
+
+                                <input type="text" name="nome_servico" class="form-control mt-2" placeholder="Nome" required>
+                                <input type="text" name="titulo_servico" class="form-control mt-2" placeholder="Título" required>
+                                <textarea name="descricao_servico" class="form-control mt-2" placeholder="Descrição"></textarea>
+
+                                <div class="button-container_left mt-3">
+                                    <button type="button" id="cancelarFormulario" class="btn btn-secondary">
+                                        Cancelar
+                                    </button>
+                                    <button type="submit" class="btn btn-success">
+                                        <i class="fas fa-save"></i> Guardar
+                                    </button>
+                                </div>
+                            </form>
                         </div>
                     </div>
-                <?php endwhile; ?>
+
+                    <!-- LISTA -->
+                    <?php while ($s = $servicos_result->fetch_assoc()): ?>
+                        <div class="card mt-3">
+                            <div class="card-body d-flex justify-content-between">
+                                <span><?= htmlspecialchars($s['nome_servico']); ?></span>
+
+                                <div>
+                                    <a href="editar_servico.php?id=<?= $s['id']; ?>" class="btn btn-success btn-sm">
+                                        <i class="fas fa-edit"></i> Editar
+                                    </a>
+                                    <a href="eliminar_servico.php?id=<?= $s['id']; ?>" class="btn btn-danger btn-sm">
+                                        <i class="fas fa-trash"></i> Eliminar
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endwhile; ?>
+
+                </div>
             </div>
         </div>
+
     </div>
 </div>
 
-<!-- Modal de confirmação de eliminação -->
-<div id="eliminarServicoModal" class="modal">
-    <div class="modal-content">
-        <h2 id="eliminarModalTitle"></h2>
-        <p>Tem certeza que deseja eliminar este serviço? Esta ação não pode ser desfeita.</p>
-        <div class="button-container mt-4">
-            <button id="cancelarEliminacao" class="btn btn-secondary">Cancelar</button>
-            <button id="confirmarEliminacao" class="btn btn-danger">Eliminar</button>
-        </div>
-    </div>
-</div>
-
-<!-- Modal de mensagem de sucesso/erro -->
+<!-- MODAL -->
 <div id="messageModal" class="modal">
     <div class="modal-content">
-        <h2 id="messageModalTitle"></h2>
+        <h4 id="modalTitle"></h4>
         <p id="modalMessage"></p>
-        <button id="okButton" class="btn btn-success">Ok</button>
+        <button id="okButton" class="btn btn-success">OK</button>
     </div>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
 <script>
-    $(document).ready(function () {
+document.getElementById('mostrarFormularioServico').onclick = () =>
+    document.getElementById('formularioServico').style.display = 'block';
 
-        // Navegação lateral
-        $('.nav-link').on('click', function (e) {
-            var href = $(this).attr('href');
-            if (href.startsWith('#')) {
-                e.preventDefault();
-                $('.config-section').hide();
-                $(href).show();
-            }
-        });
-
-        // Mostrar/esconder formulário
-        $('#mostrarFormularioServico').on('click', function () {
-            $('#formularioServico').toggle();
-        });
-
-        $('#cancelarFormulario').on('click', function () {
-            $('#formularioServico').hide();
-        });
-
-        // Modal de eliminação
-        $('.btn-danger').on('click', function (e) {
-            e.preventDefault();
-            var servicoId = $(this).data('id');
-            var servicoNome = $(this).data('nome');
-            $('#eliminarModalTitle').text('Eliminar ' + servicoNome);
-            $('#confirmarEliminacao').data('id', servicoId);
-            $('#eliminarServicoModal').show();
-        });
-
-        $('#cancelarEliminacao').on('click', function () {
-            $('#eliminarServicoModal').hide();
-        });
-
-        $('#confirmarEliminacao').on('click', function () {
-            var servicoId = $(this).data('id');
-            window.location.href = 'eliminar_servico.php?id=' + servicoId;
-        });
-    });
+document.getElementById('cancelarFormulario').onclick = () =>
+    document.getElementById('formularioServico').style.display = 'none';
 </script>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener("DOMContentLoaded", function() {
 
-        // ── Modal de mensagem (show_message=1) ──
-        var urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('show_message') === '1') {
-            var modal = document.getElementById('messageModal');
-            var modalTitle = document.getElementById('messageModalTitle');
-            var modalMessage = document.getElementById('modalMessage');
-            var okButton = document.getElementById('okButton');
+    const urlParams = new URLSearchParams(window.location.search);
 
-            <?php if (isset($_SESSION['success_message'])): ?>
-                modalTitle.textContent = 'Sucesso';
-                modalMessage.textContent = '<?php echo $_SESSION['success_message']; ?>';
-                <?php unset($_SESSION['success_message']); ?>
-            <?php elseif (isset($_SESSION['error_message'])): ?>
-                modalTitle.textContent = 'Erro';
-                modalMessage.textContent = '<?php echo $_SESSION['error_message']; ?>';
-                <?php unset($_SESSION['error_message']); ?>
-            <?php endif; ?>
+    if (urlParams.get("show_message") === "1") {
 
-            modal.style.display = 'block';
+        const modal = document.getElementById("messageModal");
+        const title = document.getElementById("modalTitle");
+        const message = document.getElementById("modalMessage");
+        const okBtn = document.getElementById("okButton");
 
-            okButton.onclick = function () {
-                modal.style.display = 'none';
-                window.history.replaceState({}, document.title, window.location.pathname + '?id=<?php echo $empresa_id; ?>');
-            };
-        }
+        <?php if (isset($_SESSION['success_message'])): ?>
+            title.textContent = "Sucesso";
+            message.textContent = "<?= htmlspecialchars($_SESSION['success_message'], ENT_QUOTES); ?>";
+            <?php unset($_SESSION['success_message']); ?>
+        <?php elseif (isset($_SESSION['error_message'])): ?>
+            title.textContent = "Erro";
+            message.textContent = "<?= htmlspecialchars($_SESSION['error_message'], ENT_QUOTES); ?>";
+            <?php unset($_SESSION['error_message']); ?>
+        <?php endif; ?>
 
-        // ── Hash na URL (ex: #servicos) ──
-        var hash = window.location.hash;
-        if (hash) {
-            var targetId = hash.substring(1);
-            var targetElement = document.getElementById(targetId);
-            if (targetElement) {
-                var sections = document.getElementsByClassName('config-section');
-                for (var i = 0; i < sections.length; i++) {
-                    sections[i].style.display = 'none';
-                }
-                targetElement.style.display = 'block';
-                targetElement.scrollIntoView({ behavior: 'smooth' });
-                var navLinks = document.getElementsByClassName('nav-link');
-                for (var i = 0; i < navLinks.length; i++) {
-                    navLinks[i].classList.remove('active');
-                    if (navLinks[i].getAttribute('href') === hash) {
-                        navLinks[i].classList.add('active');
-                    }
-                }
-            }
-        }
-    });
+        modal.style.display = "block";
+
+        okBtn.onclick = function() {
+            modal.style.display = "none";
+            window.history.replaceState({}, document.title,
+                window.location.pathname + "?id=<?= $empresa_id ?>");
+        };
+    }
+
+});
 </script>
 
-</body>
-</html>
+<?php include '../includes/footer.php'; ?>

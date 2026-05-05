@@ -3,7 +3,6 @@ session_start();
 require_once '../config/database.php';
 require_once '../includes/functions.php';
 
-// Verificar se o ID da empresa foi passado via GET
 if (isset($_GET['id'])) {
     $empresa_id = $_GET['id'];
 } else {
@@ -11,7 +10,6 @@ if (isset($_GET['id'])) {
     exit();
 }
 
-// Buscar informações da empresa
 $sql = "SELECT * FROM empresas WHERE id = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $empresa_id);
@@ -24,94 +22,97 @@ if (!$empresa) {
     exit();
 }
 
-// Processar o formulário quando enviado
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $nome_empresa = $_POST['nome_empresa'] ?? '';
-    $morada = $_POST['morada'] ?? '';
-    $codigo_postal = $_POST['codigo_postal'] ?? '';
-    $telefone = $_POST['telefone'] ?? '';
-    $email_empresa = $_POST['email_empresa'] ?? '';
-    $nome_contato = $_POST['nome_contato'] ?? '';
-    $telefone_contato = $_POST['telefone_contato'] ?? '';
-    $email_contato = $_POST['email_contato'] ?? '';
+    $nome_empresa      = $_POST['nome_empresa'] ?? '';
+    $morada            = $_POST['morada'] ?? '';
+    $codigo_postal     = $_POST['codigo_postal'] ?? '';
+    $telefone          = $_POST['telefone'] ?? '';
+    $email_empresa     = $_POST['email_empresa'] ?? '';
+    $nome_contato      = $_POST['nome_contato'] ?? '';
+    $telefone_contato  = $_POST['telefone_contato'] ?? '';
+    $email_contato     = $_POST['email_contato'] ?? '';
 
-    $update_sql = "UPDATE empresas SET 
-                   nome_empresa = ?, 
-                   morada = ?, 
-                   codigo_postal = ?, 
-                   telefone = ?, 
-                   email_empresa = ?, 
-                   nome_contato = ?, 
-                   telefone_contato = ?, 
-                   email_contato = ? 
-                   WHERE id = ?";
+    $sql = "UPDATE empresas SET 
+        nome_empresa=?, morada=?, codigo_postal=?, telefone=?, email_empresa=?, 
+        nome_contato=?, telefone_contato=?, email_contato=? WHERE id=?";
 
-    $update_stmt = $conn->prepare($update_sql);
-    $update_stmt->bind_param("ssssssssi", $nome_empresa, $morada, $codigo_postal, $telefone, $email_empresa, $nome_contato, $telefone_contato, $email_contato, $empresa_id);
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("ssssssssi",
+        $nome_empresa, $morada, $codigo_postal, $telefone,
+        $email_empresa, $nome_contato, $telefone_contato, $email_contato, $empresa_id
+    );
 
-    if ($update_stmt->execute()) {
-        $_SESSION['success_message'] = "Informações da empresa atualizadas com sucesso!";
-        header("Location: empresa_informacoes.php?id=" . $empresa_id . "&show_message=1");
-        exit();
+    if ($stmt->execute()) {
+        $_SESSION['success_message'] = "Informações atualizadas com sucesso!";
     } else {
-        $_SESSION['error_message'] = "Erro ao atualizar as informações da empresa: " . $conn->error;
-        header("Location: empresa_informacoes.php?id=" . $empresa_id . "&show_message=1");
-        exit();
+        $_SESSION['error_message'] = "Erro ao atualizar.";
     }
+
+    header("Location: empresa_informacoes.php?id=$empresa_id&show_message=1");
+    exit();
 }
 
 include '../includes/header.php';
 include '../admin/includes/header_admin.php';
-// include '../admin/includes/functions_admin.php';
 ?>
 
+<!-- FONT AWESOME (IMPORTANTE PARA OS ÍCONES) -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
 <style>
-    .button-container_left {
-        display: flex;
-        justify-content: flex-end;
-    }
+.custom-card {
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+    background: #ffffff;
+    padding: 20px;
+}
 
-    .button-container_left .btn {
-        margin-left: 10px;
-    }
+.form-control {
+    border-radius: 10px;
+    padding: 10px 14px;
+    border: 1px solid #e0e0e0;
+    transition: 0.2s;
+}
 
-    .modal {
-        display: none;
-        position: fixed;
-        z-index: 1000;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.4);
-    }
+.form-control:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 2px rgba(59,130,246,0.15);
+}
 
-    .modal-content {
-        background-color: #fefefe;
-        margin: 15% auto;
-        padding: 20px;
-        border: 1px solid #888;
-        width: 80%;
-        max-width: 500px;
-        text-align: center;
-    }
+.form-group {
+    margin-bottom: 18px;
+}
 
-    #okButton {
-        margin-top: 20px;
-    }
+label {
+    font-weight: 500;
+}
+
+label i {
+    margin-right: 6px;
+    color: #3b82f6;
+}
+
+.custom-btn {
+    border-radius: 10px;
+    padding: 10px 20px;
+    font-weight: 500;
+}
 </style>
 
+<!-- HEADER -->
 <div class="white-background">
     <div class="container-fluid">
         <div class="header-container">
             <div class="logo-container">
-                <img src="../imagens/Logotipo_freebox.png" alt="Logotipo" style="height: 75px;">
+                <img src="../imagens/Logotipo_freebox.png" style="height:75px;">
             </div>
             <div class="title-container">
-                <h4><?php echo htmlspecialchars($empresa['nome_empresa']); ?></h4>
+                <h4><?= htmlspecialchars($empresa['nome_empresa']); ?></h4>
             </div>
             <div class="buttons-container">
-                <a href="../logout.php" class="btn btn-outline-danger custom-logout" id="logoutBtn"><i class="fas fa-power-off"></i> Logout
+                <a href="../logout.php" class="btn btn-danger">
+                    <i class="fas fa-power-off"></i> Logout
                 </a>
             </div>
         </div>
@@ -122,258 +123,152 @@ include '../admin/includes/header_admin.php';
 
 <div class="container-fluid mt-4">
     <div class="row">
+
+        <!-- MENU -->
         <div class="col-md-3">
-            <h3>Configurações</h3>
-            <ul class="nav flex-column">
-                <li class="nav-item">
-                    <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'empresa_informacoes.php' ? 'active' : ''; ?>"
-                        href="empresa_informacoes.php?id=<?php echo $empresa_id; ?>">
-                        <i class="fas fa-circle-info"></i> Informações
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'empresa_servicos.php' ? 'active' : ''; ?>"
-                        href="empresa_servicos.php?id=<?php echo $empresa_id; ?>">
-                        <i class="fas fa-handshake"></i> Serviços
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'empresa_portfolio.php' ? 'active' : ''; ?>"
-                        href="empresa_portfolio.php?id=<?php echo $empresa_id; ?>">
-                        <i class="fas fa-image"></i> Portfólio
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'empresa_website.php' ? 'active' : ''; ?>"
-                        href="empresa_website.php?id=<?php echo $empresa_id; ?>">
-                        <i class="fas fa-globe"></i> Website
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/projeto/admin/dashboard.php">
-                        <i class="fas fa-house"></i> Dashboard
-                    </a>
-                </li>
-            </ul>
+            <?php include __DIR__ . '/empresa_menu.php'; ?>
         </div>
+
+        <!-- CONTEÚDO -->
         <div class="col-md-9">
-            <?php
-            if (isset($success_message)) {
-                echo "<div class='alert alert-success'>" . $success_message . "</div>";
-            }
-            if (isset($error_message)) {
-                echo "<div class='alert alert-danger'>" . $error_message . "</div>";
-            }
-            ?>
-            <div id="informacoes" class="config-section">
-                <div class="text-center">
-                    <h4>Informações da Empresa</h4>
+            <div class="card custom-card">
+                <div class="card-body">
+
+                    <h4 class="text-center mb-4">
+                        <i class="fas fa-building"></i> Informações da Empresa
+                    </h4>
+
+                    <form method="POST">
+
+                        <div class="form-group">
+                            <label><i class="fas fa-building"></i> Nome da Empresa</label>
+                            <input type="text" name="nome_empresa" class="form-control"
+                                value="<?= htmlspecialchars($empresa['nome_empresa']); ?>">
+                        </div>
+
+                        <div class="form-group">
+                            <label><i class="fas fa-map-marker-alt"></i> Morada</label>
+                            <input type="text" name="morada" class="form-control"
+                                value="<?= htmlspecialchars($empresa['morada']); ?>">
+                        </div>
+
+                        <div class="form-group">
+                            <label><i class="fas fa-mail-bulk"></i> Código Postal</label>
+                            <input type="text" name="codigo_postal" class="form-control"
+                                value="<?= htmlspecialchars($empresa['codigo_postal']); ?>">
+                        </div>
+
+                        <div class="form-group">
+                            <label><i class="fas fa-phone"></i> Telefone</label>
+                            <input type="text" name="telefone" class="form-control"
+                                value="<?= htmlspecialchars($empresa['telefone']); ?>">
+                        </div>
+
+                        <div class="form-group">
+                            <label><i class="fas fa-envelope"></i> Email da Empresa</label>
+                            <input type="email" name="email_empresa" class="form-control"
+                                value="<?= htmlspecialchars($empresa['email_empresa']); ?>">
+                        </div>
+
+                        <div class="form-group">
+                            <label><i class="fas fa-user"></i> Nome de Contato</label>
+                            <input type="text" name="nome_contato" class="form-control"
+                                value="<?= htmlspecialchars($empresa['nome_contato']); ?>">
+                        </div>
+
+                        <div class="form-group">
+                            <label><i class="fas fa-phone"></i> Telefone de Contato</label>
+                            <input type="text" name="telefone_contato" class="form-control"
+                                value="<?= htmlspecialchars($empresa['telefone_contato']); ?>">
+                        </div>
+
+                        <div class="form-group">
+                            <label><i class="fas fa-envelope"></i> Email de Contato</label>
+                            <input type="email" name="email_contato" class="form-control"
+                                value="<?= htmlspecialchars($empresa['email_contato']); ?>">
+                        </div>
+
+                        <div class="text-end mt-4">
+                            <button type="submit" class="btn btn-primary custom-btn">
+                                <i class="fas fa-save"></i> Guardar Informações
+                            </button>
+                        </div>
+
+                    </form>
+
                 </div>
-                <form method="POST" action="">
-                    <div class="form-group mt-4">
-                        <label for="nome_empresa"><i class="fas fa-building"></i> Nome da Empresa</label>
-                        <input type="text" class="form-control" id="nome_empresa" name="nome_empresa" value="<?php echo htmlspecialchars($empresa['nome_empresa']); ?>">
-                    </div>
-                    <div class="form-group mt-4">
-                        <label for="morada"><i class="fas fa-map-marker-alt"></i> Morada</label>
-                        <input type="text" class="form-control" id="morada" name="morada" value="<?php echo htmlspecialchars($empresa['morada'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
-                    </div>
-                    <div class="form-group mt-4">
-                        <label for="codigo_postal"><i class="fas fa-mail-bulk"></i> Código Postal</label>
-                        <input type="text" class="form-control" id="codigo_postal" name="codigo_postal" value="<?php echo htmlspecialchars($empresa['codigo_postal']); ?>">
-                    </div>
-                    <div class="form-group mt-4">
-                        <label for="telefone"><i class="fas fa-phone"></i> Telefone</label>
-                        <input type="tel" class="form-control" id="telefone" name="telefone" value="<?php echo htmlspecialchars($empresa['telefone']); ?>">
-                    </div>
-                    <div class="form-group mt-4">
-                        <label for="email_empresa"><i class="fas fa-envelope"></i> Email da Empresa</label>
-                        <input type="email" class="form-control" id="email_empresa" name="email_empresa" value="<?php echo htmlspecialchars($empresa['email_empresa']); ?>">
-                    </div>
-                    <div class="form-group mt-4">
-                        <label for="nome_contato"><i class="fas fa-user"></i> Nome de Contato</label>
-                        <input type="text" class="form-control" id="nome_contato" name="nome_contato" value="<?php echo htmlspecialchars($empresa['nome_contato']); ?>">
-                    </div>
-                    <div class="form-group mt-4">
-                        <label for="telefone_contato"><i class="fas fa-phone"></i> Telefone de Contato</label>
-                        <input type="tel" class="form-control" id="telefone_contato" name="telefone_contato" value="<?php echo htmlspecialchars($empresa['telefone_contato']); ?>">
-                    </div>
-                    <div class="form-group mt-4">
-                        <label for="email_contato"><i class="fas fa-envelope"></i> Email de Contato</label>
-                        <input type="email" class="form-control" id="email_contato" name="email_contato" value="<?php echo htmlspecialchars($empresa['email_contato']); ?>">
-                    </div>
-                    <div class="button-container_left mt-4">
-                        <button type="submit" class="btn btn-success">Guardar Informações</button>
-                    </div>
-                </form>
             </div>
         </div>
+
     </div>
 </div>
 
+<!-- MODAL -->
 <div id="messageModal" class="modal">
     <div class="modal-content">
         <h2 id="modalTitle"></h2>
         <p id="modalMessage"></p>
-        <button id="okButton" class="btn btn-success">Ok</button>
+        <button id="okButton" class="btn btn-success">OK</button>
     </div>
 </div>
 
-<!-- <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>-->
-<!--<script>
-    $(document).ready(function(){
-         $('#mostrarFormularioServico').on('click', function(){
-            $('#formularioServico').toggle();
-        });
+<style>
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.4);
+}
 
-        $('#cancelarFormulario').on('click', function(){
-            $('#formularioServico').hide();
-        });
-
-        // Novo código para o modal de eliminação
-        $('.btn-danger').on('click', function(e){
-            e.preventDefault();
-            var servicoId = $(this).data('id');
-            var servicoNome = $(this).data('nome');
-            $('#modalTitle').text('Eliminar ' + servicoNome);
-            $('#confirmarEliminacao').data('id', servicoId);
-            $('#eliminarServicoModal').show();
-        });
-
-        $('#cancelarEliminacao').on('click', function(){
-            $('#eliminarServicoModal').hide();
-        });
-
-        $('#confirmarEliminacao').on('click', function(){
-            var servicoId = $(this).data('id');
-            window.location.href = 'eliminar_servico.php?id=' + servicoId;
-        });
-    });
-</script>-->
-
+.modal-content {
+    background: #fff;
+    padding: 25px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 400px;
+    margin: 15% auto;
+    text-align: center;
+}
+</style>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        var urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('show_message') === '1') {
-            var modal = document.getElementById('messageModal');
-            var modalTitle = document.getElementById('modalTitle');
-            var modalMessage = document.getElementById('modalMessage');
-            var okButton = document.getElementById('okButton');
+document.addEventListener("DOMContentLoaded", function() {
 
-            <?php if (isset($_SESSION['success_message'])): ?>
-                modalTitle.textContent = 'Sucesso';
-                modalMessage.textContent = '<?php echo $_SESSION['success_message']; ?>';
-                <?php unset($_SESSION['success_message']); ?>
-            <?php elseif (isset($_SESSION['error_message'])): ?>
-                modalTitle.textContent = 'Erro';
-                modalMessage.textContent = '<?php echo $_SESSION['error_message']; ?>';
-                <?php unset($_SESSION['error_message']); ?>
-            <?php endif; ?>
+    const urlParams = new URLSearchParams(window.location.search);
 
-            modal.style.display = 'block';
+    if (urlParams.get("show_message") === "1") {
 
-            okButton.onclick = function() {
-                modal.style.display = 'none';
-                // Remove a flag da URL
-                window.history.replaceState({}, document.title, window.location.pathname + '?id=<?php echo $empresa_id; ?>');
-            }
-        }
-    });
-</script>
-<!--<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Código existente...
+        const modal = document.getElementById("messageModal");
+        const title = document.getElementById("modalTitle");
+        const message = document.getElementById("modalMessage");
+        const okBtn = document.getElementById("okButton");
 
-    // Adicione este novo código
-    var hash = window.location.hash;
-    if (hash) {
-        // Remove o '#' do início
-        var targetId = hash.substring(1);
-        var targetElement = document.getElementById(targetId);
-        if (targetElement) {
-            // Oculta todas as seções
-            var sections = document.getElementsByClassName('config-section');
-            for (var i = 0; i < sections.length; i++) {
-                sections[i].style.display = 'none';
-            }
-            // Mostra a seção alvo
-            targetElement.style.display = 'block';
-            // Rola até a seção
-            targetElement.scrollIntoView({behavior: 'smooth'});
-            // Atualiza a navegação
-            var navLinks = document.getElementsByClassName('nav-link');
-            for (var i = 0; i < navLinks.length; i++) {
-                navLinks[i].classList.remove('active');
-                if (navLinks[i].getAttribute('href') === hash) {
-                    navLinks[i].classList.add('active');
-                }
-            }
-        }
+        <?php if (isset($_SESSION['success_message'])): ?>
+            title.textContent = "Sucesso";
+            message.textContent = "<?= $_SESSION['success_message']; ?>";
+            <?php unset($_SESSION['success_message']); ?>
+        <?php elseif (isset($_SESSION['error_message'])): ?>
+            title.textContent = "Erro";
+            message.textContent = "<?= $_SESSION['error_message']; ?>";
+            <?php unset($_SESSION['error_message']); ?>
+        <?php endif; ?>
+
+        modal.style.display = "block";
+
+        okBtn.onclick = function() {
+            modal.style.display = "none";
+
+            // limpa o parâmetro da URL
+            window.history.replaceState({}, document.title,
+                window.location.pathname + "?id=<?= $empresa_id ?>");
+        };
     }
+
 });
 </script>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    var hash = window.location.hash;
-    if (hash) {
-        // Remove o '#' do início
-        var targetId = hash.substring(1);
-        var targetElement = document.getElementById(targetId);
-        if (targetElement) {
-            // Oculta todas as seções
-            var sections = document.getElementsByClassName('config-section');
-            for (var i = 0; i < sections.length; i++) {
-                sections[i].style.display = 'none';
-            }
-            // Mostra a seção alvo
-            targetElement.style.display = 'block';
-            // Rola até a seção
-            targetElement.scrollIntoView({behavior: 'smooth'});
-            // Atualiza a navegação
-            var navLinks = document.getElementsByClassName('nav-link');
-            for (var i = 0; i < navLinks.length; i++) {
-                navLinks[i].classList.remove('active');
-                if (navLinks[i].getAttribute('href') === hash) {
-                    navLinks[i].classList.add('active');
-                }
-            }
-        }
-    }
-});
-</script>-->
 
-<!--<script>
-$(document).ready(function() {
-    $('#mostrarFormularioPortfolio').on('click', function() {
-        $('#formularioPortfolio').toggle();
-    });
-
-    $('#cancelarFormularioPortfolio').on('click', function() {
-        $('#formularioPortfolio').hide();
-    });
-
-    // Nova função para manejar a eliminação do portfólio com modal
-    $('.eliminar-portfolio').on('click', function(e) {
-        e.preventDefault();
-        var imagemId = $(this).data('id');
-        $('#portfolioModalTitle').text('Eliminar Imagem');
-        $('#confirmarEliminacaoPortfolio').data('id', imagemId);
-        $('#eliminarPortfolioModal').show();
-    });
-
-    $('#cancelarEliminacaoPortfolio').on('click', function() {
-        $('#eliminarPortfolioModal').hide();
-    });
-
-    $('#confirmarEliminacaoPortfolio').on('click', function() {
-        var imagemId = $(this).data('id');
-        window.location.href = 'eliminar_portfolio.php?id=' + imagemId;
-    });
-});
-</script>-->
-<?php
-include '../includes/footer.php';
-?>
+<?php include '../includes/footer.php'; ?>
