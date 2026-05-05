@@ -40,7 +40,7 @@ $servico = $result->fetch_assoc();
 
 if (!$servico) {
     $_SESSION['error_message'] = "Serviço não encontrado ou você não tem permissão para editá-lo.";
-    header("Location: configurar_empresa.php");
+    header("Location: empresa_servicos.php");
     exit();
 }
 
@@ -56,7 +56,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if ($update_stmt->execute()) {
         $_SESSION['success_message'] = "Serviço atualizado com sucesso.";
-        header("Location: configurar_empresa.php?id=" . $servico['empresa_id'] . "&show_message=1#servicos");
+        header("Location: empresa_servicos.php?id=" . $servico['empresa_id'] . "&show_message=1#servicos");
         exit();
     } else {
         $_SESSION['error_message'] = "Erro ao atualizar o serviço: " . $conn->error;
@@ -71,7 +71,7 @@ include '../admin/includes/header_admin.php';
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="dashboard-container mt-4">
-                <form method="POST" action="">
+                <form method="POST" action="editar_servico.php?id=<?php echo $servico_id; ?>">
                     <h5 class="card-title">Editar Serviço</h5>
                     <div class="form-group mt-4">
                         <label for="nome_servico">Nome do Serviço</label>
@@ -86,7 +86,7 @@ include '../admin/includes/header_admin.php';
                         <textarea class="form-control" id="descricao_servico" name="descricao_servico" rows="3" required><?php echo htmlspecialchars($servico['descricao_servico']); ?></textarea>
                     </div>
                     <div class="buttons-container mt-4">
-                        <a href="configurar_empresa.php?id=<?php echo $servico['empresa_id']; ?>#servicos" class="btn btn-secondary">Cancelar</a>
+                        <a href="empresa_servicos.php?id=<?php echo $servico['empresa_id']; ?>#servicos" class="btn btn-secondary">Cancelar</a>
                         <button type="submit" class="btn btn-success">Guardar</button>
                     </div>
                 </form>
