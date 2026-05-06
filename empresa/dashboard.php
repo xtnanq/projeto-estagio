@@ -91,6 +91,11 @@ include '../admin/includes/header_admin.php';
     color: #0E7490;
 }
 
+.icon-ver-website {
+    background: #DCFCE7;
+    color: #166534;
+}
+
 .icon-conta {
     background: #FEF3C7;
     color: #92400E;
@@ -192,6 +197,16 @@ include '../admin/includes/header_admin.php';
                                 </div>
                                 <h5>Website</h5>
                                 <p>Configurar capa, logo e redes sociais.</p>
+                            </a>
+                        </div>
+
+                        <div class="col-md-6 col-lg-4">
+                            <a href="/projeto/sites/index.php?id=<?= $empresa_id; ?>" target="_blank" class="dashboard-card">
+                                <div class="icon-box icon-ver-website">
+                                    <i class="fas fa-eye"></i>
+                                </div>
+                                <h5>Ver Website</h5>
+                                <p>Abrir o site público da empresa.</p>
                             </a>
                         </div>
 
