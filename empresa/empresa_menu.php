@@ -2,6 +2,13 @@
 // empresa_menu.php — Menu lateral reutilizável
 // Inclui assim em cada página: include 'empresa_menu.php';
 // A variável $empresa_id tem de estar definida antes do include
+
+if (!isset($empresa_id) && isset($_GET['id'])) {
+    $empresa_id = intval($_GET['id']);
+} elseif (!isset($empresa_id)) {
+    // Fallback para evitar erro caso a variável não exista
+    $empresa_id = 0;
+}
 ?>
 <link rel="stylesheet" href="/projeto/css/empresa_menu.css">
 <div class="sidebar-config">
