@@ -3,26 +3,24 @@ session_start();
 require_once '../config/database.php';
 require_once '../includes/functions.php';
 
-// Verificar se o usuário é admin
 if (!eAdmin()) {
     header("Location: ../login.php");
     exit;
 }
 
-// Buscar empresas do banco de dados
 $sql = "SELECT e.id, e.nome_empresa, u.email FROM empresas e JOIN usuarios u ON e.usuario_id = u.id";
 $result = $conn->query($sql);
 
-include '../includes/header.php';
 include '../admin/includes/header_admin.php';
 include '../admin/includes/functions_admin.php';
 ?>
 
+<!-- TOPBAR -->
 <div class="white-background">
     <div class="container-fluid">
         <div class="header-container">
             <div class="logo-container">
-                <img src="../imagens/Logotipo_freebox.png" alt="Logotipo" style="height: 75px;">
+                <img src="../imagens/Logotipo_freebox.png" alt="Logotipo" style="height:62px;">
             </div>
             <div class="title-container">
                 <h3>Dashboard</h3>
@@ -35,22 +33,27 @@ include '../admin/includes/functions_admin.php';
     </div>
 </div>
 
-<div class="separator"></div>
-
+<!-- CONTEÚDO PRINCIPAL -->
 <div class="container-fluid mt-4">
-    <div class="dashboard-container dashboard-blue-container">
-        <div class="row mb-3">
-            <div class="col-md-12 text-right">
-                <a href="/projeto/register.php" class="btn btn-freebox-blue" onclick="window.location.href='/projeto/register.php'; return false;">Adicionar Empresa</a>
+    <div class="dashboard-container">
+
+        <!-- Toolbar: Adicionar + Pesquisa -->
+        <div class="dashboard-toolbar">
+            <a href="/projeto/register.php" class="btn btn-freebox-blue">+ Adicionar Empresa</a>
+            <div class="search-box">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input type="text" id="searchInput" placeholder="Pesquisar empresa..." onkeyup="filtrarEmpresas()">
             </div>
         </div>
 
+        <!-- Tabela -->
         <div class="table-responsive">
-            <table class="table table-striped table-hover">
+            <table class="table table-striped table-hover" id="tabelaEmpresas">
                 <thead>
                     <tr>
                         <th>Nome da Empresa</th>
                         <th>Email</th>
+                        <th>Ações</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -70,35 +73,57 @@ include '../admin/includes/functions_admin.php';
                     <?php endwhile; ?>
                 </tbody>
             </table>
+            <p id="semResultados" style="display:none; text-align:center; padding:20px; color:#5a7089; font-size:0.9rem;">Nenhuma empresa encontrada.</p>
+        </div>
+
+    </div>
+</div>
+
+<!-- Modal Confirmação -->
+<div id="modalConfirm" class="modal-confirm" style="display: none;">
+    <div class="modal-content">
+        <h2>Eliminar <span id="nomeEmpresaEliminar"></span>?</h2>
+        <p>Tem a certeza que deseja eliminar esta empresa? Esta ação não pode ser desfeita.</p>
+        <p>Digite <strong>CONFIRMAR</strong> para prosseguir:</p>
+        <input type="text" id="confirmText" class="form-control mb-3" placeholder="CONFIRMAR">
+        <div style="display:flex; gap:8px; margin-top:12px;">
+            <button id="btnCancel" class="btn btn-secondary">Cancelar</button>
+            <button id="btnConfirm" class="btn btn-danger">Eliminar</button>
         </div>
     </div>
 </div>
 
-<div id="modalConfirm" class="modal-confirm" style="display: none;">
-    <div class="modal-content">
-        <h2>Eliminar <span id="nomeEmpresaEliminar"></span> ?</h2>
-        <p>Tem certeza que deseja eliminar esta empresa? Esta ação não pode ser desfeita.</p>
-        <p>Digite CONFIRMAR para prosseguir:</p>
-        <input type="text" id="confirmText" class="form-control mb-3">
-        <button id="btnCancel" class="btn btn-secondary">Cancelar</button>
-        <button id="btnConfirm" class="btn btn-danger">Eliminar</button>
-    </div>
-</div>
-
+<!-- Modal Mensagem -->
 <div id="messageModal" class="modal" style="display: none;">
     <div class="modal-content">
         <p id="modalMessage"></p>
-        <button id="modalOkButton" class="btn btn-primary">OK</button>
+        <button id="modalOkButton" class="btn btn-freebox-blue" style="margin-top:16px;">OK</button>
     </div>
 </div>
 
+<script>
+function filtrarEmpresas() {
+    const input = document.getElementById('searchInput').value.toLowerCase();
+    const linhas = document.querySelectorAll('#tabelaEmpresas tbody tr');
+    let visiveis = 0;
+
+    linhas.forEach(function(linha) {
+        const nome = linha.cells[0].textContent.toLowerCase();
+        const email = linha.cells[1].textContent.toLowerCase();
+        if (nome.includes(input) || email.includes(input)) {
+            linha.style.display = '';
+            visiveis++;
+        } else {
+            linha.style.display = 'none';
+        }
+    });
+
+    document.getElementById('semResultados').style.display = visiveis === 0 ? 'block' : 'none';
+}
+</script>
+
 <?php
-// Gerar o script JavaScript
 gerarScriptEmpresasAdmin();
-
-// Fechar a conexão com o banco de dados
 $conn->close();
-
-// Incluir o footer
 include '../includes/footer.php';
 ?>
