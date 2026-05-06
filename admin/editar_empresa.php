@@ -68,25 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 include '../includes/header.php';
 ?>
 
-<style>
-    .center-card {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 80vh;
-    }
-    .card {
-        width: 100%;
-        max-width: 600px;
-    }
-    .button-container {
-        display: flex;
-        justify-content: flex-end;
-    }
-    .button-container .btn {
-        margin-left: 10px;
-    }
-</style>
+<link rel="stylesheet" href="/projeto/css/includes_editar_empresa.css">
 
 <div class="container">
     <div class="center-card">

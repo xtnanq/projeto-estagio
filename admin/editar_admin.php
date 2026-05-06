@@ -69,25 +69,8 @@ $stmt->close();
 
 include '../includes/header.php';
 ?>
-<style>
-    .center-card {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 80vh;
-    }
-    .card {
-        width: 100%;
-        max-width: 600px;
-    }
-    .button-container {
-        display: flex;
-        justify-content: flex-end;
-    }
-    .button-container .btn {
-        margin-left: 10px;
-    }
-</style>
+<link rel="stylesheet" href="../css/includes_editar_admin.css">
+
 
 <div class="container">
     <div class="center-card">
