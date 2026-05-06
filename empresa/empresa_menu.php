@@ -2,10 +2,6 @@
 // empresa_menu.php — Menu lateral reutilizável
 // Inclui assim em cada página: include 'empresa_menu.php';
 // A variável $empresa_id tem de estar definida antes do include
-
-if (!isset($empresa_id)) {
-    $empresa_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
-}
 ?>
 
 <style>
@@ -90,6 +86,7 @@ if (!isset($empresa_id)) {
 .sidebar-config .nav-link[href*="servicos"] .nav-icon { background: #EDE9FE; color: #6D28D9; }
 .sidebar-config .nav-link[href*="portfolio"] .nav-icon { background: #D1FAE5; color: #065F46; }
 .sidebar-config .nav-link[href*="website"] .nav-icon { background: #CFFAFE; color: #0E7490; }
+.sidebar-config .nav-link[href*="sites"] .nav-icon { background: #DCFCE7; color: #166534; }
 
 .sidebar-config .nav-link.active .nav-icon,
 .sidebar-config .nav-link:hover .nav-icon {
@@ -184,6 +181,20 @@ if (!isset($empresa_id)) {
                 <span class="nav-icon"><i class="fas fa-globe"></i></span>
                 Website
                 <i class="fas fa-chevron-right nav-arrow"></i>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <div class="nav-divider"></div>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link"
+               href="/projeto/sites/index.php?id=<?php echo $empresa_id; ?>"
+               target="_blank">
+                <span class="nav-icon"><i class="fas fa-eye"></i></span>
+                Ver Website
+                <i class="fas fa-up-right-from-square nav-arrow"></i>
             </a>
         </li>
 
