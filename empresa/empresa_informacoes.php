@@ -1,4 +1,9 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+?>
+<?php
 session_start();
 require_once '../config/database.php';
 require_once '../includes/functions.php';
@@ -64,12 +69,10 @@ include '../includes/header.php';
 include '../admin/includes/header_admin.php';
 ?>
 
-<!-- FONT AWESOME (IMPORTANTE PARA OS ÍCONES) -->
+<!-- FONT AWESOME -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
-
-<!-- HEADER -->
 <link rel="stylesheet" href="/projeto/css/empresa_informacoes.css">
+
 <div class="white-background">
     <div class="container-fluid">
         <div class="header-container">
@@ -181,42 +184,20 @@ include '../admin/includes/header_admin.php';
     </div>
 </div>
 
+<!-- Dados PHP passados ao JS via data attributes -->
+<div id="php-data"
+    data-show-message="<?= isset($_GET['show_message']) && $_GET['show_message'] === '1' ? '1' : '0' ?>"
+    data-success="<?= isset($_SESSION['success_message']) ? htmlspecialchars($_SESSION['success_message']) : '' ?>"
+    data-error="<?= isset($_SESSION['error_message']) ? htmlspecialchars($_SESSION['error_message']) : '' ?>"
+    data-empresa-id="<?= $empresa_id ?>"
+    style="display:none;">
+</div>
 
+<?php
+unset($_SESSION['success_message']);
+unset($_SESSION['error_message']);
+?>
 
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-
-        const urlParams = new URLSearchParams(window.location.search);
-
-        if (urlParams.get("show_message") === "1") {
-
-            const modal = document.getElementById("messageModal");
-            const title = document.getElementById("modalTitle");
-            const message = document.getElementById("modalMessage");
-            const okBtn = document.getElementById("okButton");
-
-            <?php if (isset($_SESSION['success_message'])): ?>
-                title.textContent = "Sucesso";
-                message.textContent = "<?= $_SESSION['success_message']; ?>";
-                <?php unset($_SESSION['success_message']); ?>
-            <?php elseif (isset($_SESSION['error_message'])): ?>
-                title.textContent = "Erro";
-                message.textContent = "<?= $_SESSION['error_message']; ?>";
-                <?php unset($_SESSION['error_message']); ?>
-            <?php endif; ?>
-
-            modal.style.display = "block";
-
-            okBtn.onclick = function() {
-                modal.style.display = "none";
-
-                // limpa o parâmetro da URL
-                window.history.replaceState({}, document.title,
-                    window.location.pathname + "?id=<?= $empresa_id ?>");
-            };
-        }
-
-    });
-</script>
+<script src="/projeto/js/empresa_informacoes.js"></script>
 
 <?php include '../includes/footer.php'; ?>

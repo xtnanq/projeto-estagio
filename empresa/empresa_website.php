@@ -93,7 +93,6 @@ include '../admin/includes/header_admin.php';
 <link rel="stylesheet" href="/projeto/css/empresa_menu.css">
 <link rel="stylesheet" href="/projeto/css/empresa_website.css">
 
-
 <!-- HEADER -->
 <div class="white-background">
     <div class="container-fluid">
@@ -175,38 +174,20 @@ include '../admin/includes/header_admin.php';
     </div>
 </div>
 
-<script>
-document.addEventListener("DOMContentLoaded", function() {
+<!-- Dados PHP passados ao JS via data attributes -->
+<div id="php-data"
+    data-show-message="<?= isset($_GET['show_message']) && $_GET['show_message'] === '1' ? '1' : '0' ?>"
+    data-success="<?= isset($_SESSION['success_message']) ? htmlspecialchars($_SESSION['success_message'], ENT_QUOTES) : '' ?>"
+    data-error="<?= isset($_SESSION['error_message']) ? htmlspecialchars($_SESSION['error_message'], ENT_QUOTES) : '' ?>"
+    data-empresa-id="<?= $empresa_id ?>"
+    style="display:none;">
+</div>
 
-    const urlParams = new URLSearchParams(window.location.search);
+<?php
+unset($_SESSION['success_message']);
+unset($_SESSION['error_message']);
+?>
 
-    if (urlParams.get("show_message") === "1") {
-
-        const modal = document.getElementById("messageModal");
-        const title = document.getElementById("modalTitle");
-        const message = document.getElementById("modalMessage");
-        const okBtn = document.getElementById("okButton");
-
-        <?php if (isset($_SESSION['success_message'])): ?>
-            title.textContent = "Sucesso";
-            message.textContent = "<?= htmlspecialchars($_SESSION['success_message'], ENT_QUOTES); ?>";
-            <?php unset($_SESSION['success_message']); ?>
-        <?php elseif (isset($_SESSION['error_message'])): ?>
-            title.textContent = "Erro";
-            message.textContent = "<?= htmlspecialchars($_SESSION['error_message'], ENT_QUOTES); ?>";
-            <?php unset($_SESSION['error_message']); ?>
-        <?php endif; ?>
-
-        modal.style.display = "block";
-
-        okBtn.onclick = function() {
-            modal.style.display = "none";
-            window.history.replaceState({}, document.title,
-                window.location.pathname + "?id=<?= $empresa_id ?>");
-        };
-    }
-
-});
-</script>
+<script src="/projeto/js/empresa_website.js"></script>
 
 <?php include '../includes/footer.php'; ?>

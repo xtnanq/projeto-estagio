@@ -1,7 +1,6 @@
 <?php
 require_once '../config/database.php';
 
-// Verificar se o ID da empresa foi passado via GET
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
     header("Location: ../index.php");
     exit();
@@ -282,16 +281,7 @@ $conn->close();
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-    document.querySelectorAll('a[href^="#"]').forEach(function(anchor) {
-        anchor.addEventListener('click', function(e) {
-            e.preventDefault();
-            var target = document.querySelector(this.getAttribute('href'));
-            if (target) {
-                target.scrollIntoView({ behavior: 'smooth' });
-            }
-        });
-    });
-</script>
+<script src="/projeto/js/sites_index.js"></script>
+
 </body>
 </html>
