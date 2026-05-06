@@ -1,20 +1,24 @@
 <?php
 session_start();
+
 require_once '../config/database.php';
+require_once '../includes/functions.php';
 
-$usuario_id = $_SESSION['usuario_id'];
-
-// buscar empresa do utilizador
-$sql = "SELECT id FROM empresas WHERE usuario_id = ?";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("i", $usuario_id);
-$stmt->execute();
-$result = $stmt->get_result();
-$empresa = $result->fetch_assoc();
-
-if ($empresa) {
-    header("Location: empresa_informacoes.php?id=" . $empresa['id']);
+if (!estaLogado()) {
+    header("Location: ../login.php");
     exit;
-} else {
-    echo "Empresa não encontrada.";
 }
+
+if (eCliente()) {
+    header("Location: dashboard.php");
+    exit;
+}
+
+if (eAdmin()) {
+    header("Location: ../admin/dashboard.php");
+    exit;
+}
+
+header("Location: ../login.php");
+exit;
+?>

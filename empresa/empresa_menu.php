@@ -9,7 +9,6 @@ if (!isset($empresa_id)) {
 ?>
 
 <style>
-/* ── Sidebar Configurações ── */
 .sidebar-config {
     background: #fff;
     border-radius: 16px;
@@ -86,12 +85,11 @@ if (!isset($empresa_id)) {
     transition: background 0.15s;
 }
 
-/* Cores dos ícones por item */
+.sidebar-config .nav-link[href*="dashboard"] .nav-icon { background: #FEF9C3; color: #854D0E; }
 .sidebar-config .nav-link[href*="informacoes"] .nav-icon { background: #DBEAFE; color: #1D4ED8; }
-.sidebar-config .nav-link[href*="servicos"]    .nav-icon { background: #EDE9FE; color: #6D28D9; }
-.sidebar-config .nav-link[href*="portfolio"]   .nav-icon { background: #D1FAE5; color: #065F46; }
-.sidebar-config .nav-link[href*="website"]     .nav-icon { background: #CFFAFE; color: #0E7490; }
-.sidebar-config .nav-link[href*="dashboard"]   .nav-icon { background: #FEF9C3; color: #854D0E; }
+.sidebar-config .nav-link[href*="servicos"] .nav-icon { background: #EDE9FE; color: #6D28D9; }
+.sidebar-config .nav-link[href*="portfolio"] .nav-icon { background: #D1FAE5; color: #065F46; }
+.sidebar-config .nav-link[href*="website"] .nav-icon { background: #CFFAFE; color: #0E7490; }
 
 .sidebar-config .nav-link.active .nav-icon,
 .sidebar-config .nav-link:hover .nav-icon {
@@ -123,7 +121,36 @@ if (!isset($empresa_id)) {
         <i class="fas fa-sliders"></i>
         <span>Configurações</span>
     </div>
+
     <ul class="nav flex-column">
+
+        <?php if (isset($_SESSION['tipo_usuario']) && $_SESSION['tipo_usuario'] === 'admin'): ?>
+            <li class="nav-item">
+                <a class="nav-link" href="/projeto/admin/dashboard.php">
+                    <span class="nav-icon"><i class="fas fa-house"></i></span>
+                    Dashboard
+                    <i class="fas fa-chevron-right nav-arrow"></i>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <div class="nav-divider"></div>
+            </li>
+        <?php else: ?>
+            <li class="nav-item">
+                <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'dashboard.php' ? 'active' : ''; ?>"
+                   href="dashboard.php">
+                    <span class="nav-icon"><i class="fas fa-house"></i></span>
+                    Dashboard
+                    <i class="fas fa-chevron-right nav-arrow"></i>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <div class="nav-divider"></div>
+            </li>
+        <?php endif; ?>
+
         <li class="nav-item">
             <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'empresa_informacoes.php' ? 'active' : ''; ?>"
                href="empresa_informacoes.php?id=<?php echo $empresa_id; ?>">
@@ -132,6 +159,7 @@ if (!isset($empresa_id)) {
                 <i class="fas fa-chevron-right nav-arrow"></i>
             </a>
         </li>
+
         <li class="nav-item">
             <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'empresa_servicos.php' ? 'active' : ''; ?>"
                href="empresa_servicos.php?id=<?php echo $empresa_id; ?>">
@@ -140,6 +168,7 @@ if (!isset($empresa_id)) {
                 <i class="fas fa-chevron-right nav-arrow"></i>
             </a>
         </li>
+
         <li class="nav-item">
             <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'empresa_portfolio.php' ? 'active' : ''; ?>"
                href="empresa_portfolio.php?id=<?php echo $empresa_id; ?>">
@@ -148,6 +177,7 @@ if (!isset($empresa_id)) {
                 <i class="fas fa-chevron-right nav-arrow"></i>
             </a>
         </li>
+
         <li class="nav-item">
             <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'empresa_website.php' ? 'active' : ''; ?>"
                href="empresa_website.php?id=<?php echo $empresa_id; ?>">
@@ -156,15 +186,6 @@ if (!isset($empresa_id)) {
                 <i class="fas fa-chevron-right nav-arrow"></i>
             </a>
         </li>
-        <li class="nav-item">
-            <div class="nav-divider"></div>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="/projeto/admin/dashboard.php">
-                <span class="nav-icon"><i class="fas fa-house"></i></span>
-                Dashboard
-                <i class="fas fa-chevron-right nav-arrow"></i>
-            </a>
-        </li>
+
     </ul>
 </div>
