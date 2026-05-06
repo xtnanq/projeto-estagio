@@ -117,7 +117,7 @@ include '../includes/header.php';
                     </div>
                     
                     <div class="button-container mt-5">
-                        <a href="dashboard.php" class="btn btn-secondary">Cancelar</a>
+                        <a href="dashboard.php" class="btn btn-secondary">Voltar</a>
                         <button type="submit" class="btn btn-success">Guardar</button>
                     </div>
                 </form>
