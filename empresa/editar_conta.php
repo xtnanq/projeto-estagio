@@ -93,50 +93,9 @@ include '../admin/includes/header_admin.php';
 ?>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="/projeto/css/editar_conta.css">
 
-<style>
-.center-card {
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    min-height: 70vh;
-}
 
-.account-card {
-    width: 100%;
-    max-width: 750px;
-    border: none;
-    border-radius: 16px;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.08);
-    background: #ffffff;
-    overflow: hidden;
-}
-
-.account-card .card-header {
-    background: linear-gradient(135deg, #1565C0 0%, #1E88E5 70%, #42A5F5 100%);
-    color: white;
-    padding: 26px;
-}
-
-.account-card .card-header h3 {
-    font-weight: 700;
-}
-
-.button-container {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-}
-
-.form-control {
-    border-radius: 10px;
-    padding: 10px 14px;
-}
-
-label {
-    font-weight: 500;
-}
-</style>
 
 <div class="white-background">
     <div class="container-fluid">

@@ -1,0 +1,85 @@
+.sidebar-config {
+    background: #fff;
+    border-radius: 16px;
+    border: 1px solid #e3eaf3;
+    box-shadow: 0 2px 16px rgba(21, 101, 192, 0.07);
+    padding: 0;
+    overflow: hidden;
+}
+
+.sidebar-config .sidebar-header {
+    background: linear-gradient(135deg, #1565C0 0%, #1E88E5 70%, #42A5F5 100%);
+    padding: 1.2rem 1.25rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.sidebar-config .sidebar-header i {
+    font-size: 18px;
+    color: rgba(255,255,255,0.85);
+}
+
+.sidebar-config .sidebar-header span {
+    font-size: 16px;
+    font-weight: 600;
+    color: #fff;
+}
+
+.sidebar-config .nav {
+    padding: 8px 0;
+}
+
+.sidebar-config .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 18px;
+    color: #374151;
+    font-size: 14px;
+    font-weight: 500;
+    border-left: 3px solid transparent;
+    transition: 0.2s;
+    text-decoration: none;
+}
+
+.sidebar-config .nav-link:hover {
+    background: #EFF6FF;
+    color: #1565C0;
+}
+
+.sidebar-config .nav-link.active {
+    background: #EFF6FF;
+    color: #1565C0;
+    border-left-color: #1565C0;
+    font-weight: 600;
+}
+
+.sidebar-config .nav-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* CORES DOS ÍCONES */
+.sidebar-config .nav-link[href*="dashboard"] .nav-icon { background: #FEF9C3; color: #854D0E; }
+.sidebar-config .nav-link[href*="informacoes"] .nav-icon { background: #DBEAFE; color: #1D4ED8; }
+.sidebar-config .nav-link[href*="servicos"] .nav-icon { background: #EDE9FE; color: #6D28D9; }
+.sidebar-config .nav-link[href*="portfolio"] .nav-icon { background: #D1FAE5; color: #065F46; }
+.sidebar-config .nav-link[href*="website"] .nav-icon { background: #CFFAFE; color: #0E7490; }
+.sidebar-config .nav-link[href*="sites"] .nav-icon { background: #DCFCE7; color: #166534; }
+
+.sidebar-config .nav-divider {
+    height: 1px;
+    background: #F1F5F9;
+    margin: 4px 0;
+}
+
+.sidebar-config .nav-arrow {
+    margin-left: auto;
+    font-size: 11px;
+    color: #CBD5E1;
+}

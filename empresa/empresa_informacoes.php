@@ -6,8 +6,8 @@ require_once '../includes/functions.php';
 if (isset($_GET['id'])) {
     $empresa_id = $_GET['id'];
 } else {
-   header("Location: index.php");
-   exit();
+    header("Location: index.php");
+    exit();
 }
 
 $sql = "SELECT * FROM empresas WHERE id = ?";
@@ -37,9 +37,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         nome_contato=?, telefone_contato=?, email_contato=? WHERE id=?";
 
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ssssssssi",
-        $nome_empresa, $morada, $codigo_postal, $telefone,
-        $email_empresa, $nome_contato, $telefone_contato, $email_contato, $empresa_id
+    $stmt->bind_param(
+        "ssssssssi",
+        $nome_empresa,
+        $morada,
+        $codigo_postal,
+        $telefone,
+        $email_empresa,
+        $nome_contato,
+        $telefone_contato,
+        $email_contato,
+        $empresa_id
     );
 
     if ($stmt->execute()) {
@@ -59,48 +67,9 @@ include '../admin/includes/header_admin.php';
 <!-- FONT AWESOME (IMPORTANTE PARA OS ÍCONES) -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-<style>
-.custom-card {
-    border: none;
-    border-radius: 16px;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.08);
-    background: #ffffff;
-    padding: 20px;
-}
-
-.form-control {
-    border-radius: 10px;
-    padding: 10px 14px;
-    border: 1px solid #e0e0e0;
-    transition: 0.2s;
-}
-
-.form-control:focus {
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 2px rgba(59,130,246,0.15);
-}
-
-.form-group {
-    margin-bottom: 18px;
-}
-
-label {
-    font-weight: 500;
-}
-
-label i {
-    margin-right: 6px;
-    color: #3b82f6;
-}
-
-.custom-btn {
-    border-radius: 10px;
-    padding: 10px 20px;
-    font-weight: 500;
-}
-</style>
 
 <!-- HEADER -->
+<link rel="stylesheet" href="/projeto/css/empresa_informacoes.css">
 <div class="white-background">
     <div class="container-fluid">
         <div class="header-container">
@@ -212,63 +181,42 @@ label i {
     </div>
 </div>
 
-<style>
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 9999;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0,0,0,0.4);
-}
 
-.modal-content {
-    background: #fff;
-    padding: 25px;
-    border-radius: 12px;
-    width: 90%;
-    max-width: 400px;
-    margin: 15% auto;
-    text-align: center;
-}
-</style>
 
 <script>
-document.addEventListener("DOMContentLoaded", function() {
+    document.addEventListener("DOMContentLoaded", function() {
 
-    const urlParams = new URLSearchParams(window.location.search);
+        const urlParams = new URLSearchParams(window.location.search);
 
-    if (urlParams.get("show_message") === "1") {
+        if (urlParams.get("show_message") === "1") {
 
-        const modal = document.getElementById("messageModal");
-        const title = document.getElementById("modalTitle");
-        const message = document.getElementById("modalMessage");
-        const okBtn = document.getElementById("okButton");
+            const modal = document.getElementById("messageModal");
+            const title = document.getElementById("modalTitle");
+            const message = document.getElementById("modalMessage");
+            const okBtn = document.getElementById("okButton");
 
-        <?php if (isset($_SESSION['success_message'])): ?>
-            title.textContent = "Sucesso";
-            message.textContent = "<?= $_SESSION['success_message']; ?>";
-            <?php unset($_SESSION['success_message']); ?>
-        <?php elseif (isset($_SESSION['error_message'])): ?>
-            title.textContent = "Erro";
-            message.textContent = "<?= $_SESSION['error_message']; ?>";
-            <?php unset($_SESSION['error_message']); ?>
-        <?php endif; ?>
+            <?php if (isset($_SESSION['success_message'])): ?>
+                title.textContent = "Sucesso";
+                message.textContent = "<?= $_SESSION['success_message']; ?>";
+                <?php unset($_SESSION['success_message']); ?>
+            <?php elseif (isset($_SESSION['error_message'])): ?>
+                title.textContent = "Erro";
+                message.textContent = "<?= $_SESSION['error_message']; ?>";
+                <?php unset($_SESSION['error_message']); ?>
+            <?php endif; ?>
 
-        modal.style.display = "block";
+            modal.style.display = "block";
 
-        okBtn.onclick = function() {
-            modal.style.display = "none";
+            okBtn.onclick = function() {
+                modal.style.display = "none";
 
-            // limpa o parâmetro da URL
-            window.history.replaceState({}, document.title,
-                window.location.pathname + "?id=<?= $empresa_id ?>");
-        };
-    }
+                // limpa o parâmetro da URL
+                window.history.replaceState({}, document.title,
+                    window.location.pathname + "?id=<?= $empresa_id ?>");
+            };
+        }
 
-});
+    });
 </script>
 
 <?php include '../includes/footer.php'; ?>
