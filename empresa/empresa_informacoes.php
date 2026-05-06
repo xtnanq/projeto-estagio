@@ -56,49 +56,9 @@ include '../includes/header.php';
 include '../admin/includes/header_admin.php';
 ?>
 
-<!-- FONT AWESOME (IMPORTANTE PARA OS ÍCONES) -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-<style>
-.custom-card {
-    border: none;
-    border-radius: 16px;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.08);
-    background: #ffffff;
-    padding: 20px;
-}
-
-.form-control {
-    border-radius: 10px;
-    padding: 10px 14px;
-    border: 1px solid #e0e0e0;
-    transition: 0.2s;
-}
-
-.form-control:focus {
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 2px rgba(59,130,246,0.15);
-}
-
-.form-group {
-    margin-bottom: 18px;
-}
-
-label {
-    font-weight: 500;
-}
-
-label i {
-    margin-right: 6px;
-    color: #3b82f6;
-}
-
-.custom-btn {
-    border-radius: 10px;
-    padding: 10px 20px;
-    font-weight: 500;
-}
-</style>
+<link rel="stylesheet" href="/projeto/css/empresa_informacoes.css">
 
 <!-- HEADER -->
 <div class="white-background">
@@ -212,29 +172,6 @@ label i {
     </div>
 </div>
 
-<style>
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 9999;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0,0,0,0.4);
-}
-
-.modal-content {
-    background: #fff;
-    padding: 25px;
-    border-radius: 12px;
-    width: 90%;
-    max-width: 400px;
-    margin: 15% auto;
-    text-align: center;
-}
-</style>
-
 <script>
 document.addEventListener("DOMContentLoaded", function() {
 
@@ -262,7 +199,6 @@ document.addEventListener("DOMContentLoaded", function() {
         okBtn.onclick = function() {
             modal.style.display = "none";
 
-            // limpa o parâmetro da URL
             window.history.replaceState({}, document.title,
                 window.location.pathname + "?id=<?= $empresa_id ?>");
         };

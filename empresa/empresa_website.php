@@ -88,58 +88,32 @@ include '../includes/header.php';
 include '../admin/includes/header_admin.php';
 ?>
 
-<!-- FONT AWESOME -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-<style>
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 9999;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0,0,0,0.4);
-}
-
-.modal-content {
-    background: #fff;
-    margin: 15% auto;
-    padding: 25px;
-    width: 90%;
-    max-width: 400px;
-    text-align: center;
-    border-radius: 12px;
-}
-
-.modal-content h4 {
-    color: #16a34a;
-}
-
-.modal-content p {
-    margin-top: 10px;
-}
-
-.preview-img {
-    width: 120px;
-    margin-top: 10px;
-    border-radius: 8px;
-}
-</style>
+<link rel="stylesheet" href="/projeto/css/empresa_website.css">
 
 <!-- HEADER -->
 <div class="white-background">
     <div class="container-fluid">
         <div class="header-container">
-            <img src="../imagens/Logotipo_freebox.png" style="height:75px;">
-            <h4><?= htmlspecialchars($empresa['nome_empresa']); ?></h4>
-            <a href="../logout.php" class="btn btn-danger">
-                <i class="fas fa-power-off"></i> Logout
-            </a>
+            <div class="logo-container">
+                <img src="../imagens/Logotipo_freebox.png" style="height:75px;">
+            </div>
+
+            <div class="title-container">
+                <h4><?= htmlspecialchars($empresa['nome_empresa']); ?></h4>
+            </div>
+
+            <div class="buttons-container">
+                <a href="../logout.php" class="btn btn-danger">
+                    <i class="fas fa-power-off"></i> Logout
+                </a>
+            </div>
         </div>
     </div>
 </div>
+
+<div class="separator"></div>
 
 <div class="container-fluid mt-4">
     <div class="row">
@@ -166,26 +140,26 @@ include '../admin/includes/header_admin.php';
                         <label class="mt-3"><i class="fas fa-image"></i> Logotipo</label>
                         <input type="file" name="logotipo" class="form-control">
                         <?php if (!empty($website['logotipo'])): ?>
-                            <img src="<?= $website['logotipo']; ?>" class="preview-img">
+                            <img src="<?= htmlspecialchars($website['logotipo']); ?>" class="preview-img">
                         <?php endif; ?>
 
                         <label class="mt-3"><i class="fas fa-image"></i> Capa</label>
                         <input type="file" name="capa_empresa" class="form-control">
                         <?php if (!empty($website['capa_empresa'])): ?>
-                            <img src="<?= $website['capa_empresa']; ?>" class="preview-img">
+                            <img src="<?= htmlspecialchars($website['capa_empresa']); ?>" class="preview-img">
                         <?php endif; ?>
 
                         <label class="mt-3"><i class="fas fa-align-left"></i> Descrição</label>
-                        <textarea name="descricao_empresa" class="form-control"><?= $website['descricao_empresa'] ?? '' ?></textarea>
+                        <textarea name="descricao_empresa" class="form-control"><?= htmlspecialchars($website['descricao_empresa'] ?? '') ?></textarea>
 
                         <label class="mt-3"><i class="fab fa-facebook"></i> Facebook</label>
-                        <input type="url" name="link_facebook" class="form-control" value="<?= $website['link_facebook'] ?? '' ?>">
+                        <input type="url" name="link_facebook" class="form-control" value="<?= htmlspecialchars($website['link_facebook'] ?? '') ?>">
 
                         <label class="mt-2"><i class="fab fa-instagram"></i> Instagram</label>
-                        <input type="url" name="link_instagram" class="form-control" value="<?= $website['link_instagram'] ?? '' ?>">
+                        <input type="url" name="link_instagram" class="form-control" value="<?= htmlspecialchars($website['link_instagram'] ?? '') ?>">
 
                         <label class="mt-2"><i class="fab fa-x-twitter"></i> X</label>
-                        <input type="url" name="link_x" class="form-control" value="<?= $website['link_x'] ?? '' ?>">
+                        <input type="url" name="link_x" class="form-control" value="<?= htmlspecialchars($website['link_x'] ?? '') ?>">
 
                         <button class="btn btn-success mt-4">
                             <i class="fas fa-save"></i> Guardar

@@ -5,7 +5,7 @@ require_once '../includes/functions.php';
 
 // Verificar se o usuário está autenticado
 if (!isset($_SESSION['usuario_id'])) {
-    header("Location: login.php");
+    header("Location: ../login.php");
     exit();
 }
 
@@ -21,13 +21,15 @@ $usuario_id = $_SESSION['usuario_id'];
 
 // Buscar informações da imagem e verificar permissão
 if ($_SESSION['tipo_usuario'] == 'admin') {
-    $sql = "SELECT p.*, e.id as empresa_id FROM portfolio p
+    $sql = "SELECT p.*, e.id as empresa_id, e.nome_empresa 
+            FROM portfolio p
             JOIN empresas e ON p.empresa_id = e.id
             WHERE p.id = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $portfolio_id);
 } else {
-    $sql = "SELECT p.*, e.id as empresa_id FROM portfolio p
+    $sql = "SELECT p.*, e.id as empresa_id, e.nome_empresa 
+            FROM portfolio p
             JOIN empresas e ON p.empresa_id = e.id
             WHERE p.id = ? AND e.usuario_id = ?";
     $stmt = $conn->prepare($sql);
@@ -41,14 +43,14 @@ $stmt->close();
 
 if (!$portfolio) {
     $_SESSION['error_message'] = "Imagem não encontrada ou sem permissão para editar.";
-    header("Location: empresa_portfolio.php");
+    header("Location: dashboard.php");
     exit();
 }
 
 // Processar o formulário quando enviado
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $descricao_imagem = $_POST['descricao_imagem'] ?? '';
-    $nova_imagem = $portfolio['imagem']; // mantém a imagem atual por defeito
+    $nova_imagem = $portfolio['imagem'];
 
     // Verificar se foi enviada nova imagem
     if (isset($_FILES['portfolio_imagem']) && $_FILES['portfolio_imagem']['error'] == UPLOAD_ERR_OK) {
@@ -68,7 +70,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         $upload_dir = '../imagens/' . $portfolio['empresa_id'] . '/';
-        if (!is_dir($upload_dir)) mkdir($upload_dir, 0777, true);
+        if (!is_dir($upload_dir)) {
+            mkdir($upload_dir, 0777, true);
+        }
 
         $ext = pathinfo($_FILES['portfolio_imagem']['name'], PATHINFO_EXTENSION);
         $filename = uniqid() . '.' . $ext;
@@ -99,6 +103,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } else {
         $_SESSION['error_message'] = "Erro ao atualizar a imagem: " . $conn->error;
     }
+
     $update_stmt->close();
 }
 
@@ -106,23 +111,55 @@ include '../includes/header.php';
 include '../admin/includes/header_admin.php';
 ?>
 
-<div class="container">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<link rel="stylesheet" href="/projeto/css/editar_portfolio.css">
+
+<div class="white-background">
+    <div class="container-fluid">
+        <div class="header-container">
+            <div class="logo-container">
+                <img src="../imagens/Logotipo_freebox.png" style="height:75px;">
+            </div>
+
+            <div class="title-container">
+                <h4><?= htmlspecialchars($portfolio['nome_empresa']); ?></h4>
+            </div>
+
+            <div class="buttons-container">
+                <a href="../logout.php" class="btn btn-danger">
+                    <i class="fas fa-power-off"></i> Logout
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="separator"></div>
+
+<div class="container editar-portfolio-container">
     <div class="row justify-content-center">
         <div class="col-md-8">
-            <div class="dashboard-container mt-4">
-                <form method="POST" action="editar_portfolio.php?id=<?php echo $portfolio_id; ?>" enctype="multipart/form-data">
-                    <h5 class="card-title">Editar Imagem do Portfólio</h5>
 
-                    <!-- Pré-visualização da imagem atual -->
+            <div class="editar-portfolio-card">
+                <form method="POST" action="editar_portfolio.php?id=<?php echo $portfolio_id; ?>" enctype="multipart/form-data">
+
+                    <h5>
+                        <i class="fas fa-edit"></i> Editar Imagem do Portfólio
+                    </h5>
+
                     <div class="form-group mt-4">
                         <label>Imagem Atual</label><br>
                         <img src="<?php echo htmlspecialchars($portfolio['imagem']); ?>"
-                            alt="Imagem atual"
-                            style="width: 150px; height: 150px; object-fit: cover; border-radius: 6px; border: 1px solid #ddd;">
+                             alt="Imagem atual"
+                             class="portfolio-current-img">
                     </div>
 
                     <div class="form-group mt-4">
-                        <label for="portfolio_imagem">Nova Imagem <span style="color:#999; font-size:13px;">(deixe vazio para manter a atual)</span></label>
+                        <label for="portfolio_imagem">
+                            Nova Imagem
+                            <span class="input-help-text">(deixe vazio para manter a atual)</span>
+                        </label>
                         <input type="file" class="form-control-file" id="portfolio_imagem" name="portfolio_imagem" accept="image/*">
                     </div>
 
@@ -131,12 +168,18 @@ include '../admin/includes/header_admin.php';
                         <textarea class="form-control" id="descricao_imagem" name="descricao_imagem" rows="3"><?php echo htmlspecialchars($portfolio['descricao_imagem']); ?></textarea>
                     </div>
 
-                    <div class="buttons-container mt-4">
-                        <a href="empresa_portfolio.php?id=<?php echo $portfolio['empresa_id']; ?>" class="btn btn-secondary">Cancelar</a>
-                        <button type="submit" class="btn btn-success">Guardar</button>
+                    <div class="editar-portfolio-buttons mt-4">
+                        <a href="empresa_portfolio.php?id=<?php echo $portfolio['empresa_id']; ?>" class="btn btn-secondary">
+                            Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-save"></i> Guardar
+                        </button>
                     </div>
+
                 </form>
             </div>
+
         </div>
     </div>
 </div>

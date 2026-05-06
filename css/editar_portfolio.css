@@ -1,0 +1,54 @@
+.editar-portfolio-container {
+    margin-top: 30px;
+}
+
+.editar-portfolio-card {
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+    padding: 25px;
+}
+
+.editar-portfolio-card h5 {
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.editar-portfolio-card .form-control,
+.editar-portfolio-card .form-control-file {
+    border-radius: 10px;
+    padding: 10px 14px;
+    border: 1px solid #e0e0e0;
+    transition: 0.2s;
+    width: 100%;
+}
+
+.editar-portfolio-card .form-control:focus,
+.editar-portfolio-card .form-control-file:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 2px rgba(59,130,246,0.15);
+}
+
+.editar-portfolio-card label {
+    font-weight: 500;
+}
+
+.portfolio-current-img {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+}
+
+.input-help-text {
+    color: #999;
+    font-size: 13px;
+}
+
+.editar-portfolio-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}

@@ -1,0 +1,42 @@
+.center-card {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;
+}
+
+.admin-edit-card {
+    width: 100%;
+    max-width: 600px;
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+    overflow: hidden;
+}
+
+.admin-edit-card .card-header {
+    background: linear-gradient(135deg, #1565C0 0%, #1E88E5 70%, #42A5F5 100%);
+    color: white;
+    padding: 24px;
+}
+
+.admin-edit-card .card-header h2 {
+    font-weight: 700;
+    margin: 0;
+}
+
+.admin-edit-card .form-control {
+    border-radius: 10px;
+    padding: 10px 14px;
+    border: 1px solid #e0e0e0;
+}
+
+.admin-edit-card label {
+    font-weight: 500;
+}
+
+.button-container {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}

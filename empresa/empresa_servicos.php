@@ -34,45 +34,9 @@ include '../includes/header.php';
 include '../admin/includes/header_admin.php';
 ?>
 
-<!-- FONT AWESOME -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-<style>
-.button-container_left {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-}
-
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 9999;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.4);
-}
-
-.modal-content {
-    background: #fff;
-    margin: 15% auto;
-    padding: 25px;
-    width: 90%;
-    max-width: 400px;
-    text-align: center;
-    border-radius: 12px;
-}
-
-.modal-content h4 {
-    color: #16a34a;
-}
-
-.modal-content p {
-    margin-top: 10px;
-}
-</style>
+<link rel="stylesheet" href="/projeto/css/empresa_servicos.css">
 
 <!-- HEADER -->
 <div class="white-background">

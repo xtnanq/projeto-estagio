@@ -5,7 +5,7 @@ require_once '../includes/functions.php';
 
 // Verificar se o usuário está autenticado
 if (!isset($_SESSION['usuario_id'])) {
-    header("Location: login.php");
+    header("Location: ../login.php");
     exit();
 }
 
@@ -21,13 +21,15 @@ $usuario_id = $_SESSION['usuario_id'];
 
 // Buscar informações do serviço e verificar se pertence ao usuário
 if ($_SESSION['tipo_usuario'] == 'admin') {
-    $sql = "SELECT s.*, e.id as empresa_id FROM servicos s
+    $sql = "SELECT s.*, e.id as empresa_id, e.nome_empresa 
+            FROM servicos s
             JOIN empresas e ON s.empresa_id = e.id
             WHERE s.id = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $servico_id);
 } else {
-    $sql = "SELECT s.*, e.id as empresa_id FROM servicos s
+    $sql = "SELECT s.*, e.id as empresa_id, e.nome_empresa 
+            FROM servicos s
             JOIN empresas e ON s.empresa_id = e.id
             WHERE s.id = ? AND e.usuario_id = ?";
     $stmt = $conn->prepare($sql);
@@ -40,7 +42,7 @@ $servico = $result->fetch_assoc();
 
 if (!$servico) {
     $_SESSION['error_message'] = "Serviço não encontrado ou você não tem permissão para editá-lo.";
-    header("Location: empresa_servicos.php");
+    header("Location: dashboard.php");
     exit();
 }
 
@@ -67,34 +69,74 @@ include '../includes/header.php';
 include '../admin/includes/header_admin.php';
 ?>
 
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="dashboard-container mt-4">
-                <form method="POST" action="editar_servico.php?id=<?php echo $servico_id; ?>">
-                    <h5 class="card-title">Editar Serviço</h5>
-                    <div class="form-group mt-4">
-                        <label for="nome_servico">Nome do Serviço</label>
-                        <input type="text" class="form-control" id="nome_servico" name="nome_servico" value="<?php echo htmlspecialchars($servico['nome_servico']); ?>" required>
-                    </div>
-                    <div class="form-group mt-4">
-                        <label for="titulo_servico">Título do Serviço</label>
-                        <input type="text" class="form-control" id="titulo_servico" name="titulo_servico" value="<?php echo htmlspecialchars($servico['titulo_servico']); ?>" required>
-                    </div>
-                    <div class="form-group mt-4">
-                        <label for="descricao_servico">Descrição do Serviço</label>
-                        <textarea class="form-control" id="descricao_servico" name="descricao_servico" rows="3" required><?php echo htmlspecialchars($servico['descricao_servico']); ?></textarea>
-                    </div>
-                    <div class="buttons-container mt-4">
-                        <a href="empresa_servicos.php?id=<?php echo $servico['empresa_id']; ?>#servicos" class="btn btn-secondary">Cancelar</a>
-                        <button type="submit" class="btn btn-success">Guardar</button>
-                    </div>
-                </form>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<link rel="stylesheet" href="/projeto/css/editar_servico.css">
+
+<div class="white-background">
+    <div class="container-fluid">
+        <div class="header-container">
+            <div class="logo-container">
+                <img src="../imagens/Logotipo_freebox.png" style="height:75px;">
+            </div>
+
+            <div class="title-container">
+                <h4><?= htmlspecialchars($servico['nome_empresa']); ?></h4>
+            </div>
+
+            <div class="buttons-container">
+                <a href="../logout.php" class="btn btn-danger">
+                    <i class="fas fa-power-off"></i> Logout
+                </a>
             </div>
         </div>
     </div>
 </div>
 
-<?php
-include '../includes/footer.php';
-?>
+<div class="separator"></div>
+
+<div class="container editar-servico-container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+
+            <div class="editar-servico-card">
+                <form method="POST" action="editar_servico.php?id=<?php echo $servico_id; ?>">
+
+                    <h5>
+                        <i class="fas fa-edit"></i> Editar Serviço
+                    </h5>
+
+                    <div class="form-group mt-4">
+                        <label for="nome_servico">Nome do Serviço</label>
+                        <input type="text" class="form-control" id="nome_servico" name="nome_servico"
+                               value="<?php echo htmlspecialchars($servico['nome_servico']); ?>" required>
+                    </div>
+
+                    <div class="form-group mt-4">
+                        <label for="titulo_servico">Título do Serviço</label>
+                        <input type="text" class="form-control" id="titulo_servico" name="titulo_servico"
+                               value="<?php echo htmlspecialchars($servico['titulo_servico']); ?>" required>
+                    </div>
+
+                    <div class="form-group mt-4">
+                        <label for="descricao_servico">Descrição do Serviço</label>
+                        <textarea class="form-control" id="descricao_servico" name="descricao_servico" rows="3" required><?php echo htmlspecialchars($servico['descricao_servico']); ?></textarea>
+                    </div>
+
+                    <div class="editar-servico-buttons mt-4">
+                        <a href="empresa_servicos.php?id=<?php echo $servico['empresa_id']; ?>#servicos" class="btn btn-secondary">
+                            Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-save"></i> Guardar
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<?php include '../includes/footer.php'; ?>
