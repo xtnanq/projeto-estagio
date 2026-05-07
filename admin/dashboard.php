@@ -100,7 +100,7 @@ include '../admin/includes/functions_admin.php';
         <button id="modalOkButton" class="btn btn-freebox-blue" style="margin-top:16px;">OK</button>
     </div>
 </div>
-<script src="/projeto/js/dashboard.js" defer></script>
+<script src="/projeto/js/admin_dashboard.js" defer></script>
 
 <?php
 $conn->close();
