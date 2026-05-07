@@ -162,7 +162,7 @@ include '../admin/includes/header_admin.php';
                         <input type="url" name="link_x" class="form-control" value="<?= htmlspecialchars($website['link_x'] ?? '') ?>">
 
                         <button class="btn btn-success mt-4">
-                            <i class="fas fa-save"></i> Guardar
+                             Guardar
                         </button>
 
                     </form>
