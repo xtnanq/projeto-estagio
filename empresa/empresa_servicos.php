@@ -49,8 +49,8 @@ include '../admin/includes/header_admin.php';
                 <h4><?= htmlspecialchars($empresa['nome_empresa']); ?></h4>
             </div>
             <div class="buttons-container">
-                <a href="../logout.php" class="btn btn-outline-danger">
-                    <i class="fas fa-power-off"></i> Logout
+                <a href="../logout.php" class="btn btn-danger">
+                     Logout
                 </a>
             </div>
         </div>
