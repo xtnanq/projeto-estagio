@@ -295,7 +295,9 @@ body {
     font-weight: 600;
 }
 
-/* SERVIÇOS */
+/* ══════════════════════════════════════════
+   SERVIÇOS
+══════════════════════════════════════════ */
 .services-section {
     background: white;
 }
@@ -339,7 +341,9 @@ body {
     line-height: 1.7;
 }
 
-/* PORTFÓLIO */
+/* ══════════════════════════════════════════
+   PORTFÓLIO
+══════════════════════════════════════════ */
 .portfolio-section {
     position: relative;
     background-size: cover;
@@ -364,6 +368,7 @@ body {
     color: white;
 }
 
+/* grid legado (mantido para compatibilidade) */
 .portfolio-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -413,6 +418,140 @@ body {
     opacity: 1;
 }
 
+/* ══════════════════════════════════════════
+   CARROSSEL GENÉRICO (Serviços + Portfólio)
+══════════════════════════════════════════ */
+.carousel-outer {
+    position: relative;
+    /* padding lateral dá espaço para os botões prev/next */
+    padding: 0 52px;
+}
+
+/* DEPOIS */
+.carousel-wrapper {
+    overflow: hidden;
+    margin: 0 -4px; /* compensa o padding interno */
+}
+
+.carousel-track {
+    display: flex;
+    transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.carousel-page {
+    min-width: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    box-sizing: border-box;
+    padding: 12px 4px 20px; /* padding top/bottom para sombras, lateral mínimo */
+}
+
+/* ── Botões prev / next ── */
+.carousel-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: none;
+    background: white;
+    color: var(--primary);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.14);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10;
+    font-size: 0.95rem;
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+}
+
+.carousel-btn:hover {
+    background: var(--accent);
+    color: white;
+    box-shadow: 0 4px 20px rgba(0,169,143,0.3);
+}
+
+.carousel-btn.prev { left: 0; }
+.carousel-btn.next { right: 0; }
+
+/* ── Dots ── */
+.carousel-dots {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.carousel-dots .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #d1d5db;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+}
+
+.carousel-dots .dot.active {
+    background: var(--primary);
+    transform: scale(1.4);
+}
+
+/* dots dentro do portfólio (fundo escuro) */
+.portfolio-section .carousel-dots .dot {
+    background: rgba(255,255,255,0.4);
+}
+
+.portfolio-section .carousel-dots .dot.active {
+    background: var(--accent);
+}
+
+/* ── Cards do portfólio no carrossel ── */
+.portfolio-card {
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+    aspect-ratio: 4 / 3;
+    border: 4px solid white;
+}
+
+.portfolio-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.4s ease;
+}
+
+.portfolio-card:hover img {
+    transform: scale(1.06);
+}
+
+.portfolio-card .overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.38);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.portfolio-card:hover .overlay {
+    opacity: 1;
+}
+
+.portfolio-card .overlay i {
+    color: white;
+    font-size: 1.8rem;
+}
+
 /* LIGHTBOX */
 .lightbox {
     display: none;
@@ -459,6 +598,9 @@ body {
     cursor: pointer;
     transition: 0.2s;
     z-index: 3001;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .lightbox-close:hover,
@@ -619,7 +761,9 @@ body {
     transform: translateY(-3px);
 }
 
-/* RESPONSIVO */
+/* ══════════════════════════════════════════
+   RESPONSIVO
+══════════════════════════════════════════ */
 @media (max-width: 992px) {
     .public-navbar .navbar-inner {
         flex-direction: column;
@@ -657,6 +801,14 @@ body {
     .lightbox-next {
         right: 10px;
     }
+
+    .carousel-page {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .carousel-outer {
+        padding: 0 40px;
+    }
 }
 
 @media (max-width: 576px) {
@@ -687,5 +839,13 @@ body {
     .footer-bottom {
         justify-content: center;
         text-align: center;
+    }
+
+    .carousel-page {
+        grid-template-columns: 1fr;
+    }
+
+    .carousel-outer {
+        padding: 0 36px;
     }
 }

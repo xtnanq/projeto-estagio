@@ -93,6 +93,120 @@ $morada_completa = trim(($empresa['morada'] ?? '') . ' ' . ($empresa['codigo_pos
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
     <link rel="stylesheet" href="/projeto/css/site_publico.css">
+
+    <style>
+        /* ── CARROSSEL GENÉRICO (Serviços + Portfólio) ── */
+        .carousel-outer {
+            position: relative;
+            padding: 0 48px;
+        }
+        .carousel-wrapper {
+            overflow: hidden;
+        }
+        .carousel-track {
+            display: flex;
+            transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .carousel-page {
+            min-width: 100%;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            box-sizing: border-box;
+        }
+
+        /* ── Botões prev/next ── */
+        .carousel-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: none;
+            background: white;
+            color: inherit;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+            font-size: 0.95rem;
+            transition: opacity 0.2s, box-shadow 0.2s;
+        }
+        .carousel-btn:hover {
+            box-shadow: 0 4px 18px rgba(0,0,0,0.22);
+        }
+        .carousel-btn.prev { left: 0; }
+        .carousel-btn.next { right: 0; }
+
+        /* ── Dots ── */
+        .carousel-dots {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 28px;
+        }
+        .carousel-dots .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ccc;
+            border: none;
+            padding: 0;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.2s;
+        }
+        .carousel-dots .dot.active {
+            background: currentColor;
+            transform: scale(1.4);
+        }
+
+        /* ── Portfólio: cards com hover overlay ── */
+        .portfolio-card {
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+            cursor: pointer;
+            aspect-ratio: 4/3;
+        }
+        .portfolio-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.4s ease;
+        }
+        .portfolio-card:hover img {
+            transform: scale(1.06);
+        }
+        .portfolio-card .overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.35);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .portfolio-card:hover .overlay {
+            opacity: 1;
+        }
+        .portfolio-card .overlay i {
+            color: white;
+            font-size: 1.6rem;
+        }
+
+        @media (max-width: 768px) {
+            .carousel-page { grid-template-columns: repeat(2, 1fr); }
+            .carousel-outer { padding: 0 36px; }
+        }
+        @media (max-width: 480px) {
+            .carousel-page { grid-template-columns: 1fr; }
+        }
+    </style>
 </head>
 <body>
 
@@ -228,7 +342,9 @@ $morada_completa = trim(($empresa['morada'] ?? '') . ' ' . ($empresa['codigo_pos
     </div>
 </section>
 
-<!-- SERVIÇOS -->
+<!-- ════════════════════════════════════════
+     SERVIÇOS — carrossel 6 por página
+═════════════════════════════════════════ -->
 <?php if (!empty($servicos)): ?>
 <section id="servicos" class="services-section section-padding">
     <div class="container">
@@ -236,31 +352,54 @@ $morada_completa = trim(($empresa['morada'] ?? '') . ' ' . ($empresa['codigo_pos
         <h2 class="section-title">Serviços</h2>
         <div class="section-line"></div>
 
-        <div class="row g-4">
-            <?php foreach ($servicos as $servico): ?>
-                <div class="col-md-6 col-lg-4">
-                    <div class="service-card">
-                        <div class="service-icon">
-                            <i class="fas fa-screwdriver-wrench"></i>
+        <?php $servicos_chunks = array_chunk($servicos, 6); $s_pages = count($servicos_chunks); ?>
+
+        <div class="carousel-outer mt-4">
+
+            <?php if ($s_pages > 1): ?>
+                <button class="carousel-btn prev" id="svcPrev"><i class="fas fa-chevron-left"></i></button>
+                <button class="carousel-btn next" id="svcNext"><i class="fas fa-chevron-right"></i></button>
+            <?php endif; ?>
+
+            <div class="carousel-wrapper">
+                <div class="carousel-track" id="svcTrack">
+                    <?php foreach ($servicos_chunks as $chunk): ?>
+                        <div class="carousel-page">
+                            <?php foreach ($chunk as $servico): ?>
+                                <div class="service-card">
+                                    <div class="service-icon">
+                                        <i class="fas fa-screwdriver-wrench"></i>
+                                    </div>
+                                    <h4>
+                                        <?= htmlspecialchars($servico['titulo_servico'] ?: ($servico['nome_servico'] ?? '')); ?>
+                                    </h4>
+                                    <p>
+                                        <?= nl2br(htmlspecialchars($servico['descricao_servico'] ?? '')); ?>
+                                    </p>
+                                </div>
+                            <?php endforeach; ?>
                         </div>
-
-                        <h4>
-                            <?= htmlspecialchars($servico['titulo_servico'] ?: $servico['nome_servico']); ?>
-                        </h4>
-
-                        <p>
-                            <?= nl2br(htmlspecialchars($servico['descricao_servico'] ?? '')); ?>
-                        </p>
-                    </div>
+                    <?php endforeach; ?>
                 </div>
-            <?php endforeach; ?>
+            </div>
+
         </div>
+
+        <?php if ($s_pages > 1): ?>
+            <div class="carousel-dots" id="svcDots">
+                <?php for ($d = 0; $d < $s_pages; $d++): ?>
+                    <button class="dot <?= $d === 0 ? 'active' : ''; ?>" data-page="<?= $d ?>"></button>
+                <?php endfor; ?>
+            </div>
+        <?php endif; ?>
 
     </div>
 </section>
 <?php endif; ?>
 
-<!-- PORTFÓLIO -->
+<!-- ════════════════════════════════════════
+     PORTFÓLIO — carrossel 6 por página
+═════════════════════════════════════════ -->
 <?php if (!empty($portfolio)): ?>
 <section id="portfolio" class="portfolio-section section-padding" style="<?= $portfolio_style; ?>">
     <div class="container">
@@ -268,14 +407,44 @@ $morada_completa = trim(($empresa['morada'] ?? '') . ' ' . ($empresa['codigo_pos
         <h2 class="section-title">Portfólio</h2>
         <div class="section-line"></div>
 
-        <div class="portfolio-grid">
-            <?php foreach ($portfolio as $index => $item): ?>
-                <div class="portfolio-item" data-index="<?= $index; ?>">
-                    <img src="<?= htmlspecialchars($item['imagem']); ?>"
-                         alt="<?= htmlspecialchars($item['descricao_imagem'] ?: 'Imagem de portfólio'); ?>">
+        <?php $portfolio_chunks = array_chunk($portfolio, 6); $p_pages = count($portfolio_chunks); ?>
+
+        <div class="carousel-outer mt-4">
+
+            <?php if ($p_pages > 1): ?>
+                <button class="carousel-btn prev" id="prtPrev"><i class="fas fa-chevron-left"></i></button>
+                <button class="carousel-btn next" id="prtNext"><i class="fas fa-chevron-right"></i></button>
+            <?php endif; ?>
+
+            <div class="carousel-wrapper">
+                <div class="carousel-track" id="prtTrack">
+                    <?php foreach ($portfolio_chunks as $chunkIndex => $chunk): ?>
+                        <div class="carousel-page">
+                            <?php foreach ($chunk as $i => $item):
+                                $globalIndex = $chunkIndex * 6 + $i;
+                            ?>
+                                <div class="portfolio-card" data-index="<?= $globalIndex ?>">
+                                    <img src="<?= htmlspecialchars($item['imagem']); ?>"
+                                         alt="<?= htmlspecialchars($item['descricao_imagem'] ?: 'Imagem de portfólio'); ?>">
+                                    <div class="overlay">
+                                        <i class="fas fa-magnifying-glass-plus"></i>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php endforeach; ?>
                 </div>
-            <?php endforeach; ?>
+            </div>
+
         </div>
+
+        <?php if ($p_pages > 1): ?>
+            <div class="carousel-dots" id="prtDots">
+                <?php for ($d = 0; $d < $p_pages; $d++): ?>
+                    <button class="dot <?= $d === 0 ? 'active' : ''; ?>" data-page="<?= $d ?>"></button>
+                <?php endfor; ?>
+            </div>
+        <?php endif; ?>
 
     </div>
 </section>
@@ -427,7 +596,6 @@ $morada_completa = trim(($empresa['morada'] ?? '') . ' ' . ($empresa['codigo_pos
 document.querySelectorAll('a[href^="#"]').forEach(function(anchor) {
     anchor.addEventListener('click', function(e) {
         const target = document.querySelector(this.getAttribute('href'));
-
         if (target) {
             e.preventDefault();
             target.scrollIntoView({ behavior: 'smooth' });
@@ -441,12 +609,12 @@ document.querySelectorAll('a[href^="#"]').forEach(function(anchor) {
 const portfolioImages = <?php echo json_encode(array_column($portfolio, 'imagem')); ?>;
 let currentImageIndex = 0;
 
-const lightbox = document.getElementById('lightbox');
-const lightboxImage = document.getElementById('lightboxImage');
-const lightboxCounter = document.getElementById('lightboxCounter');
-const lightboxClose = document.getElementById('lightboxClose');
-const lightboxPrev = document.getElementById('lightboxPrev');
-const lightboxNext = document.getElementById('lightboxNext');
+const lightbox       = document.getElementById('lightbox');
+const lightboxImage  = document.getElementById('lightboxImage');
+const lightboxCounter= document.getElementById('lightboxCounter');
+const lightboxClose  = document.getElementById('lightboxClose');
+const lightboxPrev   = document.getElementById('lightboxPrev');
+const lightboxNext   = document.getElementById('lightboxNext');
 
 function openLightbox(index) {
     currentImageIndex = index;
@@ -475,7 +643,8 @@ function prevImage() {
     updateLightbox();
 }
 
-document.querySelectorAll('.portfolio-item').forEach(function(item) {
+// Clique nos cards do portfólio (carrossel)
+document.querySelectorAll('.portfolio-card').forEach(function(item) {
     item.addEventListener('click', function() {
         openLightbox(parseInt(this.dataset.index));
     });
@@ -486,20 +655,53 @@ lightboxNext.addEventListener('click', nextImage);
 lightboxPrev.addEventListener('click', prevImage);
 
 lightbox.addEventListener('click', function(e) {
-    if (e.target === lightbox) {
-        closeLightbox();
-    }
+    if (e.target === lightbox) closeLightbox();
 });
 
 document.addEventListener('keydown', function(e) {
     if (!lightbox.classList.contains('active')) return;
-
-    if (e.key === 'Escape') closeLightbox();
-    if (e.key === 'ArrowRight') nextImage();
-    if (e.key === 'ArrowLeft') prevImage();
+    if (e.key === 'Escape')      closeLightbox();
+    if (e.key === 'ArrowRight')  nextImage();
+    if (e.key === 'ArrowLeft')   prevImage();
 });
 </script>
 <?php endif; ?>
+
+<script>
+// ── Função genérica de carrossel ──
+function initCarousel(trackId, prevId, nextId, dotsId) {
+    const track = document.getElementById(trackId);
+    if (!track) return;
+    const pages = track.querySelectorAll('.carousel-page').length;
+    if (pages <= 1) return;
+
+    let current = 0;
+
+    function goTo(page) {
+        current = (page + pages) % pages;
+        track.style.transform = 'translateX(-' + (current * 100) + '%)';
+        if (dotsId) {
+            document.querySelectorAll('#' + dotsId + ' .dot').forEach(function(d, i) {
+                d.classList.toggle('active', i === current);
+            });
+        }
+    }
+
+    const prev = document.getElementById(prevId);
+    const next = document.getElementById(nextId);
+    if (prev) prev.addEventListener('click', function() { goTo(current - 1); });
+    if (next) next.addEventListener('click', function() { goTo(current + 1); });
+
+    if (dotsId) {
+        document.querySelectorAll('#' + dotsId + ' .dot').forEach(function(dot) {
+            dot.addEventListener('click', function() { goTo(parseInt(this.dataset.page)); });
+        });
+    }
+}
+
+initCarousel('svcTrack', 'svcPrev', 'svcNext', 'svcDots');
+initCarousel('prtTrack', 'prtPrev', 'prtNext', 'prtDots');
+</script>
 
 </body>
 </html>
