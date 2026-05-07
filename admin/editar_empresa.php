@@ -137,7 +137,7 @@ include '../admin/includes/header_admin.php';
                         </a>
 
                         <button type="submit" class="btn btn-success">
-                            <i class="fas fa-save"></i> Guardar
+                             Guardar
                         </button>
                     </div>
                 </form>
