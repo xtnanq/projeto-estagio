@@ -34,8 +34,6 @@ include '../includes/header.php';
 include '../admin/includes/header_admin.php';
 ?>
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
 <link rel="stylesheet" href="/projeto/css/empresa_servicos.css">
 
 <!-- HEADER -->
@@ -78,7 +76,7 @@ include '../admin/includes/header_admin.php';
 
                     <div class="mt-4">
                         <button id="mostrarFormularioServico" class="btn btn-primary">
-                            <i class="fas fa-plus"></i> Adicionar Serviço
+                            Adicionar Serviço
                         </button>
                     </div>
 
@@ -97,7 +95,7 @@ include '../admin/includes/header_admin.php';
                                         Cancelar
                                     </button>
                                     <button type="submit" class="btn btn-success">
-                                        <i class="fas fa-save"></i> Guardar
+                                        Guardar
                                     </button>
                                 </div>
                             </form>
@@ -112,10 +110,10 @@ include '../admin/includes/header_admin.php';
 
                                 <div>
                                     <a href="editar_servico.php?id=<?= $s['id']; ?>" class="btn btn-success btn-sm">
-                                        <i class="fas fa-edit"></i> Editar
+                                        Editar
                                     </a>
                                     <a href="eliminar_servico.php?id=<?= $s['id']; ?>" class="btn btn-danger btn-sm">
-                                        <i class="fas fa-trash"></i> Eliminar
+                                        Eliminar
                                     </a>
                                 </div>
                             </div>

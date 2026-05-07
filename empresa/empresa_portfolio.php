@@ -85,13 +85,12 @@ $portfolio_stmt = $conn->prepare($portfolio_sql);
 $portfolio_stmt->bind_param("i", $empresa_id);
 $portfolio_stmt->execute();
 $portfolio_result = $portfolio_stmt->get_result();
+$portfolio_items = $portfolio_result->fetch_all(MYSQLI_ASSOC);
 $portfolio_stmt->close();
 
 include '../includes/header.php';
 include '../admin/includes/header_admin.php';
 ?>
-
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <link rel="stylesheet" href="/projeto/css/empresa_portfolio.css">
 
@@ -102,15 +101,11 @@ include '../admin/includes/header_admin.php';
             <div class="logo-container">
                 <img src="../imagens/Logotipo_freebox.png" style="height:75px;">
             </div>
-
             <div class="title-container">
                 <h4><?= htmlspecialchars($empresa['nome_empresa']); ?></h4>
             </div>
-
             <div class="buttons-container">
-                <a href="../logout.php" class="btn btn-danger">
-                     Logout
-                </a>
+                <a href="../logout.php" class="btn btn-danger">Logout</a>
             </div>
         </div>
     </div>
@@ -132,64 +127,96 @@ include '../admin/includes/header_admin.php';
                 <div class="card-body">
 
                     <div class="text-center">
-                        <h4><i class="fas fa-images"></i> Portfólio</h4>
+                        <h4>Portfólio</h4>
                     </div>
 
                     <div class="mt-4">
                         <button id="mostrarFormularioPortfolio" class="btn btn-primary">
-                            <i class="fas fa-plus"></i> Adicionar Imagem
+                            Adicionar Imagem
                         </button>
                     </div>
 
                     <!-- FORM -->
                     <div class="card mt-4" id="formularioPortfolio" style="display:none;">
                         <div class="card-body">
-                            <h5><i class="fas fa-upload"></i> Nova Imagem</h5>
-
+                            <h5>Nova Imagem</h5>
                             <form method="POST" enctype="multipart/form-data">
                                 <div class="form-group">
-                                    <label><i class="fas fa-image"></i> Imagem</label>
+                                    <label>Imagem</label>
                                     <input type="file" name="portfolio_imagem" class="form-control" required>
                                 </div>
-
                                 <div class="form-group mt-3">
-                                    <label><i class="fas fa-align-left"></i> Descrição</label>
+                                    <label>Descrição</label>
                                     <textarea name="descricao_imagem" class="form-control"></textarea>
                                 </div>
-
                                 <div class="button-container_left mt-4">
                                     <button type="button" id="cancelarFormularioPortfolio" class="btn btn-secondary">
                                         Cancelar
                                     </button>
                                     <button type="submit" name="adicionar_portfolio" class="btn btn-success">
-                                        <i class="fas fa-save"></i> Guardar
+                                        Guardar
                                     </button>
                                 </div>
                             </form>
                         </div>
                     </div>
 
-                    <!-- LISTA -->
-                    <?php while ($p = $portfolio_result->fetch_assoc()): ?>
-                        <div class="card mt-3">
-                            <div class="card-body">
-                                <img src="<?= htmlspecialchars($p['imagem']); ?>" class="img-thumbnail">
+                    <!-- GALERIA -->
+                    <?php if (count($portfolio_items) > 0): ?>
 
-                                <div class="d-flex justify-content-between mt-2">
-                                    <p><?= htmlspecialchars($p['descricao_imagem']); ?></p>
-
-                                    <div>
-                                        <a href="editar_portfolio.php?id=<?= $p['id']; ?>" class="btn btn-success btn-sm">
-                                            <i class="fas fa-edit"></i> Editar
-                                        </a>
-                                        <a href="eliminar_portfolio.php?id=<?= $p['id']; ?>" class="btn btn-danger btn-sm">
-                                            <i class="fas fa-trash"></i> Eliminar
-                                        </a>
+                        <?php if (count($portfolio_items) <= 6): ?>
+                            <!-- GRID simples (até 6 imagens) -->
+                            <div class="portfolio-grid mt-4">
+                                <?php foreach ($portfolio_items as $i => $p): ?>
+                                    <div class="portfolio-grid-item">
+                                        <img src="<?= htmlspecialchars($p['imagem']); ?>"
+                                             alt="<?= htmlspecialchars($p['descricao_imagem']); ?>"
+                                             onclick="openLightbox(<?= $i ?>)">
+                                        <div class="desc"><?= htmlspecialchars($p['descricao_imagem']); ?></div>
+                                        <div class="portfolio-actions mt-2 text-center">
+                                            <a href="editar_portfolio.php?id=<?= $p['id']; ?>" class="btn btn-success btn-sm">Editar</a>
+                                            <a href="eliminar_portfolio.php?id=<?= $p['id']; ?>" class="btn btn-danger btn-sm">Eliminar</a>
+                                        </div>
                                     </div>
-                                </div>
+                                <?php endforeach; ?>
                             </div>
-                        </div>
-                    <?php endwhile; ?>
+
+                        <?php else: ?>
+                            <!-- CARROSEL (mais de 6 imagens) -->
+                            <?php
+                                $perPage = 6;
+                                $totalPages = ceil(count($portfolio_items) / $perPage);
+                            ?>
+                            <div class="carousel-wrapper mt-4">
+                                <button class="carousel-btn prev" id="carouselPrev">&#8592;</button>
+                                <div class="carousel-track" id="carouselTrack">
+                                    <?php foreach ($portfolio_items as $i => $p): ?>
+                                        <div class="carousel-slide">
+                                            <img src="<?= htmlspecialchars($p['imagem']); ?>"
+                                                 alt="<?= htmlspecialchars($p['descricao_imagem']); ?>"
+                                                 onclick="openLightbox(<?= $i ?>)">
+                                            <div class="desc"><?= htmlspecialchars($p['descricao_imagem']); ?></div>
+                                            <div class="portfolio-actions mt-2 text-center">
+                                                <a href="editar_portfolio.php?id=<?= $p['id']; ?>" class="btn btn-success btn-sm">Editar</a>
+                                                <a href="eliminar_portfolio.php?id=<?= $p['id']; ?>" class="btn btn-danger btn-sm">Eliminar</a>
+                                            </div>
+                                        </div>
+                                    <?php endforeach; ?>
+                                </div>
+                                <button class="carousel-btn next" id="carouselNext">&#8594;</button>
+                            </div>
+
+                            <!-- BOLINHAS -->
+                            <div class="carousel-dots" id="carouselDots">
+                                <?php for ($d = 0; $d < $totalPages; $d++): ?>
+                                    <button class="dot <?= $d === 0 ? 'active' : ''; ?>" data-page="<?= $d ?>"></button>
+                                <?php endfor; ?>
+                            </div>
+                        <?php endif; ?>
+
+                    <?php else: ?>
+                        <p class="text-muted mt-4 text-center">Ainda não há imagens no portfólio.</p>
+                    <?php endif; ?>
 
                 </div>
             </div>
@@ -198,7 +225,16 @@ include '../admin/includes/header_admin.php';
     </div>
 </div>
 
-<!-- MODAL -->
+<!-- LIGHTBOX -->
+<div class="lightbox-overlay" id="lightboxOverlay">
+    <button class="lightbox-close" id="lightboxClose">&times;</button>
+    <button class="lightbox-arrow left" id="lightboxPrev">&#8592;</button>
+    <img class="lightbox-img" id="lightboxImg" src="" alt="">
+    <button class="lightbox-arrow right" id="lightboxNext">&#8594;</button>
+    <div class="lightbox-desc" id="lightboxDesc"></div>
+</div>
+
+<!-- MODAL MENSAGENS -->
 <div id="messageModal" class="modal">
     <div class="modal-content">
         <h4 id="modalTitle"></h4>
@@ -208,31 +244,107 @@ include '../admin/includes/header_admin.php';
 </div>
 
 <script>
+// ── Dados das imagens para JS ──
+const portfolioImages = <?= json_encode(array_map(function($p) {
+    return [
+        'src' => $p['imagem'],
+        'desc' => $p['descricao_imagem']
+    ];
+}, $portfolio_items)); ?>;
+
+// ── Formulário ──
 document.getElementById('mostrarFormularioPortfolio').onclick = () =>
     document.getElementById('formularioPortfolio').style.display = 'block';
 
 document.getElementById('cancelarFormularioPortfolio').onclick = () =>
     document.getElementById('formularioPortfolio').style.display = 'none';
-</script>
 
-<script>
+// ── Lightbox ──
+let currentIndex = 0;
+
+function openLightbox(index) {
+    currentIndex = index;
+    updateLightbox();
+    document.getElementById('lightboxOverlay').classList.add('open');
+}
+
+function updateLightbox() {
+    document.getElementById('lightboxImg').src  = portfolioImages[currentIndex].src;
+    document.getElementById('lightboxDesc').textContent = portfolioImages[currentIndex].desc;
+}
+
+document.getElementById('lightboxClose').onclick = () =>
+    document.getElementById('lightboxOverlay').classList.remove('open');
+
+document.getElementById('lightboxPrev').onclick = () => {
+    currentIndex = (currentIndex - 1 + portfolioImages.length) % portfolioImages.length;
+    updateLightbox();
+};
+
+document.getElementById('lightboxNext').onclick = () => {
+    currentIndex = (currentIndex + 1) % portfolioImages.length;
+    updateLightbox();
+};
+
+// Setas do teclado
+document.addEventListener('keydown', function(e) {
+    const overlay = document.getElementById('lightboxOverlay');
+    if (!overlay.classList.contains('open')) return;
+    if (e.key === 'ArrowLeft')  { currentIndex = (currentIndex - 1 + portfolioImages.length) % portfolioImages.length; updateLightbox(); }
+    if (e.key === 'ArrowRight') { currentIndex = (currentIndex + 1) % portfolioImages.length; updateLightbox(); }
+    if (e.key === 'Escape')     { overlay.classList.remove('open'); }
+});
+
+// Fechar ao clicar fora da imagem
+document.getElementById('lightboxOverlay').addEventListener('click', function(e) {
+    if (e.target === this) this.classList.remove('open');
+});
+
+// ── Carrosel (só existe se houver mais de 6 imagens) ──
+const track = document.getElementById('carouselTrack');
+if (track) {
+    const perPage   = 6;
+    const perSlide  = 3; // visíveis por vez
+    const total     = portfolioImages.length;
+    const totalPages = Math.ceil(total / perPage);
+    let currentPage  = 0;
+
+    function goToPage(page) {
+        currentPage = page;
+        const slideWidth = track.querySelector('.carousel-slide').offsetWidth;
+        track.style.transform = `translateX(-${page * perPage * slideWidth / perSlide}px)`;
+
+        document.querySelectorAll('.dot').forEach((d, i) => {
+            d.classList.toggle('active', i === page);
+        });
+    }
+
+    document.getElementById('carouselPrev').onclick = () =>
+        goToPage((currentPage - 1 + totalPages) % totalPages);
+
+    document.getElementById('carouselNext').onclick = () =>
+        goToPage((currentPage + 1) % totalPages);
+
+    document.querySelectorAll('.dot').forEach(dot => {
+        dot.addEventListener('click', () => goToPage(parseInt(dot.dataset.page)));
+    });
+}
+
+// ── Modal mensagens ──
 document.addEventListener("DOMContentLoaded", function() {
-
     const urlParams = new URLSearchParams(window.location.search);
-
     if (urlParams.get("show_message") === "1") {
-
-        const modal = document.getElementById("messageModal");
-        const title = document.getElementById("modalTitle");
+        const modal   = document.getElementById("messageModal");
+        const title   = document.getElementById("modalTitle");
         const message = document.getElementById("modalMessage");
-        const okBtn = document.getElementById("okButton");
+        const okBtn   = document.getElementById("okButton");
 
         <?php if (isset($_SESSION['success_message'])): ?>
-            title.textContent = "Sucesso";
+            title.textContent   = "Sucesso";
             message.textContent = "<?= htmlspecialchars($_SESSION['success_message'], ENT_QUOTES); ?>";
             <?php unset($_SESSION['success_message']); ?>
         <?php elseif (isset($_SESSION['error_message'])): ?>
-            title.textContent = "Erro";
+            title.textContent   = "Erro";
             message.textContent = "<?= htmlspecialchars($_SESSION['error_message'], ENT_QUOTES); ?>";
             <?php unset($_SESSION['error_message']); ?>
         <?php endif; ?>
@@ -245,7 +357,6 @@ document.addEventListener("DOMContentLoaded", function() {
                 window.location.pathname + "?id=<?= $empresa_id ?>");
         };
     }
-
 });
 </script>
 

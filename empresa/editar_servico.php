@@ -69,8 +69,6 @@ include '../includes/header.php';
 include '../admin/includes/header_admin.php';
 ?>
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
 <link rel="stylesheet" href="/projeto/css/editar_servico.css">
 
 <div class="white-background">
@@ -86,7 +84,7 @@ include '../admin/includes/header_admin.php';
 
             <div class="buttons-container">
                 <a href="../logout.php" class="btn btn-danger">
-                    <i class="fas fa-power-off"></i> Logout
+                Logout
                 </a>
             </div>
         </div>
@@ -103,7 +101,7 @@ include '../admin/includes/header_admin.php';
                 <form method="POST" action="editar_servico.php?id=<?php echo $servico_id; ?>">
 
                     <h5>
-                        <i class="fas fa-edit"></i> Editar Serviço
+                        Editar Serviço
                     </h5>
 
                     <div class="form-group mt-4">
@@ -128,7 +126,7 @@ include '../admin/includes/header_admin.php';
                             Cancelar
                         </a>
                         <button type="submit" class="btn btn-success">
-                            <i class="fas fa-save"></i> Guardar
+                            Guardar
                         </button>
                     </div>
 

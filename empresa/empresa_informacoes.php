@@ -150,7 +150,7 @@ include '../admin/includes/header_admin.php';
 
                         <div class="text-end mt-4">
                             <button type="submit" class="btn btn-primary custom-btn">
-                                <i class="fas fa-save"></i> Guardar Informações
+                             Guardar Informações
                             </button>
                         </div>
 
