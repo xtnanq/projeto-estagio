@@ -849,3 +849,15 @@ body {
         padding: 0 36px;
     }
 }
+
+/* REMOVER SUBALINHADO DO RODAPÉ */
+.made-by {
+    text-decoration: none;
+    transition: color 0.2s; /* Para suavizar a mudança de cor se quiseres */
+}
+
+.made-by:hover {
+    text-decoration: none; /* Garante que não aparece ao passar o rato */
+    color: var(--accent);  /* Opcional: muda para a cor verde que tens no tema */
+}
+

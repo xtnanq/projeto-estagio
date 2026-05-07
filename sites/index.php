@@ -558,7 +558,7 @@ $morada_completa = trim(($empresa['morada'] ?? '') . ' ' . ($empresa['codigo_pos
             </span>
 
             <span>
-                Made by <span class="made-by">IS4 Web Designer</span>
+               Made by <a href="https://webdesigner.is4.pt/" target="_blank" class="made-by">IS4 Web Designer</a>
             </span>
         </div>
     </div>
