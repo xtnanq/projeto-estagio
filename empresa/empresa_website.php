@@ -162,7 +162,11 @@ include '../admin/includes/header_admin.php';
                         <input type="url" name="link_x" class="form-control" value="<?= htmlspecialchars($website['link_x'] ?? '') ?>">
 
                         <button class="btn btn-success mt-4">
+<<<<<<< HEAD
                             Guardar
+=======
+                             Guardar
+>>>>>>> 2f78b7dc26b7d24db504c47119fea1312f726557
                         </button>
 
                     </form>

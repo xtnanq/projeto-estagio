@@ -1,7 +1,6 @@
 <?php
 require_once '../config/database.php';
 
-// Verificar se o ID da empresa foi passado via GET
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
     header("Location: ../index.php");
     exit();
@@ -9,7 +8,7 @@ if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
 
 $empresa_id = intval($_GET['id']);
 
-// Buscar informações da empresa
+// Empresa
 $sql = "SELECT * FROM empresas WHERE id = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $empresa_id);
@@ -23,7 +22,7 @@ if (!$empresa) {
     exit();
 }
 
-// Buscar configurações do website
+// Website config
 $website_sql = "SELECT * FROM website_config WHERE empresa_id = ?";
 $website_stmt = $conn->prepare($website_sql);
 $website_stmt->bind_param("i", $empresa_id);
@@ -32,7 +31,18 @@ $website_result = $website_stmt->get_result();
 $website = $website_result->fetch_assoc();
 $website_stmt->close();
 
-// Buscar serviços
+if (!$website) {
+    $website = [
+        'logotipo' => '',
+        'capa_empresa' => '',
+        'descricao_empresa' => '',
+        'link_facebook' => '',
+        'link_instagram' => '',
+        'link_x' => ''
+    ];
+}
+
+// Serviços
 $servicos_sql = "SELECT * FROM servicos WHERE empresa_id = ?";
 $servicos_stmt = $conn->prepare($servicos_sql);
 $servicos_stmt->bind_param("i", $empresa_id);
@@ -41,7 +51,7 @@ $servicos_result = $servicos_stmt->get_result();
 $servicos = $servicos_result->fetch_all(MYSQLI_ASSOC);
 $servicos_stmt->close();
 
-// Buscar portfólio
+// Portfólio
 $portfolio_sql = "SELECT * FROM portfolio WHERE empresa_id = ?";
 $portfolio_stmt = $conn->prepare($portfolio_sql);
 $portfolio_stmt->bind_param("i", $empresa_id);
@@ -51,452 +61,445 @@ $portfolio = $portfolio_result->fetch_all(MYSQLI_ASSOC);
 $portfolio_stmt->close();
 
 $conn->close();
+
+$nome_empresa = $empresa['nome_empresa'] ?? 'Empresa';
+$descricao = trim($website['descricao_empresa'] ?? '');
+$logo = trim($website['logotipo'] ?? '');
+$capa = trim($website['capa_empresa'] ?? '');
+
+$hero_style = '';
+if (!empty($capa)) {
+    $hero_style = "background-image: url('" . htmlspecialchars($capa, ENT_QUOTES) . "');";
+}
+
+$portfolio_bg = !empty($capa) ? $capa : (!empty($portfolio[0]['imagem']) ? $portfolio[0]['imagem'] : '');
+$portfolio_style = '';
+if (!empty($portfolio_bg)) {
+    $portfolio_style = "background-image: url('" . htmlspecialchars($portfolio_bg, ENT_QUOTES) . "');";
+}
+
+$telefone_principal = !empty($empresa['telefone']) ? $empresa['telefone'] : ($empresa['telefone_contato'] ?? '');
+$email_principal = !empty($empresa['email_empresa']) ? $empresa['email_empresa'] : ($empresa['email_contato'] ?? '');
+$morada_completa = trim(($empresa['morada'] ?? '') . ' ' . ($empresa['codigo_postal'] ?? ''));
 ?>
 <!DOCTYPE html>
 <html lang="pt">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo htmlspecialchars($empresa['nome_empresa']); ?></title>
+    <title><?= htmlspecialchars($nome_empresa); ?></title>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <style>
-        :root {
-            --cor-primaria: #0066cc;
-            --cor-secundaria: #004080;
-        }
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: #333;
-        }
-
-        /* NAVBAR */
-        .navbar-site {
-            background-color: white;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            padding: 15px 0;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-        .navbar-site .logo {
-            height: 60px;
-            object-fit: contain;
-        }
-        .navbar-site .nome-empresa {
-            font-size: 1.4rem;
-            font-weight: bold;
-            color: var(--cor-primaria);
-        }
-        .navbar-site .nav-links a {
-            color: #333;
-            text-decoration: none;
-            margin-left: 25px;
-            font-weight: 500;
-            transition: color 0.3s;
-        }
-        .navbar-site .nav-links a:hover {
-            color: var(--cor-primaria);
-        }
-
-        /* CAPA */
-        .capa {
-            width: 100%;
-            height: 500px;
-            object-fit: cover;
-            display: block;
-        }
-        .capa-placeholder {
-            width: 100%;
-            height: 500px;
-            background: linear-gradient(135deg, var(--cor-primaria), var(--cor-secundaria));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .capa-placeholder h1 {
-            color: white;
-            font-size: 3rem;
-            font-weight: bold;
-            text-align: center;
-        }
-
-        /* SECÇÕES */
-        section {
-            padding: 70px 0;
-        }
-        section:nth-child(even) {
-            background-color: #f8f9fa;
-        }
-        .section-title {
-            font-size: 2rem;
-            font-weight: bold;
-            color: var(--cor-primaria);
-            margin-bottom: 15px;
-            position: relative;
-            padding-bottom: 15px;
-        }
-        .section-title::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 60px;
-            height: 3px;
-            background-color: var(--cor-primaria);
-        }
-        .section-title.text-center::after {
-            left: 50%;
-            transform: translateX(-50%);
-        }
-
-        /* SERVIÇOS */
-        .servico-card {
-            background: white;
-            border-radius: 10px;
-            padding: 30px;
-            box-shadow: 0 3px 15px rgba(0,0,0,0.08);
-            height: 100%;
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-        .servico-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-        }
-        .servico-card .icon {
-            font-size: 2.5rem;
-            color: var(--cor-primaria);
-            margin-bottom: 15px;
-        }
-        .servico-card h4 {
-            font-weight: bold;
-            margin-bottom: 10px;
-            color: #222;
-        }
-        .servico-card p {
-            color: #666;
-            line-height: 1.6;
-        }
-
-        /* PORTFÓLIO */
-        .portfolio-item {
-            position: relative;
-            overflow: hidden;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-        .portfolio-item img {
-            width: 100%;
-            height: 220px;
-            object-fit: cover;
-            transition: transform 0.3s;
-            display: block;
-        }
-        .portfolio-item:hover img {
-            transform: scale(1.05);
-        }
-        .portfolio-overlay {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(0,102,204,0.85);
-            color: white;
-            padding: 10px 15px;
-            transform: translateY(100%);
-            transition: transform 0.3s;
-        }
-        .portfolio-item:hover .portfolio-overlay {
-            transform: translateY(0);
-        }
-
-        /* CONTACTOS */
-        .contacto-item {
-            display: flex;
-            align-items: flex-start;
-            margin-bottom: 25px;
-        }
-        .contacto-item .icon {
-            font-size: 1.5rem;
-            color: var(--cor-primaria);
-            margin-right: 15px;
-            min-width: 30px;
-        }
-        .contacto-item .info h6 {
-            font-weight: bold;
-            margin-bottom: 3px;
-        }
-        .contacto-item .info p {
-            color: #666;
-            margin: 0;
-        }
-
-        /* REDES SOCIAIS */
-        .redes-sociais a {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            background-color: var(--cor-primaria);
-            color: white;
-            font-size: 1.2rem;
-            margin-right: 10px;
-            text-decoration: none;
-            transition: background-color 0.3s, transform 0.3s;
-        }
-        .redes-sociais a:hover {
-            background-color: var(--cor-secundaria);
-            transform: translateY(-3px);
-        }
-
-        /* FOOTER */
-        footer {
-            background-color: #222;
-            color: #aaa;
-            padding: 30px 0;
-            text-align: center;
-        }
-        footer a {
-            color: #aaa;
-            text-decoration: none;
-        }
-    </style>
+    <link rel="stylesheet" href="/projeto/css/site_publico.css">
 </head>
 <body>
 
 <!-- NAVBAR -->
-<nav class="navbar-site">
-    <div class="container d-flex justify-content-between align-items-center">
-        <div class="d-flex align-items-center gap-3">
-            <?php if (!empty($website['logotipo'])): ?>
-                <img src="<?php echo htmlspecialchars($website['logotipo']); ?>"
-                     alt="Logo" class="logo">
+<header class="public-navbar">
+    <div class="container navbar-inner">
+
+        <a href="#inicio" class="brand">
+            <?php if (!empty($logo)): ?>
+                <img src="<?= htmlspecialchars($logo); ?>" alt="<?= htmlspecialchars($nome_empresa); ?>" class="brand-logo">
+            <?php else: ?>
+                <span class="brand-name"><?= htmlspecialchars($nome_empresa); ?></span>
             <?php endif; ?>
-            <span class="nome-empresa"><?php echo htmlspecialchars($empresa['nome_empresa']); ?></span>
-        </div>
-        <div class="nav-links d-none d-md-block">
+        </a>
+
+        <nav class="nav-links">
             <a href="#sobre">Sobre Nós</a>
+
             <?php if (!empty($servicos)): ?>
                 <a href="#servicos">Serviços</a>
             <?php endif; ?>
+
             <?php if (!empty($portfolio)): ?>
                 <a href="#portfolio">Portfólio</a>
             <?php endif; ?>
-            <a href="#contactos">Contactos</a>
-        </div>
-    </div>
-</nav>
 
-<!-- CAPA -->
-<?php if (!empty($website['capa_empresa'])): ?>
-    <img src="<?php echo htmlspecialchars($website['capa_empresa']); ?>"
-         alt="Capa" class="capa">
-<?php else: ?>
-    <div class="capa-placeholder">
-        <h1><?php echo htmlspecialchars($empresa['nome_empresa']); ?></h1>
+            <a href="#contactos">Contacto</a>
+        </nav>
+
+        <div class="language-flags">
+            <span title="English">🇬🇧</span>
+            <span title="Français">🇫🇷</span>
+            <span title="Português">🇵🇹</span>
+            <span title="Español">🇪🇸</span>
+        </div>
+
     </div>
-<?php endif; ?>
+</header>
+
+<!-- HERO -->
+<section id="inicio" class="hero <?= !empty($capa) ? 'has-image' : ''; ?>" style="<?= $hero_style; ?>">
+    <div class="hero-content">
+        <h1><?= htmlspecialchars($nome_empresa); ?></h1>
+
+        <p class="hero-subtitle">
+            <?php if (!empty($servicos)): ?>
+                <?php
+                    $nomes_servicos = array_slice(array_column($servicos, 'nome_servico'), 0, 4);
+                    echo htmlspecialchars(implode(' · ', $nomes_servicos));
+                ?>
+            <?php else: ?>
+                Soluções profissionais para a sua empresa
+            <?php endif; ?>
+        </p>
+
+        <a href="#contactos" class="hero-button">
+            Contacte-nos
+        </a>
+    </div>
+</section>
 
 <!-- SOBRE NÓS -->
-<section id="sobre">
+<section id="sobre" class="about-section section-padding">
     <div class="container">
+
         <h2 class="section-title">Sobre Nós</h2>
-        <div class="row mt-4">
-            <div class="col-md-8">
-                <?php if (!empty($website['descricao_empresa'])): ?>
-                    <p style="font-size: 1.1rem; line-height: 1.8; color: #555;">
-                        <?php echo nl2br(htmlspecialchars($website['descricao_empresa'])); ?>
-                    </p>
-                <?php else: ?>
-                    <p class="text-muted">Descrição da empresa não disponível.</p>
-                <?php endif; ?>
-            </div>
-            <div class="col-md-4">
-                <div class="card border-0 shadow-sm p-4">
-                    <?php if (!empty($empresa['telefone'])): ?>
-                        <p><i class="fas fa-phone text-primary me-2"></i>
-                            <?php echo htmlspecialchars($empresa['telefone']); ?>
-                        </p>
-                    <?php endif; ?>
-                    <?php if (!empty($empresa['email_empresa'])): ?>
-                        <p><i class="fas fa-envelope text-primary me-2"></i>
-                            <?php echo htmlspecialchars($empresa['email_empresa']); ?>
-                        </p>
-                    <?php endif; ?>
-                    <?php if (!empty($empresa['morada'])): ?>
-                        <p><i class="fas fa-map-marker-alt text-primary me-2"></i>
-                            <?php echo htmlspecialchars($empresa['morada']); ?>
-                            <?php if (!empty($empresa['codigo_postal'])): ?>
-                                , <?php echo htmlspecialchars($empresa['codigo_postal']); ?>
+        <div class="section-line"></div>
+
+        <div class="row about-grid">
+            <div class="col-lg-8">
+                <div class="about-text-block">
+                    <div class="about-icon">
+                        <i class="fas fa-store"></i>
+                    </div>
+
+                    <div>
+                        <h3>Empresa</h3>
+
+                        <?php if (!empty($descricao)): ?>
+                            <p class="about-text">
+                                <?= nl2br(htmlspecialchars($descricao)); ?>
+                            </p>
+                        <?php else: ?>
+                            <p class="about-text">
+                                Somos uma empresa dedicada a prestar serviços de qualidade,
+                                com foco na satisfação dos nossos clientes e na apresentação
+                                profissional da nossa marca.
+                            </p>
+                        <?php endif; ?>
+
+                        <div class="about-contact-card">
+                            <?php if (!empty($morada_completa)): ?>
+                                <p>
+                                    <i class="fas fa-location-dot"></i>
+                                    <?= htmlspecialchars($morada_completa); ?>
+                                </p>
                             <?php endif; ?>
-                        </p>
-                    <?php endif; ?>
+
+                            <?php if (!empty($telefone_principal)): ?>
+                                <p>
+                                    <i class="fas fa-phone"></i>
+                                    <?= htmlspecialchars($telefone_principal); ?>
+                                </p>
+                            <?php endif; ?>
+
+                            <?php if (!empty($email_principal)): ?>
+                                <p>
+                                    <i class="fas fa-envelope"></i>
+                                    <?= htmlspecialchars($email_principal); ?>
+                                </p>
+                            <?php endif; ?>
+                        </div>
+                    </div>
                 </div>
             </div>
+
+            <div class="col-lg-4">
+                <?php if (!empty($morada_completa)): ?>
+                    <div class="about-map-card">
+                        <iframe src="https://maps.google.com/maps?q=<?= urlencode($morada_completa); ?>&output=embed"
+                                allowfullscreen
+                                loading="lazy"></iframe>
+                    </div>
+                <?php else: ?>
+                    <div class="about-map-placeholder">
+                        <i class="fas fa-map-location-dot"></i>
+                        <p>Morada não disponível.</p>
+                    </div>
+                <?php endif; ?>
+            </div>
         </div>
+
     </div>
 </section>
 
 <!-- SERVIÇOS -->
 <?php if (!empty($servicos)): ?>
-<section id="servicos">
+<section id="servicos" class="services-section section-padding">
     <div class="container">
-        <h2 class="section-title text-center">Os Nossos Serviços</h2>
-        <div class="row mt-5">
+
+        <h2 class="section-title">Serviços</h2>
+        <div class="section-line"></div>
+
+        <div class="row g-4">
             <?php foreach ($servicos as $servico): ?>
-                <div class="col-md-4 mb-4">
-                    <div class="servico-card">
-                        <div class="icon">
-                            <i class="fas fa-handshake"></i>
+                <div class="col-md-6 col-lg-4">
+                    <div class="service-card">
+                        <div class="service-icon">
+                            <i class="fas fa-screwdriver-wrench"></i>
                         </div>
-                        <h4><?php echo htmlspecialchars($servico['titulo_servico']); ?></h4>
-                        <p><?php echo nl2br(htmlspecialchars($servico['descricao_servico'])); ?></p>
+
+                        <h4>
+                            <?= htmlspecialchars($servico['titulo_servico'] ?: $servico['nome_servico']); ?>
+                        </h4>
+
+                        <p>
+                            <?= nl2br(htmlspecialchars($servico['descricao_servico'] ?? '')); ?>
+                        </p>
                     </div>
                 </div>
             <?php endforeach; ?>
         </div>
+
     </div>
 </section>
 <?php endif; ?>
 
 <!-- PORTFÓLIO -->
 <?php if (!empty($portfolio)): ?>
-<section id="portfolio">
+<section id="portfolio" class="portfolio-section section-padding" style="<?= $portfolio_style; ?>">
     <div class="container">
-        <h2 class="section-title text-center">Portfólio</h2>
-        <div class="row mt-5">
-            <?php foreach ($portfolio as $item): ?>
-                <div class="col-md-4">
-                    <div class="portfolio-item">
-                        <img src="<?php echo htmlspecialchars($item['imagem']); ?>"
-                             alt="<?php echo htmlspecialchars($item['descricao_imagem']); ?>">
-                        <?php if (!empty($item['descricao_imagem'])): ?>
-                            <div class="portfolio-overlay">
-                                <p class="mb-0"><?php echo htmlspecialchars($item['descricao_imagem']); ?></p>
-                            </div>
-                        <?php endif; ?>
-                    </div>
+
+        <h2 class="section-title">Portfólio</h2>
+        <div class="section-line"></div>
+
+        <div class="portfolio-grid">
+            <?php foreach ($portfolio as $index => $item): ?>
+                <div class="portfolio-item" data-index="<?= $index; ?>">
+                    <img src="<?= htmlspecialchars($item['imagem']); ?>"
+                         alt="<?= htmlspecialchars($item['descricao_imagem'] ?: 'Imagem de portfólio'); ?>">
                 </div>
             <?php endforeach; ?>
         </div>
+
     </div>
 </section>
 <?php endif; ?>
 
 <!-- CONTACTOS -->
-<section id="contactos">
+<section id="contactos" class="contact-section">
     <div class="container">
-        <h2 class="section-title">Contactos</h2>
-        <div class="row mt-4">
-            <div class="col-md-5">
-                <?php if (!empty($empresa['morada'])): ?>
-                    <div class="contacto-item">
-                        <div class="icon"><i class="fas fa-map-marker-alt"></i></div>
-                        <div class="info">
-                            <h6>Morada</h6>
-                            <p><?php echo htmlspecialchars($empresa['morada']); ?>
-                                <?php if (!empty($empresa['codigo_postal'])): ?>
-                                    <br><?php echo htmlspecialchars($empresa['codigo_postal']); ?>
-                                <?php endif; ?>
-                            </p>
-                        </div>
-                    </div>
-                <?php endif; ?>
 
-                <?php if (!empty($empresa['telefone'])): ?>
-                    <div class="contacto-item">
-                        <div class="icon"><i class="fas fa-phone"></i></div>
-                        <div class="info">
-                            <h6>Telefone</h6>
-                            <p><?php echo htmlspecialchars($empresa['telefone']); ?></p>
-                        </div>
-                    </div>
-                <?php endif; ?>
+        <div class="contact-cards">
 
-                <?php if (!empty($empresa['email_empresa'])): ?>
-                    <div class="contacto-item">
-                        <div class="icon"><i class="fas fa-envelope"></i></div>
-                        <div class="info">
-                            <h6>Email</h6>
-                            <p><?php echo htmlspecialchars($empresa['email_empresa']); ?></p>
-                        </div>
-                    </div>
-                <?php endif; ?>
+            <div class="contact-card">
+                <div class="contact-card-icon">
+                    <i class="fas fa-phone"></i>
+                </div>
 
-                <?php if (!empty($empresa['nome_contato'])): ?>
-                    <div class="contacto-item">
-                        <div class="icon"><i class="fas fa-user"></i></div>
-                        <div class="info">
-                            <h6>Contacto</h6>
-                            <p><?php echo htmlspecialchars($empresa['nome_contato']); ?>
-                                <?php if (!empty($empresa['telefone_contato'])): ?>
-                                    — <?php echo htmlspecialchars($empresa['telefone_contato']); ?>
-                                <?php endif; ?>
-                            </p>
-                        </div>
-                    </div>
-                <?php endif; ?>
-
-                <!-- REDES SOCIAIS -->
-                <?php if (!empty($website['link_facebook']) || !empty($website['link_instagram']) || !empty($website['link_x'])): ?>
-                    <div class="redes-sociais mt-3">
-                        <?php if (!empty($website['link_facebook'])): ?>
-                            <a href="<?php echo htmlspecialchars($website['link_facebook']); ?>"
-                               target="_blank" title="Facebook">
-                                <i class="fab fa-facebook-f"></i>
-                            </a>
-                        <?php endif; ?>
-                        <?php if (!empty($website['link_instagram'])): ?>
-                            <a href="<?php echo htmlspecialchars($website['link_instagram']); ?>"
-                               target="_blank" title="Instagram">
-                                <i class="fab fa-instagram"></i>
-                            </a>
-                        <?php endif; ?>
-                        <?php if (!empty($website['link_x'])): ?>
-                            <a href="<?php echo htmlspecialchars($website['link_x']); ?>"
-                               target="_blank" title="X (Twitter)">
-                                <i class="fab fa-x-twitter"></i>
-                            </a>
-                        <?php endif; ?>
-                    </div>
-                <?php endif; ?>
+                <div>
+                    <h4>
+                        <?= !empty($telefone_principal) ? htmlspecialchars($telefone_principal) : 'Telefone'; ?>
+                    </h4>
+                    <p>
+                        Segunda a sexta: 9h às 19h<br>
+                        Sábado: 9h às 12:30h
+                    </p>
+                </div>
             </div>
 
-            <!-- MAPA -->
-            <div class="col-md-7">
-                <?php if (!empty($empresa['morada'])): ?>
-                    <iframe src="https://maps.google.com/maps?q=<?php echo urlencode($empresa['morada']); ?>&output=embed"
-                            width="100%" height="350" style="border:0; border-radius:10px;"
-                            allowfullscreen="" loading="lazy"></iframe>
-                <?php endif; ?>
+            <div class="contact-card">
+                <div class="contact-card-icon">
+                    <i class="fas fa-envelope"></i>
+                </div>
+
+                <div>
+                    <h4>Fale connosco</h4>
+
+                    <?php if (!empty($email_principal)): ?>
+                        <p>
+                            <a href="mailto:<?= htmlspecialchars($email_principal); ?>">
+                                <?= htmlspecialchars($email_principal); ?>
+                            </a>
+                        </p>
+                    <?php else: ?>
+                        <p>Contacte-nos diretamente.</p>
+                    <?php endif; ?>
+
+                    <?php if (!empty($empresa['nome_contato'])): ?>
+                        <p><?= htmlspecialchars($empresa['nome_contato']); ?></p>
+                    <?php endif; ?>
+                </div>
             </div>
+
+            <div class="contact-card">
+                <div class="contact-card-icon">
+                    <i class="fab fa-facebook-f"></i>
+                </div>
+
+                <div>
+                    <h4>Redes sociais</h4>
+
+                    <?php if (!empty($website['link_facebook'])): ?>
+                        <p>
+                            <a href="<?= htmlspecialchars($website['link_facebook']); ?>" target="_blank">
+                                Siga-nos no Facebook
+                            </a>
+                        </p>
+                    <?php endif; ?>
+
+                    <?php if (!empty($website['link_instagram'])): ?>
+                        <p>
+                            <a href="<?= htmlspecialchars($website['link_instagram']); ?>" target="_blank">
+                                Instagram
+                            </a>
+                        </p>
+                    <?php endif; ?>
+
+                    <?php if (!empty($website['link_x'])): ?>
+                        <p>
+                            <a href="<?= htmlspecialchars($website['link_x']); ?>" target="_blank">
+                                X / Twitter
+                            </a>
+                        </p>
+                    <?php endif; ?>
+
+                    <?php if (empty($website['link_facebook']) && empty($website['link_instagram']) && empty($website['link_x'])): ?>
+                        <p>Siga-nos nas nossas redes sociais.</p>
+                    <?php endif; ?>
+                </div>
+            </div>
+
         </div>
+
     </div>
 </section>
 
 <!-- FOOTER -->
-<footer>
+<footer class="public-footer">
     <div class="container">
-        <p>&copy; <?php echo date('Y'); ?> <?php echo htmlspecialchars($empresa['nome_empresa']); ?>. Todos os direitos reservados.</p>
+        <div class="footer-line"></div>
+
+        <div class="footer-links">
+            <a href="#">Política de privacidade</a>
+            <span>|</span>
+            <a href="#">Resolução de conflitos</a>
+            <span>|</span>
+            <a href="#">Livro de reclamações</a>
+        </div>
+
+        <div class="footer-bottom">
+            <span>
+                © <?= date('Y'); ?> — <?= htmlspecialchars($nome_empresa); ?> — todos os direitos reservados
+            </span>
+
+            <span>
+                Made by <span class="made-by">IS4 Web Designer</span>
+            </span>
+        </div>
     </div>
 </footer>
 
+<!-- LIGHTBOX -->
+<?php if (!empty($portfolio)): ?>
+<div id="lightbox" class="lightbox">
+    <button class="lightbox-close" id="lightboxClose">
+        <i class="fas fa-xmark"></i>
+    </button>
+
+    <button class="lightbox-prev" id="lightboxPrev">
+        <i class="fas fa-arrow-left"></i>
+    </button>
+
+    <div class="lightbox-image-wrap">
+        <img id="lightboxImage" src="" alt="Imagem do portfólio">
+        <div class="lightbox-counter" id="lightboxCounter"></div>
+    </div>
+
+    <button class="lightbox-next" id="lightboxNext">
+        <i class="fas fa-arrow-right"></i>
+    </button>
+</div>
+<?php endif; ?>
+
+<a href="#inicio" class="back-to-top">
+    <i class="fas fa-chevron-up"></i>
+</a>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
 <script>
-    document.querySelectorAll('a[href^="#"]').forEach(function(anchor) {
-        anchor.addEventListener('click', function(e) {
+document.querySelectorAll('a[href^="#"]').forEach(function(anchor) {
+    anchor.addEventListener('click', function(e) {
+        const target = document.querySelector(this.getAttribute('href'));
+
+        if (target) {
             e.preventDefault();
-            var target = document.querySelector(this.getAttribute('href'));
-            if (target) {
-                target.scrollIntoView({ behavior: 'smooth' });
-            }
-        });
+            target.scrollIntoView({ behavior: 'smooth' });
+        }
     });
+});
 </script>
+
+<?php if (!empty($portfolio)): ?>
+<script>
+const portfolioImages = <?php echo json_encode(array_column($portfolio, 'imagem')); ?>;
+let currentImageIndex = 0;
+
+const lightbox = document.getElementById('lightbox');
+const lightboxImage = document.getElementById('lightboxImage');
+const lightboxCounter = document.getElementById('lightboxCounter');
+const lightboxClose = document.getElementById('lightboxClose');
+const lightboxPrev = document.getElementById('lightboxPrev');
+const lightboxNext = document.getElementById('lightboxNext');
+
+function openLightbox(index) {
+    currentImageIndex = index;
+    updateLightbox();
+    lightbox.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox() {
+    lightbox.classList.remove('active');
+    document.body.style.overflow = '';
+}
+
+function updateLightbox() {
+    lightboxImage.src = portfolioImages[currentImageIndex];
+    lightboxCounter.textContent = 'Item ' + (currentImageIndex + 1) + ' of ' + portfolioImages.length;
+}
+
+function nextImage() {
+    currentImageIndex = (currentImageIndex + 1) % portfolioImages.length;
+    updateLightbox();
+}
+
+function prevImage() {
+    currentImageIndex = (currentImageIndex - 1 + portfolioImages.length) % portfolioImages.length;
+    updateLightbox();
+}
+
+document.querySelectorAll('.portfolio-item').forEach(function(item) {
+    item.addEventListener('click', function() {
+        openLightbox(parseInt(this.dataset.index));
+    });
+});
+
+lightboxClose.addEventListener('click', closeLightbox);
+lightboxNext.addEventListener('click', nextImage);
+lightboxPrev.addEventListener('click', prevImage);
+
+lightbox.addEventListener('click', function(e) {
+    if (e.target === lightbox) {
+        closeLightbox();
+    }
+});
+
+document.addEventListener('keydown', function(e) {
+    if (!lightbox.classList.contains('active')) return;
+
+    if (e.key === 'Escape') closeLightbox();
+    if (e.key === 'ArrowRight') nextImage();
+    if (e.key === 'ArrowLeft') prevImage();
+});
+</script>
+<?php endif; ?>
+
 </body>
 </html>
