@@ -3,7 +3,11 @@ session_start();
 require_once '../config/database.php';
 require_once '../includes/functions.php';
 
-if (!eAdmin()) {
+// Define a variável uma vez
+$is_admin = eAdmin();
+
+// Verifica se é admin
+if (!$is_admin) {
     header("Location: ../login.php");
     exit;
 }
@@ -14,31 +18,20 @@ $sql = "SELECT e.id, e.nome_empresa, u.email
 $result = $conn->query($sql);
 
 include '../includes/header.php';
-include '../admin/includes/header_admin.php';
 include '../admin/includes/functions_admin.php';
+
+// Mostrar header conforme o tipo de utilizador
+if ($is_admin) {
+    include '../admin/header_admin.php';
+} else {
+    include '../empresa/header_cliente.php';
+}
 ?>
+
 
 <link rel="stylesheet" href="/projeto/css/admin_dashboard.css">
 
-<!-- TOPBAR -->
-<div class="white-background">
-    <div class="container-fluid">
-        <div class="header-container">
-            <div class="logo-container">
-                <img src="../imagens/Logotipo_freebox.png" alt="Logotipo" class="admin-logo">
-            </div>
 
-            <div class="title-container">
-                <h3>Dashboard</h3>
-            </div>
-
-            <div class="buttons-container">
-                <a href="editar_admin.php" class="btn btn-success">Editar Admin</a>
-                <a href="../logout.php" class="btn btn-danger">Logout</a>
-            </div>
-        </div>
-    </div>
-</div>
 
 <!-- CONTEÚDO PRINCIPAL -->
 <div class="container-fluid mt-4">
@@ -202,5 +195,12 @@ include '../admin/includes/functions_admin.php';
 <?php
 gerarScriptEmpresasAdmin();
 $conn->close();
-include '../includes/footer.php';
+
+if ($is_admin) {
+    include '../admin/footer_admin.php';
+} else {
+    include '../empresa/footer_cliente.php';
+}
+
+
 ?>

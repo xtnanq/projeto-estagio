@@ -43,11 +43,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $hero_botao_texto  = trim($_POST['hero_botao_texto'] ?? '');
     $hero_botao_link   = trim($_POST['hero_botao_link'] ?? '');
 
+
     // URL do site só o admin pode mudar
     if ($is_admin) {
         $url_site = trim($_POST['url_site'] ?? '');
         $url_site = preg_replace('/[^a-zA-Z0-9\-]/', '', $url_site);
         $url_site = strtolower($url_site);
+
+        if ($is_admin) {
+            $email_formulario = trim($_POST['email_formulario'] ?? '');
+        } else {
+            $email_formulario = $website['email_formulario'] ?? '';
+        }
 
         if (!empty($url_site)) {
             $check_sql  = "SELECT id FROM website_config WHERE url_site = ? AND empresa_id != ?";
@@ -87,6 +94,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
 
+
+
     if (!empty($_FILES['capa_empresa']['tmp_name'])) {
         $allowed   = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
         $file_type = mime_content_type($_FILES['capa_empresa']['tmp_name']);
@@ -102,23 +111,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     $sql = "INSERT INTO website_config 
-            (empresa_id, descricao_empresa, logotipo, capa_empresa, hero_titulo, hero_subtitulo, hero_botao_texto, hero_botao_link, link_facebook, link_instagram, link_x, url_site)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            ON DUPLICATE KEY UPDATE
-            descricao_empresa = VALUES(descricao_empresa),
-            logotipo          = VALUES(logotipo),
-            capa_empresa      = VALUES(capa_empresa),
-            hero_titulo       = VALUES(hero_titulo),
-            hero_subtitulo    = VALUES(hero_subtitulo),
-            hero_botao_texto  = VALUES(hero_botao_texto),
-            hero_botao_link   = VALUES(hero_botao_link),
-            link_facebook     = VALUES(link_facebook),
-            link_instagram    = VALUES(link_instagram),
-            link_x            = VALUES(link_x),
-            url_site          = VALUES(url_site)";
+        (empresa_id, descricao_empresa, logotipo, capa_empresa, hero_titulo, hero_subtitulo, hero_botao_texto, hero_botao_link, link_facebook, link_instagram, link_x, url_site, email_formulario)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ON DUPLICATE KEY UPDATE
+        descricao_empresa = VALUES(descricao_empresa),
+        logotipo          = VALUES(logotipo),
+        capa_empresa      = VALUES(capa_empresa),
+        hero_titulo       = VALUES(hero_titulo),
+        hero_subtitulo    = VALUES(hero_subtitulo),
+        hero_botao_texto  = VALUES(hero_botao_texto),
+        hero_botao_link   = VALUES(hero_botao_link),
+        link_facebook     = VALUES(link_facebook),
+        link_instagram    = VALUES(link_instagram),
+        link_x            = VALUES(link_x),
+        url_site          = VALUES(url_site),
+        email_formulario  = VALUES(email_formulario)";
 
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("isssssssssss", $empresa_id, $descricao_empresa, $logotipo, $capa_empresa, $hero_titulo, $hero_subtitulo, $hero_botao_texto, $hero_botao_link, $link_facebook, $link_instagram, $link_x, $url_site);
+    $stmt->bind_param("issssssssssss", $empresa_id, $descricao_empresa, $logotipo, $capa_empresa, $hero_titulo, $hero_subtitulo, $hero_botao_texto, $hero_botao_link, $link_facebook, $link_instagram, $link_x, $url_site, $email_formulario);
 
     if ($stmt->execute()) {
         $_SESSION['success_message'] = "Guardado com sucesso!";
@@ -131,7 +141,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 
 include '../includes/header.php';
-include '../admin/includes/header_admin.php';
+
+// Mostrar header conforme o tipo de utilizador
+if ($is_admin) {
+    include '../admin/header_admin.php';
+} else {
+    include __DIR__ . '/header_cliente.php';
+}
 ?>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -139,43 +155,54 @@ include '../admin/includes/header_admin.php';
 
 <style>
     .modal {
-        display: none; position: fixed; z-index: 1000;
-        left: 0; top: 0; width: 100%; height: 100%;
-        background-color: rgba(0,0,0,0.4);
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.4);
     }
+
     .modal-content {
-        background-color: #fefefe; margin: 15% auto; padding: 20px;
-        border: 1px solid #888; width: 80%; max-width: 500px; text-align: center;
+        background-color: #fefefe;
+        margin: 15% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+        max-width: 500px;
+        text-align: center;
     }
+
     .preview-img {
-        max-width: 200px; max-height: 100px; object-fit: contain;
-        margin-top: 8px; border: 1px solid #ddd; border-radius: 4px; padding: 4px;
+        max-width: 200px;
+        max-height: 100px;
+        object-fit: contain;
+        margin-top: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        padding: 4px;
         display: block;
     }
+
     .url-group {
-        display: flex; align-items: center; gap: 5px; margin-top: 8px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        margin-top: 8px;
     }
+
     .url-prefix {
-        background-color: #e9ecef; border: 1px solid #ced4da; border-radius: 4px;
-        padding: 6px 12px; white-space: nowrap; color: #495057;
+        background-color: #e9ecef;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        padding: 6px 12px;
+        white-space: nowrap;
+        color: #495057;
     }
 </style>
 
-<div class="white-background">
-    <div class="container-fluid">
-        <div class="header-container">
-            <div class="logo-container">
-                <img src="../imagens/Logotipo_freebox.png" style="height:75px;">
-            </div>
-            <div class="title-container">
-                <h4><?= htmlspecialchars($empresa['nome_empresa']); ?></h4>
-            </div>
-            <div class="buttons-container">
-                <a href="../logout.php" class="btn btn-danger">Logout</a>
-            </div>
-        </div>
-    </div>
-</div>
 
 <div class="separator"></div>
 
@@ -285,6 +312,20 @@ include '../admin/includes/header_admin.php';
                         <label class="mt-3"><i class="fas fa-align-left"></i> Descrição (Sobre Nós)</label>
                         <textarea name="descricao_empresa" class="form-control" rows="4"><?= htmlspecialchars($website['descricao_empresa'] ?? '') ?></textarea>
 
+                        <label class="mt-4">
+                            <i class="fas fa-envelope"></i> Email para receber formularios do seu site
+                        </label>
+
+                        <input type="email"
+                            name="email_formulario"
+                            class="form-control"
+                            placeholder="empresa@email.com"
+                            value="<?= htmlspecialchars($website['email_formulario'] ?? '') ?>">
+
+                        <small class="text-muted">
+                            O formulário do site vai enviar as mensagens para este email.
+                        </small>
+
                         <!-- REDES SOCIAIS -->
                         <label class="mt-4"><i class="fab fa-facebook"></i> Facebook</label>
                         <input type="url" name="link_facebook" class="form-control"
@@ -322,33 +363,39 @@ include '../admin/includes/header_admin.php';
 </div>
 
 <script>
-document.addEventListener("DOMContentLoaded", function() {
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get("show_message") === "1") {
-        const modal   = document.getElementById("messageModal");
-        const title   = document.getElementById("modalTitle");
-        const message = document.getElementById("modalMessage");
-        const okBtn   = document.getElementById("okButton");
+    document.addEventListener("DOMContentLoaded", function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get("show_message") === "1") {
+            const modal = document.getElementById("messageModal");
+            const title = document.getElementById("modalTitle");
+            const message = document.getElementById("modalMessage");
+            const okBtn = document.getElementById("okButton");
 
-        <?php if (isset($_SESSION['success_message'])): ?>
-            title.textContent   = "Sucesso";
-            message.textContent = "<?= htmlspecialchars($_SESSION['success_message'], ENT_QUOTES); ?>";
-            <?php unset($_SESSION['success_message']); ?>
-        <?php elseif (isset($_SESSION['error_message'])): ?>
-            title.textContent   = "Erro";
-            message.textContent = "<?= htmlspecialchars($_SESSION['error_message'], ENT_QUOTES); ?>";
-            <?php unset($_SESSION['error_message']); ?>
-        <?php endif; ?>
+            <?php if (isset($_SESSION['success_message'])): ?>
+                title.textContent = "Sucesso";
+                message.textContent = "<?= htmlspecialchars($_SESSION['success_message'], ENT_QUOTES); ?>";
+                <?php unset($_SESSION['success_message']); ?>
+            <?php elseif (isset($_SESSION['error_message'])): ?>
+                title.textContent = "Erro";
+                message.textContent = "<?= htmlspecialchars($_SESSION['error_message'], ENT_QUOTES); ?>";
+                <?php unset($_SESSION['error_message']); ?>
+            <?php endif; ?>
 
-        modal.style.display = "block";
+            modal.style.display = "block";
 
-        okBtn.onclick = function() {
-            modal.style.display = "none";
-            window.history.replaceState({}, document.title,
-                window.location.pathname + "?id=<?= $empresa_id ?>");
-        };
-    }
-});
+            okBtn.onclick = function() {
+                modal.style.display = "none";
+                window.history.replaceState({}, document.title,
+                    window.location.pathname + "?id=<?= $empresa_id ?>");
+            };
+        }
+    });
 </script>
 
-<?php include '../includes/footer.php'; ?>
+<?php
+if ($is_admin) {
+    include '../admin/footer_admin.php';
+} else {
+    include __DIR__ . '/footer_cliente.php';
+}
+?>

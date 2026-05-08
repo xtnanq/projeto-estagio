@@ -1,3 +1,82 @@
+
+.cliente-header {
+    width: 100%;
+    background: #ffffff;
+    padding: 20px 40px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.cliente-header-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.cliente-logo {
+    height: 70px;
+    object-fit: contain;
+}
+
+.cliente-header-title h3 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 700;
+    color: #111827;
+}
+
+.cliente-header-title span {
+    font-size: 14px;
+    color: #6b7280;
+}
+
+.cliente-header-right .btn {
+    border-radius: 10px;
+    padding: 10px 18px;
+    font-weight: 600;
+}
+
+.cliente-separator {
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(
+        to right,
+        #2563eb,
+        #1d4ed8
+    );
+}
+
+/* RESPONSIVO */
+
+@media (max-width: 768px) {
+
+    .cliente-header {
+        flex-direction: column;
+        gap: 20px;
+        text-align: center;
+        padding: 20px;
+    }
+
+    .cliente-header-left {
+        flex-direction: column;
+    }
+
+}
+/* ── Layout de página ─────────────────────────────────────────────────────── */
+body {
+    background-color: #f0f6ff;
+    min-height: 100vh;
+}
+
+.container-fluid {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
 /* ── Card ─────────────────────────────────────────────────────────────────── */
 .custom-card {
     border: none;
@@ -42,22 +121,13 @@
     color: #3b82f6;
 }
 
-/* ── Botão guardar ────────────────────────────────────────────────────────── */
-.custom-btn {
-    border-radius: 10px;
-    padding: 10px 20px;
-    font-weight: 500;
-}
-
-/* ── Modal overlay ────────────────────────────────────────────────────────── */
+/* ── Modal ────────────────────────────────────────────────────────────────── */
 #messageModal.modal {
     display: none;
     position: fixed;
     z-index: 9999;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
+    left: 0; top: 0;
+    width: 100%; height: 100%;
     background-color: rgba(0,0,0,0.4);
 }
 
@@ -70,15 +140,4 @@
     margin: 15% auto;
     text-align: center;
     box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-}
-
-#messageModal .modal-content h2 {
-    margin-bottom: 12px;
-    font-size: 1.3rem;
-    font-weight: 600;
-}
-
-#messageModal .modal-content p {
-    color: #555;
-    margin-bottom: 20px;
 }

@@ -1,0 +1,98 @@
+/* Configuração Principal do Footer */
+.public-footer {
+    background: linear-gradient(135deg, #0d1f3c 0%, #1a3a6b 50%, #1f5b9d 100%) !important;
+    color: rgba(255,255,255,0.55) !important;
+    margin-top: 60px !important;
+    padding: 0 !important;
+    overflow: hidden;
+    display: block !important;
+    width: 100%;
+}
+
+/* Área de Colunas */
+.footer-top {
+    padding: 60px 0 40px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.footer-cols {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 colunas iguais */
+    gap: 48px;
+    align-items: start;
+}
+
+.footer-col-title {
+    color: white !important;
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2.5px;
+    margin-bottom: 20px;
+}
+
+.footer-col ul {
+    list-style: none !important; /* Remove os pontos da lista */
+    padding: 0 !important;
+    margin: 0 !important;
+    display: flex;
+    flex-direction: column;
+    gap: 11px;
+}
+
+.footer-col ul li a {
+    color: rgba(255,255,255,0.45);
+    text-decoration: none;
+    transition: 0.2s;
+}
+
+.footer-col ul li a:hover {
+    color: white;
+}
+
+/* Nome Grande no Fundo */
+.footer-brand-name {
+    font-size: clamp(3rem, 10vw, 8rem);
+    font-weight: 900;
+    color: rgba(255,255,255,0.06);
+    text-transform: uppercase;
+    text-align: center;
+    line-height: 1;
+    pointer-events: none; /* Garante que não atrapalhe cliques */
+}
+
+/* Barra Inferior */
+.footer-bottom {
+    border-top: 1px solid rgba(255,255,255,0.06);
+    padding: 18px 0;
+}
+
+.footer-bottom-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.76rem;
+}
+
+/* Botão Voltar ao Topo */
+.back-to-top {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: #1f5b9d;
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%; /* Corrigido de A50% */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    transition: 0.3s;
+    z-index: 1000;
+}
+
+.back-to-top:hover { 
+    background: white; /* Corrigido de #white */
+    color: #0d1f3c; 
+}

@@ -66,30 +66,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 
 include '../includes/header.php';
-include '../admin/includes/header_admin.php';
+
+// Mostrar header conforme o tipo de utilizador
+if ($_SESSION['tipo_usuario'] == 'admin') {
+    include '../admin/header_admin.php';
+} else {
+    include __DIR__ . '/header_cliente.php';
+}
 ?>
 
 <link rel="stylesheet" href="/projeto/css/editar_servico.css">
 
-<div class="white-background">
-    <div class="container-fluid">
-        <div class="header-container">
-            <div class="logo-container">
-                <img src="../imagens/Logotipo_freebox.png" style="height:75px;">
-            </div>
 
-            <div class="title-container">
-                <h4><?= htmlspecialchars($servico['nome_empresa']); ?></h4>
-            </div>
-
-            <div class="buttons-container">
-                <a href="../logout.php" class="btn btn-danger">
-                    Logout
-                </a>
-            </div>
-        </div>
-    </div>
-</div>
 
 <div class="separator"></div>
 
@@ -140,4 +128,10 @@ include '../admin/includes/header_admin.php';
     </div>
 </div>
 
-<?php include '../includes/footer.php'; ?>
+<?php
+if ($_SESSION['tipo_usuario'] == 'admin') {
+    include '../admin/footer_admin.php';
+} else {
+    include __DIR__ . '/footer_cliente.php';
+}
+?>

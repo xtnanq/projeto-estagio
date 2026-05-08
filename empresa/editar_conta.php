@@ -109,7 +109,7 @@ include '../admin/includes/header_admin.php';
 
             <div class="buttons-container">
                 <a href="../logout.php" class="btn btn-danger">
-                    <i class="fas fa-power-off"></i> Logout
+                     Logout
                 </a>
             </div>
         </div>
