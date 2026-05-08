@@ -68,18 +68,29 @@ include 'header_publico.php';
 ?>
 
 <!-- HERO -->
+<?php
+$tem_titulo    = !empty($website['hero_titulo']);
+$tem_subtitulo = !empty($website['hero_subtitulo']);
+$tem_botao     = !empty($website['hero_botao_texto']) && !empty($website['hero_botao_link']);
+$tem_conteudo  = $tem_titulo || $tem_subtitulo || $tem_botao;
+?>
 <section id="inicio" class="hero <?= !empty($capa) ? 'has-image' : ''; ?>" style="<?= $hero_style; ?>">
-    <div class="hero-content">
-        <h1><?= htmlspecialchars($nome_empresa); ?></h1>
-        <p class="hero-subtitle">
-            <?php if (!empty($servicos)): ?>
-                <?= htmlspecialchars(implode(' · ', array_slice(array_column($servicos, 'nome_servico'), 0, 4))); ?>
-            <?php else: ?>
-                Soluções profissionais para a sua empresa
+    <?php if ($tem_conteudo): ?>
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <?php if ($tem_titulo): ?>
+                <h1><?= htmlspecialchars($website['hero_titulo']); ?></h1>
             <?php endif; ?>
-        </p>
-        <a href="/projeto/freebox/contato.php?url=<?= htmlspecialchars($website['url_site'] ?? ''); ?>" class="hero-button">Contacte-nos</a>
-    </div>
+            <?php if ($tem_subtitulo): ?>
+                <p class="hero-subtitle"><?= htmlspecialchars($website['hero_subtitulo']); ?></p>
+            <?php endif; ?>
+            <?php if ($tem_botao): ?>
+                <a href="<?= htmlspecialchars($website['hero_botao_link']); ?>" class="hero-button">
+                    <?= htmlspecialchars($website['hero_botao_texto']); ?>
+                </a>
+            <?php endif; ?>
+        </div>
+    <?php endif; ?>
 </section>
 
 <!-- SOBRE NÓS -->

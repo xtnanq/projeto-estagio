@@ -40,8 +40,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $link_instagram    = trim($_POST['link_instagram'] ?? '');
     $link_x            = trim($_POST['link_x'] ?? '');
     $url_site          = trim($_POST['url_site'] ?? '');
+    $hero_titulo       = trim($_POST['hero_titulo'] ?? '');
+    $hero_subtitulo    = trim($_POST['hero_subtitulo'] ?? '');
+    $hero_botao_texto  = trim($_POST['hero_botao_texto'] ?? '');
+    $hero_botao_link   = trim($_POST['hero_botao_link'] ?? '');
 
-    // Validar url_site — só letras, números e hífens
+    // Validar url_site
     $url_site = preg_replace('/[^a-zA-Z0-9\-]/', '', $url_site);
     $url_site = strtolower($url_site);
 
@@ -98,19 +102,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     $sql = "INSERT INTO website_config 
-            (empresa_id, descricao_empresa, logotipo, capa_empresa, link_facebook, link_instagram, link_x, url_site)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            (empresa_id, descricao_empresa, logotipo, capa_empresa, hero_titulo, hero_subtitulo, hero_botao_texto, hero_botao_link, link_facebook, link_instagram, link_x, url_site)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON DUPLICATE KEY UPDATE
             descricao_empresa = VALUES(descricao_empresa),
             logotipo          = VALUES(logotipo),
             capa_empresa      = VALUES(capa_empresa),
+            hero_titulo       = VALUES(hero_titulo),
+            hero_subtitulo    = VALUES(hero_subtitulo),
+            hero_botao_texto  = VALUES(hero_botao_texto),
+            hero_botao_link   = VALUES(hero_botao_link),
             link_facebook     = VALUES(link_facebook),
             link_instagram    = VALUES(link_instagram),
             link_x            = VALUES(link_x),
             url_site          = VALUES(url_site)";
 
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("isssssss", $empresa_id, $descricao_empresa, $logotipo, $capa_empresa, $link_facebook, $link_instagram, $link_x, $url_site);
+    $stmt->bind_param("isssssssssss", $empresa_id, $descricao_empresa, $logotipo, $capa_empresa, $hero_titulo, $hero_subtitulo, $hero_botao_texto, $hero_botao_link, $link_facebook, $link_instagram, $link_x, $url_site);
 
     if ($stmt->execute()) {
         $_SESSION['success_message'] = "Guardado com sucesso!";
@@ -237,8 +245,38 @@ include '../admin/includes/header_admin.php';
                                  alt="Capa atual" class="preview-img mt-2">
                         <?php endif; ?>
 
+                        <!-- HERO TEXTO -->
+                        <hr class="mt-4">
+                        <h6 class="mt-3 mb-3"><i class="fas fa-image"></i> Texto em cima da imagem (opcional)</h6>
+
+                        <label><i class="fas fa-heading"></i> Título</label>
+                        <input type="text" name="hero_titulo" class="form-control"
+                               placeholder="Ex: Bem-vindo à nossa empresa"
+                               value="<?= htmlspecialchars($website['hero_titulo'] ?? '') ?>"
+                               maxlength="255">
+
+                        <label class="mt-3"><i class="fas fa-font"></i> Subtítulo</label>
+                        <input type="text" name="hero_subtitulo" class="form-control"
+                               placeholder="Ex: Qualidade e confiança desde 2010"
+                               value="<?= htmlspecialchars($website['hero_subtitulo'] ?? '') ?>"
+                               maxlength="255">
+
+                        <label class="mt-3"><i class="fas fa-mouse-pointer"></i> Texto do botão</label>
+                        <input type="text" name="hero_botao_texto" class="form-control"
+                               placeholder="Ex: Contacte-nos"
+                               value="<?= htmlspecialchars($website['hero_botao_texto'] ?? '') ?>"
+                               maxlength="100">
+
+                        <label class="mt-3"><i class="fas fa-link"></i> Link do botão</label>
+                        <input type="text" name="hero_botao_link" class="form-control"
+                               placeholder="Ex: https://... ou #contactos"
+                               value="<?= htmlspecialchars($website['hero_botao_link'] ?? '') ?>"
+                               maxlength="255">
+                        <small class="text-muted">Se deixar tudo em branco, a imagem fica limpa sem texto.</small>
+                        <hr>
+
                         <!-- DESCRIÇÃO -->
-                        <label class="mt-4"><i class="fas fa-align-left"></i> Descrição (Sobre Nós)</label>
+                        <label class="mt-3"><i class="fas fa-align-left"></i> Descrição (Sobre Nós)</label>
                         <textarea name="descricao_empresa" class="form-control" rows="4"><?= htmlspecialchars($website['descricao_empresa'] ?? '') ?></textarea>
 
                         <!-- REDES SOCIAIS -->
@@ -258,7 +296,7 @@ include '../admin/includes/header_admin.php';
                                value="<?= htmlspecialchars($website['link_x'] ?? '') ?>">
 
                         <button type="submit" class="btn btn-success mt-4">
-                             Guardar
+                            Guardar
                         </button>
 
                     </form>

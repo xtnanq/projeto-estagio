@@ -102,7 +102,7 @@ body {
    HERO
 ══════════════════════════════════════════ */
 .hero {
-    min-height: 760px;
+    min-height: 500px;
     padding-top: 92px;
     position: relative;
     display: flex;
@@ -120,26 +120,23 @@ body {
 }
 
 .hero::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: rgba(255,255,255,0.48);
-    z-index: 1;
+   display: none;
 }
 
 .hero::after {
-    content: "";
+    display: none;
+}
+
+.hero-overlay {
     position: absolute;
     inset: 0;
-    background:
-        linear-gradient(to bottom, rgba(255,255,255,0.15), rgba(255,255,255,0.45)),
-        radial-gradient(circle at center, rgba(255,255,255,0.2), rgba(0,0,0,0.08));
-    z-index: 2;
+    background: rgba(255, 255, 255, 0.4);
+    z-index: 1;
 }
 
 .hero-content {
     position: relative;
-    z-index: 3;
+    z-index: 2;
     max-width: 980px;
     padding: 40px 20px;
 }
