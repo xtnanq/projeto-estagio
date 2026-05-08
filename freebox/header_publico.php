@@ -147,12 +147,12 @@
 
         <!-- LINKS -->
         <nav class="nav-links">
-            <a href="#sobre">Sobre Nós</a>
+            <a href="/projeto/freebox/?url=<?= htmlspecialchars($website['url_site'] ?? ''); ?>#sobre">Sobre Nós</a>
             <?php if (!empty($servicos)): ?>
-                <a href="#servicos">Serviços</a>
+                <a href="/projeto/freebox/?url=<?= htmlspecialchars($website['url_site'] ?? ''); ?>#servicos">Serviços</a>
             <?php endif; ?>
             <?php if (!empty($portfolio)): ?>
-                <a href="#portfolio">Portfólio</a>
+                <a href="/projeto/freebox/?url=<?= htmlspecialchars($website['url_site'] ?? ''); ?>#portfolio">Portfólio</a>
             <?php endif; ?>
             <a href="/projeto/freebox/contato.php?url=<?= htmlspecialchars($website['url_site'] ?? ''); ?>">Contacto</a>
         </nav>

@@ -7,12 +7,12 @@
                 <div class="footer-col">
                     <h6 class="footer-col-title">Páginas</h6>
                     <ul>
-                        <li><a href="#sobre">Sobre Nós</a></li>
+                        <li><a href="/projeto/freebox/?url=<?= htmlspecialchars($website['url_site'] ?? ''); ?>#sobre">Sobre Nós</a></li>
                         <?php if (!empty($servicos)): ?>
-                            <li><a href="#servicos">Serviços</a></li>
+                            <li><a href="/projeto/freebox/?url=<?= htmlspecialchars($website['url_site'] ?? ''); ?>#servicos">Serviços</a></li>
                         <?php endif; ?>
                         <?php if (!empty($portfolio)): ?>
-                            <li><a href="#portfolio">Portfólio</a></li>
+                            <li><a href="/projeto/freebox/?url=<?= htmlspecialchars($website['url_site'] ?? ''); ?>#portfolio">Portfólio</a></li>
                         <?php endif; ?>
                         <li><a href="/projeto/freebox/contato.php?url=<?= htmlspecialchars($website['url_site'] ?? ''); ?>">Contacto</a></li>
                         <li><a href="https://www.livroreclamacoes.pt/Inicio/" target="_blank">Reclamações</a></li>
@@ -39,7 +39,7 @@
                 <div class="footer-col">
                     <h6 class="footer-col-title">Fale Connosco</h6>
                     <a href="/projeto/freebox/formulario.php?url=<?= htmlspecialchars($website['url_site'] ?? ''); ?>" class="footer-btn-enviar" style="display:inline-block; text-decoration:none;">
-                        Enviar Mensagem 
+                        Enviar Mensagem <i class="fas fa-paper-plane"></i>
                     </a>
                 </div>
 
