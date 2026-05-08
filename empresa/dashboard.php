@@ -120,7 +120,7 @@ include '../admin/includes/header_admin.php';
                         </div>
 
                         <div class="col-md-6 col-lg-4">
-                            <a href="/projeto/sites/index.php?id=<?= $empresa_id; ?>" target="_blank" class="dashboard-card">
+                            <a href="/projeto/freebox/index.php?id=<?= $empresa_id; ?>" target="_blank" class="dashboard-card">
                                 <div class="icon-box icon-ver-website">
                                     <i class="fas fa-eye"></i>
                                 </div>

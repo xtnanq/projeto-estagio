@@ -52,22 +52,22 @@ include '../admin/includes/functions_admin.php';
 
             <div class="search-box">
                 <svg xmlns="http://www.w3.org/2000/svg"
-                     width="16"
-                     height="16"
-                     viewBox="0 0 24 24"
-                     fill="none"
-                     stroke="currentColor"
-                     stroke-width="2.2"
-                     stroke-linecap="round"
-                     stroke-linejoin="round">
-                    <circle cx="11" cy="11" r="8"/>
-                    <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8" />
+                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
                 </svg>
 
                 <input type="text"
-                       id="searchInput"
-                       placeholder="Pesquisar empresa..."
-                       onkeyup="filtrarEmpresas()">
+                    id="searchInput"
+                    placeholder="Pesquisar empresa..."
+                    onkeyup="filtrarEmpresas()">
             </div>
         </div>
 
@@ -90,23 +90,40 @@ include '../admin/includes/functions_admin.php';
                             <td>
                                 <div class="action-buttons">
                                     <a href="editar_empresa.php?id=<?php echo $row['id']; ?>"
-                                       class="btn btn-sm btn-success">
+                                        class="btn btn-sm btn-success">
                                         Editar
                                     </a>
 
                                     <a href="/projeto/empresa/empresa_informacoes.php?id=<?php echo $row['id']; ?>"
-                                       class="btn btn-sm btn-freebox-blue">
+                                        class="btn btn-sm btn-freebox-blue">
                                         Configurar
                                     </a>
 
-                                    <a href="/projeto/sites/index.php?id=<?php echo $row['id']; ?>"
-                                       class="btn btn-sm btn-info"
-                                       target="_blank">
-                                        Ver Website
-                                    </a>
+                                    <?php
+                                    $url_stmt = $conn->prepare("SELECT url_site FROM website_config WHERE empresa_id = ?");
+                                    $url_stmt->bind_param("i", $row['id']);
+                                    $url_stmt->execute();
+                                    $url_row = $url_stmt->get_result()->fetch_assoc();
+                                    $url_stmt->close();
+                                    $url_site = $url_row['url_site'] ?? '';
+                                    ?>
+
+                                    <?php if (!empty($url_site)): ?>
+                                        <a href="/projeto/freebox/<?php echo htmlspecialchars($url_site); ?>"
+                                            class="btn btn-sm btn-info"
+                                            target="_blank">
+                                            Ver Website
+                                        </a>
+                                    <?php else: ?>
+                                        <a class="btn btn-sm btn-secondary"
+                                            style="cursor: default; opacity: 0.6;"
+                                            title="Cliente ainda não definiu o endereço do site">
+                                            Sem Website
+                                        </a>
+                                    <?php endif; ?>
 
                                     <button class="btn btn-sm btn-danger"
-                                            onclick="confirmarExclusao(<?php echo (int)$row['id']; ?>, '<?php echo addslashes(htmlspecialchars($row['nome_empresa'])); ?>')">
+                                        onclick="confirmarExclusao(<?php echo (int)$row['id']; ?>, '<?php echo addslashes(htmlspecialchars($row['nome_empresa'])); ?>')">
                                         Eliminar
                                     </button>
                                 </div>
@@ -133,9 +150,9 @@ include '../admin/includes/functions_admin.php';
         <p>Digite <strong>CONFIRMAR</strong> para prosseguir:</p>
 
         <input type="text"
-               id="confirmText"
-               class="form-control mb-3"
-               placeholder="CONFIRMAR">
+            id="confirmText"
+            class="form-control mb-3"
+            placeholder="CONFIRMAR">
 
         <div class="modal-actions">
             <button id="btnCancel" class="btn btn-secondary">
@@ -161,25 +178,25 @@ include '../admin/includes/functions_admin.php';
 </div>
 
 <script>
-function filtrarEmpresas() {
-    const input = document.getElementById('searchInput').value.toLowerCase();
-    const linhas = document.querySelectorAll('#tabelaEmpresas tbody tr');
-    let visiveis = 0;
+    function filtrarEmpresas() {
+        const input = document.getElementById('searchInput').value.toLowerCase();
+        const linhas = document.querySelectorAll('#tabelaEmpresas tbody tr');
+        let visiveis = 0;
 
-    linhas.forEach(function(linha) {
-        const nome = linha.cells[0].textContent.toLowerCase();
-        const email = linha.cells[1].textContent.toLowerCase();
+        linhas.forEach(function(linha) {
+            const nome = linha.cells[0].textContent.toLowerCase();
+            const email = linha.cells[1].textContent.toLowerCase();
 
-        if (nome.includes(input) || email.includes(input)) {
-            linha.style.display = '';
-            visiveis++;
-        } else {
-            linha.style.display = 'none';
-        }
-    });
+            if (nome.includes(input) || email.includes(input)) {
+                linha.style.display = '';
+                visiveis++;
+            } else {
+                linha.style.display = 'none';
+            }
+        });
 
-    document.getElementById('semResultados').style.display = visiveis === 0 ? 'block' : 'none';
-}
+        document.getElementById('semResultados').style.display = visiveis === 0 ? 'block' : 'none';
+    }
 </script>
 
 <?php

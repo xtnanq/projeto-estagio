@@ -84,7 +84,7 @@ include '../admin/includes/header_admin.php';
 
             <div class="buttons-container">
                 <a href="../logout.php" class="btn btn-danger">
-                Logout
+                    Logout
                 </a>
             </div>
         </div>
@@ -97,23 +97,26 @@ include '../admin/includes/header_admin.php';
     <div class="row justify-content-center">
         <div class="col-md-8">
 
+            <div class="editar-servico-header">
+                <h5>Editar Serviço</h5>
+            </div>
+
             <div class="editar-servico-card">
                 <form method="POST" action="editar_servico.php?id=<?php echo $servico_id; ?>">
 
-                    <h5>
-                        Editar Serviço
-                    </h5>
+
+
 
                     <div class="form-group mt-4">
                         <label for="nome_servico">Nome do Serviço</label>
                         <input type="text" class="form-control" id="nome_servico" name="nome_servico"
-                               value="<?php echo htmlspecialchars($servico['nome_servico']); ?>" required>
+                            value="<?php echo htmlspecialchars($servico['nome_servico']); ?>" required>
                     </div>
 
                     <div class="form-group mt-4">
                         <label for="titulo_servico">Título do Serviço</label>
                         <input type="text" class="form-control" id="titulo_servico" name="titulo_servico"
-                               value="<?php echo htmlspecialchars($servico['titulo_servico']); ?>" required>
+                            value="<?php echo htmlspecialchars($servico['titulo_servico']); ?>" required>
                     </div>
 
                     <div class="form-group mt-4">

@@ -36,3 +36,20 @@
     justify-content: flex-end;
     gap: 10px;
 }
+.editar-servico-header {
+    background-color: #0066cc;
+    color: white;
+    padding: 15px 20px;
+    border-radius: 10px 10px 0 0;
+    margin-bottom: 0;
+}
+
+.editar-servico-header h5 {
+    margin: 0;
+    font-weight: bold;
+    color: white;
+}
+
+.editar-servico-card {
+    border-radius: 0 0 10px 10px;
+}

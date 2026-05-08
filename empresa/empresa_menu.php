@@ -2,6 +2,13 @@
 // empresa_menu.php — Menu lateral reutilizável
 // Inclui assim em cada página: include 'empresa_menu.php';
 // A variável $empresa_id tem de estar definida antes do include
+
+if (!isset($empresa_id) && isset($_GET['id'])) {
+    $empresa_id = intval($_GET['id']);
+}
+if (!isset($empresa_id)) {
+    $empresa_id = null;
+}
 ?>
 
 <link rel="stylesheet" href="/projeto/css/empresa_menu.css">
@@ -29,7 +36,7 @@
         <?php else: ?>
             <li class="nav-item">
                 <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'dashboard.php' ? 'active' : ''; ?>"
-                   href="dashboard.php">
+                    href="dashboard.php">
                     <span class="nav-icon"><i class="fas fa-house"></i></span>
                     Dashboard
                     <i class="fas fa-chevron-right nav-arrow"></i>
@@ -43,7 +50,7 @@
 
         <li class="nav-item">
             <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'empresa_informacoes.php' ? 'active' : ''; ?>"
-               href="empresa_informacoes.php?id=<?php echo $empresa_id; ?>">
+                href="empresa_informacoes.php?id=<?php echo $empresa_id; ?>">
                 <span class="nav-icon"><i class="fas fa-circle-info"></i></span>
                 Informações
                 <i class="fas fa-chevron-right nav-arrow"></i>
@@ -52,7 +59,7 @@
 
         <li class="nav-item">
             <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'empresa_servicos.php' ? 'active' : ''; ?>"
-               href="empresa_servicos.php?id=<?php echo $empresa_id; ?>">
+                href="empresa_servicos.php?id=<?php echo $empresa_id; ?>">
                 <span class="nav-icon"><i class="fas fa-handshake"></i></span>
                 Serviços
                 <i class="fas fa-chevron-right nav-arrow"></i>
@@ -61,7 +68,7 @@
 
         <li class="nav-item">
             <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'empresa_portfolio.php' ? 'active' : ''; ?>"
-               href="empresa_portfolio.php?id=<?php echo $empresa_id; ?>">
+                href="empresa_portfolio.php?id=<?php echo $empresa_id; ?>">
                 <span class="nav-icon"><i class="fas fa-image"></i></span>
                 Portfólio
                 <i class="fas fa-chevron-right nav-arrow"></i>
@@ -70,7 +77,7 @@
 
         <li class="nav-item">
             <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'empresa_website.php' ? 'active' : ''; ?>"
-               href="empresa_website.php?id=<?php echo $empresa_id; ?>">
+                href="empresa_website.php?id=<?php echo $empresa_id; ?>">
                 <span class="nav-icon"><i class="fas fa-globe"></i></span>
                 Website
                 <i class="fas fa-chevron-right nav-arrow"></i>
@@ -82,13 +89,37 @@
         </li>
 
         <li class="nav-item">
-            <a class="nav-link"
-               href="/projeto/sites/index.php?id=<?php echo $empresa_id; ?>"
-               target="_blank">
-                <span class="nav-icon"><i class="fas fa-eye"></i></span>
-                Ver Website
-                <i class="fas fa-up-right-from-square nav-arrow"></i>
-            </a>
+            <?php
+            // Buscar url_site da BD
+            if ($empresa_id) {
+                global $conn;
+                $url_stmt = $conn->prepare("SELECT url_site FROM website_config WHERE empresa_id = ?");
+                $url_stmt->bind_param("i", $empresa_id);
+                $url_stmt->execute();
+                $url_result = $url_stmt->get_result()->fetch_assoc();
+                $url_stmt->close();
+                $url_site = $url_result['url_site'] ?? '';
+            } else {
+                $url_site = '';
+            }
+
+            if (!empty($url_site)):
+            ?>
+                <a class="nav-link"
+                    href="/projeto/freebox/<?php echo htmlspecialchars($url_site); ?>"
+                    target="_blank">
+                    <span class="nav-icon"><i class="fas fa-eye"></i></span>
+                    Ver Website
+                    <i class="fas fa-up-right-from-square nav-arrow"></i>
+                </a>
+            <?php else: ?>
+                <a class="nav-link text-muted" style="cursor: default;"
+                    title="Defina o endereço do site na secção Website">
+                    <span class="nav-icon"><i class="fas fa-eye-slash"></i></span>
+                    Ver Website
+                    <small class="d-block" style="font-size:0.75rem;">Defina o endereço primeiro</small>
+                </a>
+            <?php endif; ?>
         </li>
 
     </ul>

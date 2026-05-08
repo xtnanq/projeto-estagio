@@ -128,7 +128,7 @@ include '../admin/includes/header_admin.php';
 
             <div class="buttons-container">
                 <a href="../logout.php" class="btn btn-danger">
-                    <i class="fas fa-power-off"></i> Logout
+                    Logout
                 </a>
             </div>
         </div>
@@ -141,18 +141,20 @@ include '../admin/includes/header_admin.php';
     <div class="row justify-content-center">
         <div class="col-md-8">
 
+            <div class="editar-portfolio-header">
+                <h5><i class="fas fa-edit"></i> Editar Imagem do Portfólio</h5>
+            </div>
+
             <div class="editar-portfolio-card">
                 <form method="POST" action="editar_portfolio.php?id=<?php echo $portfolio_id; ?>" enctype="multipart/form-data">
 
-                    <h5>
-                        <i class="fas fa-edit"></i> Editar Imagem do Portfólio
-                    </h5>
+
 
                     <div class="form-group mt-4">
                         <label>Imagem Atual</label><br>
                         <img src="<?php echo htmlspecialchars($portfolio['imagem']); ?>"
-                             alt="Imagem atual"
-                             class="portfolio-current-img">
+                            alt="Imagem atual"
+                            class="portfolio-current-img">
                     </div>
 
                     <div class="form-group mt-4">
@@ -173,7 +175,7 @@ include '../admin/includes/header_admin.php';
                             Cancelar
                         </a>
                         <button type="submit" class="btn btn-success">
-                            <i class="fas fa-save"></i> Guardar
+                             Guardar
                         </button>
                     </div>
 
