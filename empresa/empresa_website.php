@@ -10,7 +10,6 @@ if (isset($_GET['id'])) {
     exit();
 }
 
-// Empresa
 $sql = "SELECT * FROM empresas WHERE id = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $empresa_id);
@@ -24,7 +23,8 @@ if (!$empresa) {
     exit();
 }
 
-// Website config
+$is_admin = isset($_SESSION['tipo_usuario']) && $_SESSION['tipo_usuario'] === 'admin';
+
 $website_sql = "SELECT * FROM website_config WHERE empresa_id = ?";
 $website_stmt = $conn->prepare($website_sql);
 $website_stmt->bind_param("i", $empresa_id);
@@ -32,37 +32,39 @@ $website_stmt->execute();
 $website = $website_stmt->get_result()->fetch_assoc();
 $website_stmt->close();
 
-/* --------- GUARDAR --------- */
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $descricao_empresa = trim($_POST['descricao_empresa'] ?? '');
     $link_facebook     = trim($_POST['link_facebook'] ?? '');
     $link_instagram    = trim($_POST['link_instagram'] ?? '');
     $link_x            = trim($_POST['link_x'] ?? '');
-    $url_site          = trim($_POST['url_site'] ?? '');
     $hero_titulo       = trim($_POST['hero_titulo'] ?? '');
     $hero_subtitulo    = trim($_POST['hero_subtitulo'] ?? '');
     $hero_botao_texto  = trim($_POST['hero_botao_texto'] ?? '');
     $hero_botao_link   = trim($_POST['hero_botao_link'] ?? '');
 
-    // Validar url_site
-    $url_site = preg_replace('/[^a-zA-Z0-9\-]/', '', $url_site);
-    $url_site = strtolower($url_site);
+    // URL do site só o admin pode mudar
+    if ($is_admin) {
+        $url_site = trim($_POST['url_site'] ?? '');
+        $url_site = preg_replace('/[^a-zA-Z0-9\-]/', '', $url_site);
+        $url_site = strtolower($url_site);
 
-    // Verificar se o url_site já está em uso por outra empresa
-    if (!empty($url_site)) {
-        $check_sql = "SELECT id FROM website_config WHERE url_site = ? AND empresa_id != ?";
-        $check_stmt = $conn->prepare($check_sql);
-        $check_stmt->bind_param("si", $url_site, $empresa_id);
-        $check_stmt->execute();
-        $check_result = $check_stmt->get_result();
-        $check_stmt->close();
+        if (!empty($url_site)) {
+            $check_sql  = "SELECT id FROM website_config WHERE url_site = ? AND empresa_id != ?";
+            $check_stmt = $conn->prepare($check_sql);
+            $check_stmt->bind_param("si", $url_site, $empresa_id);
+            $check_stmt->execute();
+            $check_result = $check_stmt->get_result();
+            $check_stmt->close();
 
-        if ($check_result->num_rows > 0) {
-            $_SESSION['error_message'] = "Este endereço já está em uso por outra empresa. Escolha outro.";
-            header("Location: empresa_website.php?id=$empresa_id&show_message=1");
-            exit();
+            if ($check_result->num_rows > 0) {
+                $_SESSION['error_message'] = "Este endereço já está em uso por outra empresa. Escolha outro.";
+                header("Location: empresa_website.php?id=$empresa_id&show_message=1");
+                exit();
+            }
         }
+    } else {
+        $url_site = $website['url_site'] ?? '';
     }
 
     $logotipo     = $website['logotipo'] ?? '';
@@ -71,7 +73,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $upload_dir = '../imagens/' . $empresa_id . '/';
     if (!is_dir($upload_dir)) mkdir($upload_dir, 0777, true);
 
-    // LOGOTIPO
     if (!empty($_FILES['logotipo']['tmp_name'])) {
         $allowed   = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
         $file_type = mime_content_type($_FILES['logotipo']['tmp_name']);
@@ -86,7 +87,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
 
-    // CAPA
     if (!empty($_FILES['capa_empresa']['tmp_name'])) {
         $allowed   = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
         $file_type = mime_content_type($_FILES['capa_empresa']['tmp_name']);
@@ -153,18 +153,11 @@ include '../admin/includes/header_admin.php';
         display: block;
     }
     .url-group {
-        display: flex;
-        align-items: center;
-        gap: 5px;
-        margin-top: 8px;
+        display: flex; align-items: center; gap: 5px; margin-top: 8px;
     }
     .url-prefix {
-        background-color: #e9ecef;
-        border: 1px solid #ced4da;
-        border-radius: 4px;
-        padding: 6px 12px;
-        white-space: nowrap;
-        color: #495057;
+        background-color: #e9ecef; border: 1px solid #ced4da; border-radius: 4px;
+        padding: 6px 12px; white-space: nowrap; color: #495057;
     }
 </style>
 
@@ -190,8 +183,12 @@ include '../admin/includes/header_admin.php';
     <div class="row">
 
         <!-- MENU -->
-        <div class="col-md-3">
-            <?php include __DIR__ . '/empresa_menu.php'; ?>
+        <div class="col-md-3 d-flex justify-content-start">
+            <?php if ($is_admin): ?>
+                <?php include __DIR__ . '/empresa_menu.php'; ?>
+            <?php else: ?>
+                <?php include __DIR__ . '/empresa_menu_cliente.php'; ?>
+            <?php endif; ?>
         </div>
 
         <!-- CONTEÚDO -->
@@ -205,21 +202,30 @@ include '../admin/includes/header_admin.php';
 
                     <form method="POST" enctype="multipart/form-data">
 
-                        <!-- URL DO SITE -->
+                        <!-- URL DO SITE — só admin pode mudar -->
                         <label class="mt-3"><i class="fas fa-link"></i> Endereço do seu site</label>
-                        <div class="url-group">
-                            <span class="url-prefix">http://freebox/</span>
-                            <input type="text" name="url_site" class="form-control"
-                                   placeholder="nome-do-seu-site"
-                                   value="<?= htmlspecialchars($website['url_site'] ?? '') ?>"
-                                   maxlength="100">
-                        </div>
-                        <small class="text-muted">Apenas letras, números e hífens. Ex: <?= htmlspecialchars(strtolower(preg_replace('/[^a-zA-Z0-9\-]/', '-', $empresa['nome_empresa']))); ?></small>
+                        <?php if ($is_admin): ?>
+                            <div class="url-group">
+                                <span class="url-prefix">http://freebox/</span>
+                                <input type="text" name="url_site" class="form-control"
+                                    placeholder="nome-do-seu-site"
+                                    value="<?= htmlspecialchars($website['url_site'] ?? '') ?>"
+                                    maxlength="100">
+                            </div>
+                            <small class="text-muted">Apenas letras, números e hífens. Ex: <?= htmlspecialchars(strtolower(preg_replace('/[^a-zA-Z0-9\-]/', '-', $empresa['nome_empresa']))); ?></small>
+                        <?php else: ?>
+                            <div class="url-group">
+                                <span class="url-prefix">http://freebox/</span>
+                                <input type="text" class="form-control"
+                                    value="<?= htmlspecialchars($website['url_site'] ?? '') ?>" disabled>
+                            </div>
+                            <small class="text-muted">Apenas o administrador pode alterar o endereço do site.</small>
+                        <?php endif; ?>
 
                         <?php if (!empty($website['url_site'])): ?>
                             <div class="mt-2">
                                 <a href="http://localhost/projeto/freebox/<?= htmlspecialchars($website['url_site']); ?>"
-                                   target="_blank" class="btn btn-sm btn-outline-primary">
+                                    target="_blank" class="btn btn-sm btn-outline-primary">
                                     <i class="fas fa-external-link-alt"></i> Ver site
                                 </a>
                             </div>
@@ -228,21 +234,21 @@ include '../admin/includes/header_admin.php';
                         <!-- LOGOTIPO -->
                         <label class="mt-4"><i class="fas fa-image"></i> Logotipo</label>
                         <input type="file" name="logotipo" class="form-control"
-                               accept="image/jpeg,image/png,image/gif,image/webp">
+                            accept="image/jpeg,image/png,image/gif,image/webp">
                         <small class="text-muted">JPG, PNG, GIF ou WEBP. Máx. 2MB.</small>
                         <?php if (!empty($website['logotipo'])): ?>
                             <img src="<?= htmlspecialchars($website['logotipo']); ?>"
-                                 alt="Logotipo atual" class="preview-img mt-2">
+                                alt="Logotipo atual" class="preview-img mt-2">
                         <?php endif; ?>
 
                         <!-- CAPA -->
                         <label class="mt-4"><i class="fas fa-panorama"></i> Capa</label>
                         <input type="file" name="capa_empresa" class="form-control"
-                               accept="image/jpeg,image/png,image/gif,image/webp">
+                            accept="image/jpeg,image/png,image/gif,image/webp">
                         <small class="text-muted">JPG, PNG, GIF ou WEBP. Máx. 5MB.</small>
                         <?php if (!empty($website['capa_empresa'])): ?>
                             <img src="<?= htmlspecialchars($website['capa_empresa']); ?>"
-                                 alt="Capa atual" class="preview-img mt-2">
+                                alt="Capa atual" class="preview-img mt-2">
                         <?php endif; ?>
 
                         <!-- HERO TEXTO -->
@@ -251,27 +257,27 @@ include '../admin/includes/header_admin.php';
 
                         <label><i class="fas fa-heading"></i> Título</label>
                         <input type="text" name="hero_titulo" class="form-control"
-                               placeholder="Ex: Bem-vindo à nossa empresa"
-                               value="<?= htmlspecialchars($website['hero_titulo'] ?? '') ?>"
-                               maxlength="255">
+                            placeholder="Ex: Bem-vindo à nossa empresa"
+                            value="<?= htmlspecialchars($website['hero_titulo'] ?? '') ?>"
+                            maxlength="255">
 
                         <label class="mt-3"><i class="fas fa-font"></i> Subtítulo</label>
                         <input type="text" name="hero_subtitulo" class="form-control"
-                               placeholder="Ex: Qualidade e confiança desde 2010"
-                               value="<?= htmlspecialchars($website['hero_subtitulo'] ?? '') ?>"
-                               maxlength="255">
+                            placeholder="Ex: Qualidade e confiança desde 2010"
+                            value="<?= htmlspecialchars($website['hero_subtitulo'] ?? '') ?>"
+                            maxlength="255">
 
                         <label class="mt-3"><i class="fas fa-mouse-pointer"></i> Texto do botão</label>
                         <input type="text" name="hero_botao_texto" class="form-control"
-                               placeholder="Ex: Contacte-nos"
-                               value="<?= htmlspecialchars($website['hero_botao_texto'] ?? '') ?>"
-                               maxlength="100">
+                            placeholder="Ex: Contacte-nos"
+                            value="<?= htmlspecialchars($website['hero_botao_texto'] ?? '') ?>"
+                            maxlength="100">
 
                         <label class="mt-3"><i class="fas fa-link"></i> Link do botão</label>
                         <input type="text" name="hero_botao_link" class="form-control"
-                               placeholder="Ex: https://... ou #contactos"
-                               value="<?= htmlspecialchars($website['hero_botao_link'] ?? '') ?>"
-                               maxlength="255">
+                            placeholder="Ex: https://... ou #contactos"
+                            value="<?= htmlspecialchars($website['hero_botao_link'] ?? '') ?>"
+                            maxlength="255">
                         <small class="text-muted">Se deixar tudo em branco, a imagem fica limpa sem texto.</small>
                         <hr>
 
@@ -282,18 +288,18 @@ include '../admin/includes/header_admin.php';
                         <!-- REDES SOCIAIS -->
                         <label class="mt-4"><i class="fab fa-facebook"></i> Facebook</label>
                         <input type="url" name="link_facebook" class="form-control"
-                               placeholder="https://facebook.com/suaempresa"
-                               value="<?= htmlspecialchars($website['link_facebook'] ?? '') ?>">
+                            placeholder="https://facebook.com/suaempresa"
+                            value="<?= htmlspecialchars($website['link_facebook'] ?? '') ?>">
 
                         <label class="mt-3"><i class="fab fa-instagram"></i> Instagram</label>
                         <input type="url" name="link_instagram" class="form-control"
-                               placeholder="https://instagram.com/suaempresa"
-                               value="<?= htmlspecialchars($website['link_instagram'] ?? '') ?>">
+                            placeholder="https://instagram.com/suaempresa"
+                            value="<?= htmlspecialchars($website['link_instagram'] ?? '') ?>">
 
                         <label class="mt-3"><i class="fab fa-x-twitter"></i> X (Twitter)</label>
                         <input type="url" name="link_x" class="form-control"
-                               placeholder="https://x.com/suaempresa"
-                               value="<?= htmlspecialchars($website['link_x'] ?? '') ?>">
+                            placeholder="https://x.com/suaempresa"
+                            value="<?= htmlspecialchars($website['link_x'] ?? '') ?>">
 
                         <button type="submit" class="btn btn-success mt-4">
                             Guardar

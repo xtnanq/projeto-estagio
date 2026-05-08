@@ -10,7 +10,6 @@ if (isset($_GET['id'])) {
     exit();
 }
 
-// Buscar empresa
 $sql = "SELECT * FROM empresas WHERE id = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $empresa_id);
@@ -24,14 +23,15 @@ if (!$empresa) {
     exit();
 }
 
-/* ---------------- UPLOAD PORTFOLIO ---------------- */
+$is_admin = isset($_SESSION['tipo_usuario']) && $_SESSION['tipo_usuario'] === 'admin';
+
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['adicionar_portfolio'])) {
 
     $descricao_imagem = $_POST['descricao_imagem'] ?? '';
 
     if (isset($_FILES['portfolio_imagem']) && $_FILES['portfolio_imagem']['error'] == UPLOAD_ERR_OK) {
 
-        $allowed = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+        $allowed   = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
         $file_type = mime_content_type($_FILES['portfolio_imagem']['tmp_name']);
 
         if (!in_array($file_type, $allowed)) {
@@ -47,17 +47,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['adicionar_portfolio'])
         }
 
         $upload_dir = '../imagens/' . $empresa_id . '/';
-        if (!is_dir($upload_dir)) {
-            mkdir($upload_dir, 0777, true);
-        }
+        if (!is_dir($upload_dir)) mkdir($upload_dir, 0777, true);
 
-        $ext = pathinfo($_FILES['portfolio_imagem']['name'], PATHINFO_EXTENSION);
-        $filename = uniqid() . '.' . $ext;
+        $ext           = pathinfo($_FILES['portfolio_imagem']['name'], PATHINFO_EXTENSION);
+        $filename      = uniqid() . '.' . $ext;
         $uploaded_file = '/projeto/imagens/' . $empresa_id . '/' . $filename;
 
         if (move_uploaded_file($_FILES['portfolio_imagem']['tmp_name'], $upload_dir . $filename)) {
-
-            $insert_sql = "INSERT INTO portfolio (empresa_id, imagem, descricao_imagem) VALUES (?, ?, ?)";
+            $insert_sql  = "INSERT INTO portfolio (empresa_id, imagem, descricao_imagem) VALUES (?, ?, ?)";
             $insert_stmt = $conn->prepare($insert_sql);
             $insert_stmt->bind_param("iss", $empresa_id, $uploaded_file, $descricao_imagem);
 
@@ -66,7 +63,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['adicionar_portfolio'])
             } else {
                 $_SESSION['error_message'] = "Erro ao guardar no banco de dados.";
             }
-
             $insert_stmt->close();
         } else {
             $_SESSION['error_message'] = "Erro ao fazer upload.";
@@ -79,13 +75,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['adicionar_portfolio'])
     exit();
 }
 
-/* ---------------- PORTFÓLIO ---------------- */
-$portfolio_sql = "SELECT * FROM portfolio WHERE empresa_id = ?";
+$portfolio_sql  = "SELECT * FROM portfolio WHERE empresa_id = ?";
 $portfolio_stmt = $conn->prepare($portfolio_sql);
 $portfolio_stmt->bind_param("i", $empresa_id);
 $portfolio_stmt->execute();
 $portfolio_result = $portfolio_stmt->get_result();
-$portfolio_items = $portfolio_result->fetch_all(MYSQLI_ASSOC);
+$portfolio_items  = $portfolio_result->fetch_all(MYSQLI_ASSOC);
 $portfolio_stmt->close();
 
 include '../includes/header.php';
@@ -94,7 +89,6 @@ include '../admin/includes/header_admin.php';
 
 <link rel="stylesheet" href="/projeto/css/empresa_portfolio.css">
 
-<!-- HEADER -->
 <div class="white-background">
     <div class="container-fluid">
         <div class="header-container">
@@ -117,8 +111,12 @@ include '../admin/includes/header_admin.php';
     <div class="row">
 
         <!-- MENU -->
-        <div class="col-md-3">
-            <?php include __DIR__ . '/empresa_menu.php'; ?>
+        <div class="col-md-3 d-flex justify-content-start">
+            <?php if ($is_admin): ?>
+                <?php include __DIR__ . '/empresa_menu.php'; ?>
+            <?php else: ?>
+                <?php include __DIR__ . '/empresa_menu_cliente.php'; ?>
+            <?php endif; ?>
         </div>
 
         <!-- CONTEÚDO -->
@@ -165,7 +163,6 @@ include '../admin/includes/header_admin.php';
                     <?php if (count($portfolio_items) > 0): ?>
 
                         <?php if (count($portfolio_items) <= 6): ?>
-                            <!-- GRID simples (até 6 imagens) -->
                             <div class="portfolio-grid mt-4">
                                 <?php foreach ($portfolio_items as $i => $p): ?>
                                     <div class="portfolio-grid-item">
@@ -175,17 +172,18 @@ include '../admin/includes/header_admin.php';
                                         <div class="desc"><?= htmlspecialchars($p['descricao_imagem']); ?></div>
                                         <div class="portfolio-actions mt-2 text-center">
                                             <a href="editar_portfolio.php?id=<?= $p['id']; ?>" class="btn btn-success btn-sm">Editar</a>
-                                            <a href="eliminar_portfolio.php?id=<?= $p['id']; ?>" class="btn btn-danger btn-sm">Eliminar</a>
+                                            <?php if ($is_admin): ?>
+                                                <a href="eliminar_portfolio.php?id=<?= $p['id']; ?>" class="btn btn-danger btn-sm">Eliminar</a>
+                                            <?php endif; ?>
                                         </div>
                                     </div>
                                 <?php endforeach; ?>
                             </div>
 
                         <?php else: ?>
-                            <!-- CARROSEL (mais de 6 imagens) -->
                             <?php
-                                $perPage = 6;
-                                $totalPages = ceil(count($portfolio_items) / $perPage);
+                            $perPage    = 6;
+                            $totalPages = ceil(count($portfolio_items) / $perPage);
                             ?>
                             <div class="carousel-wrapper mt-4">
                                 <button class="carousel-btn prev" id="carouselPrev">&#8592;</button>
@@ -198,7 +196,9 @@ include '../admin/includes/header_admin.php';
                                             <div class="desc"><?= htmlspecialchars($p['descricao_imagem']); ?></div>
                                             <div class="portfolio-actions mt-2 text-center">
                                                 <a href="editar_portfolio.php?id=<?= $p['id']; ?>" class="btn btn-success btn-sm">Editar</a>
-                                                <a href="eliminar_portfolio.php?id=<?= $p['id']; ?>" class="btn btn-danger btn-sm">Eliminar</a>
+                                                <?php if ($is_admin): ?>
+                                                    <a href="eliminar_portfolio.php?id=<?= $p['id']; ?>" class="btn btn-danger btn-sm">Eliminar</a>
+                                                <?php endif; ?>
                                             </div>
                                         </div>
                                     <?php endforeach; ?>
@@ -206,7 +206,6 @@ include '../admin/includes/header_admin.php';
                                 <button class="carousel-btn next" id="carouselNext">&#8594;</button>
                             </div>
 
-                            <!-- BOLINHAS -->
                             <div class="carousel-dots" id="carouselDots">
                                 <?php for ($d = 0; $d < $totalPages; $d++): ?>
                                     <button class="dot <?= $d === 0 ? 'active' : ''; ?>" data-page="<?= $d ?>"></button>
@@ -221,7 +220,6 @@ include '../admin/includes/header_admin.php';
                 </div>
             </div>
         </div>
-
     </div>
 </div>
 
@@ -244,120 +242,115 @@ include '../admin/includes/header_admin.php';
 </div>
 
 <script>
-// ── Dados das imagens para JS ──
-const portfolioImages = <?= json_encode(array_map(function($p) {
-    return [
-        'src' => $p['imagem'],
-        'desc' => $p['descricao_imagem']
-    ];
-}, $portfolio_items)); ?>;
+    const portfolioImages = <?= json_encode(array_map(function ($p) {
+        return ['src' => $p['imagem'], 'desc' => $p['descricao_imagem']];
+    }, $portfolio_items)); ?>;
 
-// ── Formulário ──
-document.getElementById('mostrarFormularioPortfolio').onclick = () =>
-    document.getElementById('formularioPortfolio').style.display = 'block';
+    document.getElementById('mostrarFormularioPortfolio').onclick = () =>
+        document.getElementById('formularioPortfolio').style.display = 'block';
 
-document.getElementById('cancelarFormularioPortfolio').onclick = () =>
-    document.getElementById('formularioPortfolio').style.display = 'none';
+    document.getElementById('cancelarFormularioPortfolio').onclick = () =>
+        document.getElementById('formularioPortfolio').style.display = 'none';
 
-// ── Lightbox ──
-let currentIndex = 0;
+    let currentIndex = 0;
 
-function openLightbox(index) {
-    currentIndex = index;
-    updateLightbox();
-    document.getElementById('lightboxOverlay').classList.add('open');
-}
+    function openLightbox(index) {
+        currentIndex = index;
+        updateLightbox();
+        document.getElementById('lightboxOverlay').classList.add('open');
+    }
 
-function updateLightbox() {
-    document.getElementById('lightboxImg').src  = portfolioImages[currentIndex].src;
-    document.getElementById('lightboxDesc').textContent = portfolioImages[currentIndex].desc;
-}
+    function updateLightbox() {
+        document.getElementById('lightboxImg').src = portfolioImages[currentIndex].src;
+        document.getElementById('lightboxDesc').textContent = portfolioImages[currentIndex].desc;
+    }
 
-document.getElementById('lightboxClose').onclick = () =>
-    document.getElementById('lightboxOverlay').classList.remove('open');
+    document.getElementById('lightboxClose').onclick = () =>
+        document.getElementById('lightboxOverlay').classList.remove('open');
 
-document.getElementById('lightboxPrev').onclick = () => {
-    currentIndex = (currentIndex - 1 + portfolioImages.length) % portfolioImages.length;
-    updateLightbox();
-};
+    document.getElementById('lightboxPrev').onclick = () => {
+        currentIndex = (currentIndex - 1 + portfolioImages.length) % portfolioImages.length;
+        updateLightbox();
+    };
 
-document.getElementById('lightboxNext').onclick = () => {
-    currentIndex = (currentIndex + 1) % portfolioImages.length;
-    updateLightbox();
-};
+    document.getElementById('lightboxNext').onclick = () => {
+        currentIndex = (currentIndex + 1) % portfolioImages.length;
+        updateLightbox();
+    };
 
-// Setas do teclado
-document.addEventListener('keydown', function(e) {
-    const overlay = document.getElementById('lightboxOverlay');
-    if (!overlay.classList.contains('open')) return;
-    if (e.key === 'ArrowLeft')  { currentIndex = (currentIndex - 1 + portfolioImages.length) % portfolioImages.length; updateLightbox(); }
-    if (e.key === 'ArrowRight') { currentIndex = (currentIndex + 1) % portfolioImages.length; updateLightbox(); }
-    if (e.key === 'Escape')     { overlay.classList.remove('open'); }
-});
+    document.addEventListener('keydown', function(e) {
+        const overlay = document.getElementById('lightboxOverlay');
+        if (!overlay.classList.contains('open')) return;
+        if (e.key === 'ArrowLeft') {
+            currentIndex = (currentIndex - 1 + portfolioImages.length) % portfolioImages.length;
+            updateLightbox();
+        }
+        if (e.key === 'ArrowRight') {
+            currentIndex = (currentIndex + 1) % portfolioImages.length;
+            updateLightbox();
+        }
+        if (e.key === 'Escape') overlay.classList.remove('open');
+    });
 
-// Fechar ao clicar fora da imagem
-document.getElementById('lightboxOverlay').addEventListener('click', function(e) {
-    if (e.target === this) this.classList.remove('open');
-});
+    document.getElementById('lightboxOverlay').addEventListener('click', function(e) {
+        if (e.target === this) this.classList.remove('open');
+    });
 
-// ── Carrosel (só existe se houver mais de 6 imagens) ──
-const track = document.getElementById('carouselTrack');
-if (track) {
-    const perPage   = 6;
-    const perSlide  = 3; // visíveis por vez
-    const total     = portfolioImages.length;
-    const totalPages = Math.ceil(total / perPage);
-    let currentPage  = 0;
+    const track = document.getElementById('carouselTrack');
+    if (track) {
+        const perPage    = 6;
+        const perSlide   = 3;
+        const total      = portfolioImages.length;
+        const totalPages = Math.ceil(total / perPage);
+        let currentPage  = 0;
 
-    function goToPage(page) {
-        currentPage = page;
-        const slideWidth = track.querySelector('.carousel-slide').offsetWidth;
-        track.style.transform = `translateX(-${page * perPage * slideWidth / perSlide}px)`;
+        function goToPage(page) {
+            currentPage = page;
+            const slideWidth = track.querySelector('.carousel-slide').offsetWidth;
+            track.style.transform = `translateX(-${page * perPage * slideWidth / perSlide}px)`;
+            document.querySelectorAll('.dot').forEach((d, i) => {
+                d.classList.toggle('active', i === page);
+            });
+        }
 
-        document.querySelectorAll('.dot').forEach((d, i) => {
-            d.classList.toggle('active', i === page);
+        document.getElementById('carouselPrev').onclick = () =>
+            goToPage((currentPage - 1 + totalPages) % totalPages);
+
+        document.getElementById('carouselNext').onclick = () =>
+            goToPage((currentPage + 1) % totalPages);
+
+        document.querySelectorAll('.dot').forEach(dot => {
+            dot.addEventListener('click', () => goToPage(parseInt(dot.dataset.page)));
         });
     }
 
-    document.getElementById('carouselPrev').onclick = () =>
-        goToPage((currentPage - 1 + totalPages) % totalPages);
+    document.addEventListener("DOMContentLoaded", function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get("show_message") === "1") {
+            const modal   = document.getElementById("messageModal");
+            const title   = document.getElementById("modalTitle");
+            const message = document.getElementById("modalMessage");
+            const okBtn   = document.getElementById("okButton");
 
-    document.getElementById('carouselNext').onclick = () =>
-        goToPage((currentPage + 1) % totalPages);
+            <?php if (isset($_SESSION['success_message'])): ?>
+                title.textContent   = "Sucesso";
+                message.textContent = "<?= htmlspecialchars($_SESSION['success_message'], ENT_QUOTES); ?>";
+                <?php unset($_SESSION['success_message']); ?>
+            <?php elseif (isset($_SESSION['error_message'])): ?>
+                title.textContent   = "Erro";
+                message.textContent = "<?= htmlspecialchars($_SESSION['error_message'], ENT_QUOTES); ?>";
+                <?php unset($_SESSION['error_message']); ?>
+            <?php endif; ?>
 
-    document.querySelectorAll('.dot').forEach(dot => {
-        dot.addEventListener('click', () => goToPage(parseInt(dot.dataset.page)));
+            modal.style.display = "block";
+
+            okBtn.onclick = function() {
+                modal.style.display = "none";
+                window.history.replaceState({}, document.title,
+                    window.location.pathname + "?id=<?= $empresa_id ?>");
+            };
+        }
     });
-}
-
-// ── Modal mensagens ──
-document.addEventListener("DOMContentLoaded", function() {
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get("show_message") === "1") {
-        const modal   = document.getElementById("messageModal");
-        const title   = document.getElementById("modalTitle");
-        const message = document.getElementById("modalMessage");
-        const okBtn   = document.getElementById("okButton");
-
-        <?php if (isset($_SESSION['success_message'])): ?>
-            title.textContent   = "Sucesso";
-            message.textContent = "<?= htmlspecialchars($_SESSION['success_message'], ENT_QUOTES); ?>";
-            <?php unset($_SESSION['success_message']); ?>
-        <?php elseif (isset($_SESSION['error_message'])): ?>
-            title.textContent   = "Erro";
-            message.textContent = "<?= htmlspecialchars($_SESSION['error_message'], ENT_QUOTES); ?>";
-            <?php unset($_SESSION['error_message']); ?>
-        <?php endif; ?>
-
-        modal.style.display = "block";
-
-        okBtn.onclick = function() {
-            modal.style.display = "none";
-            window.history.replaceState({}, document.title,
-                window.location.pathname + "?id=<?= $empresa_id ?>");
-        };
-    }
-});
 </script>
 
 <?php include '../includes/footer.php'; ?>

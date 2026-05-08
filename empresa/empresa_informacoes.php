@@ -6,8 +6,8 @@ require_once '../includes/functions.php';
 if (isset($_GET['id'])) {
     $empresa_id = $_GET['id'];
 } else {
-   header("Location: index.php");
-   exit();
+    header("Location: index.php");
+    exit();
 }
 
 $sql = "SELECT * FROM empresas WHERE id = ?";
@@ -22,25 +22,33 @@ if (!$empresa) {
     exit();
 }
 
+$is_admin = isset($_SESSION['tipo_usuario']) && $_SESSION['tipo_usuario'] === 'admin';
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $nome_empresa      = $_POST['nome_empresa'] ?? '';
-    $morada            = $_POST['morada'] ?? '';
-    $codigo_postal     = $_POST['codigo_postal'] ?? '';
-    $telefone          = $_POST['telefone'] ?? '';
-    $email_empresa     = $_POST['email_empresa'] ?? '';
-    $nome_contato      = $_POST['nome_contato'] ?? '';
-    $telefone_contato  = $_POST['telefone_contato'] ?? '';
-    $email_contato     = $_POST['email_contato'] ?? '';
+    $morada           = $_POST['morada'] ?? '';
+    $codigo_postal    = $_POST['codigo_postal'] ?? '';
+    $telefone         = $_POST['telefone'] ?? '';
+    $nome_contato     = $_POST['nome_contato'] ?? '';
+    $telefone_contato = $_POST['telefone_contato'] ?? '';
+    $email_contato    = $_POST['email_contato'] ?? '';
 
-    $sql = "UPDATE empresas SET 
-        nome_empresa=?, morada=?, codigo_postal=?, telefone=?, email_empresa=?, 
-        nome_contato=?, telefone_contato=?, email_contato=? WHERE id=?";
-
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ssssssssi",
-        $nome_empresa, $morada, $codigo_postal, $telefone,
-        $email_empresa, $nome_contato, $telefone_contato, $email_contato, $empresa_id
-    );
+    if ($is_admin) {
+        $nome_empresa  = $_POST['nome_empresa'] ?? '';
+        $email_empresa = $_POST['email_empresa'] ?? '';
+        $sql = "UPDATE empresas SET 
+            nome_empresa=?, morada=?, codigo_postal=?, telefone=?, email_empresa=?, 
+            nome_contato=?, telefone_contato=?, email_contato=? WHERE id=?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("ssssssssi", $nome_empresa, $morada, $codigo_postal, $telefone,
+            $email_empresa, $nome_contato, $telefone_contato, $email_contato, $empresa_id);
+    } else {
+        $sql = "UPDATE empresas SET 
+            morada=?, codigo_postal=?, telefone=?,
+            nome_contato=?, telefone_contato=?, email_contato=? WHERE id=?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("ssssssi", $morada, $codigo_postal, $telefone,
+            $nome_contato, $telefone_contato, $email_contato, $empresa_id);
+    }
 
     if ($stmt->execute()) {
         $_SESSION['success_message'] = "Informações atualizadas com sucesso!";
@@ -57,10 +65,8 @@ include '../admin/includes/header_admin.php';
 ?>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
 <link rel="stylesheet" href="/projeto/css/empresa_informacoes.css">
 
-<!-- HEADER -->
 <div class="white-background">
     <div class="container-fluid">
         <div class="header-container">
@@ -71,9 +77,7 @@ include '../admin/includes/header_admin.php';
                 <h4><?= htmlspecialchars($empresa['nome_empresa']); ?></h4>
             </div>
             <div class="buttons-container">
-                <a href="../logout.php" class="btn btn-danger">
-                     Logout
-                </a>
+                <a href="../logout.php" class="btn btn-danger">Logout</a>
             </div>
         </div>
     </div>
@@ -84,12 +88,16 @@ include '../admin/includes/header_admin.php';
 <div class="container-fluid mt-4">
     <div class="row">
 
-        <!-- MENU -->
-        <div class="col-md-3">
-            <?php include __DIR__ . '/empresa_menu.php'; ?>
+        <div class="col-md-3 d-flex justify-content-start">
+            <?php
+            if ($is_admin) {
+                include __DIR__ . '/empresa_menu.php';
+            } else {
+                include __DIR__ . '/empresa_menu_cliente.php';
+            }
+            ?>
         </div>
 
-        <!-- CONTEÚDO -->
         <div class="col-md-9">
             <div class="card custom-card">
                 <div class="card-body">
@@ -102,8 +110,14 @@ include '../admin/includes/header_admin.php';
 
                         <div class="form-group">
                             <label><i class="fas fa-building"></i> Nome da Empresa</label>
-                            <input type="text" name="nome_empresa" class="form-control"
-                                value="<?= htmlspecialchars($empresa['nome_empresa']); ?>">
+                            <?php if ($is_admin): ?>
+                                <input type="text" name="nome_empresa" class="form-control"
+                                    value="<?= htmlspecialchars($empresa['nome_empresa']); ?>">
+                            <?php else: ?>
+                                <input type="text" class="form-control"
+                                    value="<?= htmlspecialchars($empresa['nome_empresa']); ?>" disabled>
+                                <small class="text-muted">Apenas o administrador pode alterar o nome da empresa.</small>
+                            <?php endif; ?>
                         </div>
 
                         <div class="form-group">
@@ -126,8 +140,14 @@ include '../admin/includes/header_admin.php';
 
                         <div class="form-group">
                             <label><i class="fas fa-envelope"></i> Email da Empresa</label>
-                            <input type="email" name="email_empresa" class="form-control"
-                                value="<?= htmlspecialchars($empresa['email_empresa']); ?>">
+                            <?php if ($is_admin): ?>
+                                <input type="email" name="email_empresa" class="form-control"
+                                    value="<?= htmlspecialchars($empresa['email_empresa']); ?>">
+                            <?php else: ?>
+                                <input type="email" class="form-control"
+                                    value="<?= htmlspecialchars($empresa['email_empresa']); ?>" disabled>
+                                <small class="text-muted">Apenas o administrador pode alterar o email da empresa.</small>
+                            <?php endif; ?>
                         </div>
 
                         <div class="form-group">
@@ -150,20 +170,17 @@ include '../admin/includes/header_admin.php';
 
                         <div class="text-end mt-4">
                             <button type="submit" class="btn btn-primary custom-btn">
-                             Guardar Informações
+                                Guardar Informações
                             </button>
                         </div>
 
                     </form>
-
                 </div>
             </div>
         </div>
-
     </div>
 </div>
 
-<!-- MODAL -->
 <div id="messageModal" class="modal">
     <div class="modal-content">
         <h2 id="modalTitle"></h2>
@@ -174,22 +191,19 @@ include '../admin/includes/header_admin.php';
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {
-
     const urlParams = new URLSearchParams(window.location.search);
-
     if (urlParams.get("show_message") === "1") {
-
-        const modal = document.getElementById("messageModal");
-        const title = document.getElementById("modalTitle");
+        const modal   = document.getElementById("messageModal");
+        const title   = document.getElementById("modalTitle");
         const message = document.getElementById("modalMessage");
-        const okBtn = document.getElementById("okButton");
+        const okBtn   = document.getElementById("okButton");
 
         <?php if (isset($_SESSION['success_message'])): ?>
-            title.textContent = "Sucesso";
+            title.textContent   = "Sucesso";
             message.textContent = "<?= $_SESSION['success_message']; ?>";
             <?php unset($_SESSION['success_message']); ?>
         <?php elseif (isset($_SESSION['error_message'])): ?>
-            title.textContent = "Erro";
+            title.textContent   = "Erro";
             message.textContent = "<?= $_SESSION['error_message']; ?>";
             <?php unset($_SESSION['error_message']); ?>
         <?php endif; ?>
@@ -198,12 +212,10 @@ document.addEventListener("DOMContentLoaded", function() {
 
         okBtn.onclick = function() {
             modal.style.display = "none";
-
             window.history.replaceState({}, document.title,
                 window.location.pathname + "?id=<?= $empresa_id ?>");
         };
     }
-
 });
 </script>
 

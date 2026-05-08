@@ -1,5 +1,4 @@
 <?php
-// empresa_menu.php — Menu lateral reutilizável
 if (!isset($empresa_id) && isset($_GET['id'])) {
     $empresa_id = intval($_GET['id']);
 }
@@ -17,24 +16,15 @@ if (!isset($empresa_id)) {
 
     <ul class="nav flex-column">
 
-        <?php if (isset($_SESSION['tipo_usuario']) && $_SESSION['tipo_usuario'] === 'admin'): ?>
-            <li class="nav-item">
-                <a class="nav-link" href="/projeto/admin/dashboard.php">
-                    <span class="nav-icon"><i class="fas fa-house"></i></span>
-                    Dashboard
-                </a>
-            </li>
-            <li class="nav-item"><div class="nav-divider"></div></li>
-        <?php else: ?>
-            <li class="nav-item">
-                <a class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'dashboard.php' ? 'active' : ''; ?>"
-                    href="dashboard.php">
-                    <span class="nav-icon"><i class="fas fa-house"></i></span>
-                    Dashboard
-                </a>
-            </li>
-            <li class="nav-item"><div class="nav-divider"></div></li>
-        <?php endif; ?>
+        <li class="nav-item">
+            <a class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'dashboard.php' ? 'active' : ''; ?>"
+                href="/projeto/empresa/dashboard.php">
+                <span class="nav-icon"><i class="fas fa-house"></i></span>
+                Dashboard
+            </a>
+        </li>
+
+        <li class="nav-item"><div class="nav-divider"></div></li>
 
         <li class="nav-item">
             <a class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'empresa_informacoes.php' ? 'active' : ''; ?>"
