@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= htmlspecialchars($nome_empresa); ?></title>
+    <title><?= htmlspecialchars($nome_empresa ?? 'Nome da Empresa'); ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="/projeto/css/site_publico.css">
@@ -109,9 +109,9 @@
         <!-- LOGO / NOME -->
         <a href="/projeto/freebox/?url=<?= htmlspecialchars($website['url_site'] ?? ''); ?>" class="brand">
             <?php if (!empty($logo)): ?>
-                <img src="<?= htmlspecialchars($logo); ?>" alt="<?= htmlspecialchars($nome_empresa); ?>" class="brand-logo">
+                <img src="<?= htmlspecialchars($logo); ?>" alt="<?= htmlspecialchars($nome_empresa ?? 'Nome da Empresa'); ?>" class="brand-logo">
             <?php else: ?>
-                <span class="brand-name"><?= htmlspecialchars($nome_empresa); ?></span>
+                <span class="brand-name"><?= htmlspecialchars($nome_empresa ?? 'Nome da Empresa'); ?></span>
             <?php endif; ?>
         </a>
 
