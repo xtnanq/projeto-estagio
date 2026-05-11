@@ -32,56 +32,10 @@
     border-radius: 12px;
 }
 
-.modal-content h4 {
-    color: #16a34a;
-}
+.modal-content h4 { color: #16a34a; }
+.modal-content p  { margin-top: 10px; }
 
-.modal-content p {
-    margin-top: 10px;
-}
-.button-container_left {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-}
-
-.img-thumbnail {
-    width: 100px;
-    height: 100px;
-    object-fit: cover;
-    border-radius: 8px;
-}
-
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 9999;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.4);
-}
-
-.modal-content {
-    background-color: #fff;
-    margin: 15% auto;
-    padding: 25px;
-    width: 90%;
-    max-width: 400px;
-    text-align: center;
-    border-radius: 12px;
-}
-
-.modal-content h4 {
-    color: #16a34a;
-}
-
-.modal-content p {
-    margin-top: 10px;
-}
-
-/* ── CARROSEL ── */
+/* ── CARROSSEL ── */
 .carousel-wrapper {
     position: relative;
     overflow: hidden;
@@ -107,9 +61,7 @@
     transition: opacity 0.2s;
 }
 
-.carousel-slide img:hover {
-    opacity: 0.85;
-}
+.carousel-slide img:hover { opacity: 0.85; }
 
 .carousel-slide .desc {
     font-size: 0.85rem;
@@ -158,31 +110,42 @@
     transition: background 0.2s;
 }
 
-.carousel-dots .dot.active {
-    background: #000;
-}
+.carousel-dots .dot.active { background: #1f5b9d; }
 
 /* ── LIGHTBOX ── */
 .lightbox-overlay {
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.88);
+    background: rgba(0, 0, 0, 0.92);
     z-index: 99999;
     align-items: center;
     justify-content: center;
+    flex-direction: column;
 }
 
 .lightbox-overlay.open {
     display: flex;
 }
 
+/* Wrapper central para imagem + setas lado a lado */
+.lightbox-inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    width: 100%;
+    padding: 0 20px;
+    box-sizing: border-box;
+}
+
 .lightbox-img {
-    max-width: 88vw;
-    max-height: 85vh;
+    max-width: 80vw;
+    max-height: 80vh;
     border-radius: 8px;
     object-fit: contain;
     box-shadow: 0 4px 32px rgba(0, 0, 0, 0.6);
+    display: block;
 }
 
 .lightbox-close {
@@ -190,41 +153,56 @@
     top: 18px;
     right: 24px;
     color: #fff;
-    font-size: 2rem;
+    font-size: 2.2rem;
     cursor: pointer;
-    background: none;
+    background: rgba(255,255,255,0.1);
     border: none;
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     line-height: 1;
+    transition: background 0.2s;
+    z-index: 100000;
 }
+
+.lightbox-close:hover { background: rgba(255,255,255,0.25); }
 
 .lightbox-arrow {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
     color: #fff;
-    font-size: 2.5rem;
+    font-size: 2rem;
     cursor: pointer;
-    background: none;
+    background: rgba(255,255,255,0.1);
     border: none;
-    padding: 0 16px;
+    border-radius: 50%;
+    width: 52px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.2s, transform 0.2s;
     user-select: none;
+    z-index: 100000;
 }
 
-.lightbox-arrow.left  { left: 8px; }
-.lightbox-arrow.right { right: 8px; }
+.lightbox-arrow:hover {
+    background: rgba(255,255,255,0.25);
+    transform: scale(1.1);
+}
 
 .lightbox-desc {
-    position: absolute;
-    bottom: 24px;
-    left: 50%;
-    transform: translateX(-50%);
-    color: #ddd;
-    font-size: 0.95rem;
+    color: #ccc;
+    font-size: 0.9rem;
     text-align: center;
     max-width: 80vw;
+    margin-top: 16px;
+    padding: 0 20px;
 }
 
-/* ── GRID (menos de 6 imagens, sem carrosel) ── */
+/* ── GRID (menos de 6 imagens) ── */
 .portfolio-grid {
     display: flex;
     flex-wrap: wrap;
@@ -246,9 +224,7 @@
     transition: opacity 0.2s;
 }
 
-.portfolio-grid-item img:hover {
-    opacity: 0.85;
-}
+.portfolio-grid-item img:hover { opacity: 0.85; }
 
 .portfolio-grid-item .desc {
     font-size: 0.85rem;

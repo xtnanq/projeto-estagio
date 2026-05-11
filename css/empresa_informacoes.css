@@ -82,3 +82,132 @@
     color: #555;
     margin-bottom: 20px;
 }
+/* ── Galeria ──────────────────────────────────────────────────────────────── */
+.portfolio-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+.portfolio-grid-item {
+    border-radius: 10px;
+    overflow: hidden;
+    background: #f9f9f9;
+    border: 1px solid #e0e0e0;
+    padding-bottom: 10px;
+}
+
+.portfolio-grid-item img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    cursor: pointer;
+    transition: transform 0.3s;
+    display: block;
+}
+
+.portfolio-grid-item img:hover {
+    transform: scale(1.04);
+}
+
+.portfolio-grid-item .desc {
+    padding: 8px 10px 0;
+    font-size: 0.85rem;
+    color: #555;
+    text-align: center;
+}
+
+/* ── Lightbox ─────────────────────────────────────────────────────────────── */
+.lightbox-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(0, 0, 0, 0.92);
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.lightbox-overlay.open {
+    display: flex;
+}
+
+.lightbox-img {
+    max-width: 85vw;
+    max-height: 78vh;
+    object-fit: contain;
+    border: 6px solid white;
+    border-radius: 8px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+}
+
+.lightbox-close {
+    position: fixed;
+    top: 20px;
+    right: 25px;
+    background: rgba(255,255,255,0.15);
+    border: none;
+    color: white;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    font-size: 1.6rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+    z-index: 10000;
+}
+
+.lightbox-close:hover {
+    background: rgba(255,255,255,0.3);
+}
+
+.lightbox-arrow {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255,255,255,0.15);
+    border: none;
+    color: white;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+    z-index: 10001;
+}
+
+.lightbox-arrow.left  { left: 20px; }
+.lightbox-arrow.right { right: 20px; }
+
+.lightbox-arrow:hover {
+    background: rgba(255,255,255,0.3);
+}
+
+.lightbox-desc {
+    color: white;
+    margin-top: 15px;
+    font-size: 0.95rem;
+    opacity: 0.75;
+    text-align: center;
+    max-width: 600px;
+}
+
+@media (max-width: 768px) {
+    .portfolio-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .portfolio-grid {
+        grid-template-columns: 1fr;
+    }
+}
