@@ -43,7 +43,7 @@ if ($is_admin) {
 
 <link rel="stylesheet" href="/projeto/css/empresa_servicos.css">
 
-    
+
 
 <div class="separator"></div>
 
@@ -51,7 +51,7 @@ if ($is_admin) {
     <div class="row">
 
         <!-- MENU -->
-        <div class="col-md-3 d-flex justify-content-start">
+        <div class="col-md-3 d-falex justify-content-start">
 
             <?php if ($is_admin): ?>
                 <?php include __DIR__ . '/empresa_menu.php'; ?>

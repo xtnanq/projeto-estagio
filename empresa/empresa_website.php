@@ -147,6 +147,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     header("Location: empresa_website.php?id=$empresa_id&show_message=1");
     exit();
 }
+}
 
 include '../includes/header.php';
 
@@ -416,6 +417,8 @@ if ($is_admin) {
 </script>
 
 <?php
+$url_site = $website['url_site'] ?? '';
+
 if ($is_admin) {
     include '../admin/footer_admin.php';
 } else {

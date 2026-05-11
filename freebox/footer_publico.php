@@ -66,7 +66,13 @@
             </div>
         </div>
     </div>
-
+    <?php
+    // filepath: [arquivo_principal].php
+    // ...existing code...
+    $nome_empresa = $empresa['nome'] ?? 'Nome Padrão';  // Defina aqui
+    include 'footer_publico.php';
+    // ...existing code...
+    ?>
     <!-- NOME GRANDE -->
     <div class="footer-brand-name">
         <?= htmlspecialchars($nome_empresa); ?>
@@ -101,7 +107,9 @@
             const target = document.querySelector(this.getAttribute('href'));
             if (target) {
                 e.preventDefault();
-                target.scrollIntoView({ behavior: 'smooth' });
+                target.scrollIntoView({
+                    behavior: 'smooth'
+                });
             }
         });
     });
@@ -184,11 +192,17 @@
         }
         const prev = document.getElementById(prevId);
         const next = document.getElementById(nextId);
-        if (prev) prev.addEventListener('click', function() { goTo(current - 1); });
-        if (next) next.addEventListener('click', function() { goTo(current + 1); });
+        if (prev) prev.addEventListener('click', function() {
+            goTo(current - 1);
+        });
+        if (next) next.addEventListener('click', function() {
+            goTo(current + 1);
+        });
         if (dotsId) {
             document.querySelectorAll('#' + dotsId + ' .dot').forEach(function(dot) {
-                dot.addEventListener('click', function() { goTo(parseInt(this.dataset.page)); });
+                dot.addEventListener('click', function() {
+                    goTo(parseInt(this.dataset.page));
+                });
             });
         }
     }
@@ -197,4 +211,5 @@
 </script>
 
 </body>
+
 </html>

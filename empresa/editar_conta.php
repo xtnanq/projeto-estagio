@@ -44,9 +44,19 @@ if (!$empresa) {
     exit;
 }
 
+$empresa_id = $empresa['id'];
+
+// ── Buscar url_site para o footer ─────────────────────────────────────────────
+$website_stmt = $conn->prepare("SELECT url_site FROM website_config WHERE empresa_id = ?");
+$website_stmt->bind_param("i", $empresa_id);
+$website_stmt->execute();
+$website_row = $website_stmt->get_result()->fetch_assoc();
+$website_stmt->close();
+$url_site = $website_row['url_site'] ?? '';
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $nome = limparDados($_POST['nome'] ?? '');
-    $email = limparDados($_POST['email'] ?? '');
+    $nome      = limparDados($_POST['nome'] ?? '');
+    $email     = limparDados($_POST['email'] ?? '');
     $nova_senha = $_POST['nova_senha'] ?? '';
 
     if (empty($nome) || empty($email)) {
@@ -58,24 +68,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         try {
             if (!empty($nova_senha)) {
-                $senha_hash = password_hash($nova_senha, PASSWORD_DEFAULT);
-
-                $sql_update = "UPDATE usuarios SET nome = ?, email = ?, senha = ? WHERE id = ?";
+                $senha_hash  = password_hash($nova_senha, PASSWORD_DEFAULT);
+                $sql_update  = "UPDATE usuarios SET nome = ?, email = ?, senha = ? WHERE id = ?";
                 $stmt_update = $conn->prepare($sql_update);
                 $stmt_update->bind_param("sssi", $nome, $email, $senha_hash, $usuario_id);
             } else {
-                $sql_update = "UPDATE usuarios SET nome = ?, email = ? WHERE id = ?";
+                $sql_update  = "UPDATE usuarios SET nome = ?, email = ? WHERE id = ?";
                 $stmt_update = $conn->prepare($sql_update);
                 $stmt_update->bind_param("ssi", $nome, $email, $usuario_id);
             }
 
             if ($stmt_update->execute()) {
-                $_SESSION['nome_usuario'] = $nome;
+                $_SESSION['nome_usuario']  = $nome;
                 $_SESSION['email_usuario'] = $email;
-
-                $usuario['nome'] = $nome;
+                $usuario['nome']  = $nome;
                 $usuario['email'] = $email;
-
                 $mensagem = "Conta atualizada com sucesso!";
             } else {
                 $mensagem = "Erro: não foi possível atualizar a conta.";
@@ -89,34 +96,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 include '../includes/header.php';
-include '../admin/includes/header_admin.php';
+include __DIR__ . '/header_cliente.php';
 ?>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
 <link rel="stylesheet" href="/projeto/css/editar_conta.css">
-
-<div class="white-background">
-    <div class="container-fluid">
-        <div class="header-container">
-            <div class="logo-container">
-                <img src="../imagens/Logotipo_freebox.png" style="height:75px;">
-            </div>
-
-            <div class="title-container">
-                <h4><?= htmlspecialchars($empresa['nome_empresa']); ?></h4>
-            </div>
-
-            <div class="buttons-container">
-                <a href="../logout.php" class="btn btn-danger">
-                     Logout
-                </a>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="separator"></div>
 
 <div class="container-fluid mt-4">
     <div class="center-card">
@@ -138,45 +122,33 @@ include '../admin/includes/header_admin.php';
                 <form method="POST">
 
                     <div class="form-group">
-                        <label for="nome">
-                            <i class="fas fa-user"></i> Nome
-                        </label>
+                        <label for="nome"><i class="fas fa-user"></i> Nome</label>
                         <input type="text" class="form-control" id="nome" name="nome"
                                value="<?= htmlspecialchars($usuario['nome']); ?>" required>
                     </div>
 
                     <div class="form-group mt-4">
-                        <label for="email">
-                            <i class="fas fa-envelope"></i> Email
-                        </label>
+                        <label for="email"><i class="fas fa-envelope"></i> Email</label>
                         <input type="email" class="form-control" id="email" name="email"
                                value="<?= htmlspecialchars($usuario['email']); ?>" required>
                     </div>
 
                     <div class="form-group mt-4">
-                        <label for="nova_senha">
-                            <i class="fas fa-lock"></i> Nova Palavra-passe
-                        </label>
+                        <label for="nova_senha"><i class="fas fa-lock"></i> Nova Palavra-passe</label>
                         <input type="password" class="form-control" id="nova_senha" name="nova_senha" minlength="6">
-                        <small class="form-text text-muted">
-                            Deixa em branco se não quiseres alterar.
-                        </small>
+                        <small class="form-text text-muted">Deixa em branco se não quiseres alterar.</small>
                     </div>
 
                     <div class="button-container mt-5">
-                        <a href="dashboard.php" class="btn btn-secondary">
-                            Voltar
-                        </a>
-                        <button type="submit" class="btn btn-success">
-                             Guardar
-                        </button>
+                        <a href="dashboard.php" class="btn btn-secondary">Voltar</a>
+                        <button type="submit" class="btn btn-success">Guardar</button>
                     </div>
 
                 </form>
-
             </div>
         </div>
     </div>
 </div>
 
+<?php include __DIR__ . '/footer_cliente.php'; ?>
 <?php include '../includes/footer.php'; ?>
