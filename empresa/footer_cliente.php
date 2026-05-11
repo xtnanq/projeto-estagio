@@ -16,7 +16,6 @@
                                 </a>
                             </li>
                         <?php endif; ?>
-                        // ...existing code...
                         <li><a href="editar_conta.php"><i class="fas fa-user-gear me-2"></i>Minha Conta</a></li>
                     </ul>
                 </div>
