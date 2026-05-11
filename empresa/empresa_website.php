@@ -46,15 +46,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // URL do site só o admin pode mudar
     if ($is_admin) {
-        $url_site = trim($_POST['url_site'] ?? '');
-        $url_site = preg_replace('/[^a-zA-Z0-9\-]/', '', $url_site);
-        $url_site = strtolower($url_site);
+    $url_site = trim($_POST['url_site'] ?? '');
+    $url_site = preg_replace('/[^a-zA-Z0-9\-]/', '', $url_site);
+    $url_site = strtolower($url_site);
+
+    $email_formulario = trim($_POST['email_formulario'] ?? '');
 
         if ($is_admin) {
-            $email_formulario = trim($_POST['email_formulario'] ?? '');
-        } else {
-            $email_formulario = $website['email_formulario'] ?? '';
-        }
+    $url_site = trim($_POST['url_site'] ?? '');
+    $url_site = preg_replace('/[^a-zA-Z0-9\-]/', '', $url_site);
+    $url_site = strtolower($url_site);
+
+    if ($is_admin) {
+        $email_formulario = trim($_POST['email_formulario'] ?? '');
+    } else {
+        $email_formulario = $website['email_formulario'] ?? '';
+    }
 
         if (!empty($url_site)) {
             $check_sql  = "SELECT id FROM website_config WHERE url_site = ? AND empresa_id != ?";
@@ -71,8 +78,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
         }
     } else {
-        $url_site = $website['url_site'] ?? '';
-    }
+    $url_site = $website['url_site'] ?? '';
+    $email_formulario = $website['email_formulario'] ?? '';
+}
 
     $logotipo     = $website['logotipo'] ?? '';
     $capa_empresa = $website['capa_empresa'] ?? '';
@@ -313,18 +321,33 @@ if ($is_admin) {
                         <textarea name="descricao_empresa" class="form-control" rows="4"><?= htmlspecialchars($website['descricao_empresa'] ?? '') ?></textarea>
 
                         <label class="mt-4">
-                            <i class="fas fa-envelope"></i> Email para receber formularios do seu site
+                            <i class="fas fa-envelope"></i> Email para receber formulários do site
                         </label>
 
-                        <input type="email"
-                            name="email_formulario"
-                            class="form-control"
-                            placeholder="empresa@email.com"
-                            value="<?= htmlspecialchars($website['email_formulario'] ?? '') ?>">
+                        <?php if ($is_admin): ?>
 
-                        <small class="text-muted">
-                            O formulário do site vai enviar as mensagens para este email.
-                        </small>
+                            <input type="email"
+                                name="email_formulario"
+                                class="form-control"
+                                placeholder="empresa@email.com"
+                                value="<?= htmlspecialchars($website['email_formulario'] ?? '') ?>">
+
+                            <small class="text-muted">
+                                O formulário do site vai enviar as mensagens para este email.
+                            </small>
+
+                        <?php else: ?>
+
+                            <input type="email"
+                                class="form-control"
+                                value="<?= htmlspecialchars($website['email_formulario'] ?? '') ?>"
+                                disabled>
+
+                            <small class="text-muted">
+                                Apenas o administrador pode alterar este email.
+                            </small>
+
+                        <?php endif; ?>
 
                         <!-- REDES SOCIAIS -->
                         <label class="mt-4"><i class="fab fa-facebook"></i> Facebook</label>

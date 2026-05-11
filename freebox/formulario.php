@@ -105,7 +105,7 @@ include 'header_publico.php';
 
                         <div class="text-end">
                             <button type="submit" class="hero-button" style="text-decoration:none; cursor:pointer; border:none;">
-                                Enviar <i class="fas fa-paper-plane ms-1"></i>
+                                Enviar 
                             </button>
                         </div>
                     </form>
