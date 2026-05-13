@@ -8,7 +8,10 @@ if (isset($_GET['url'])) {
     $website_stmt->execute();
     $website = $website_stmt->get_result()->fetch_assoc();
     $website_stmt->close();
-    if (!$website) { header("Location: ../index.php"); exit(); }
+    if (!$website) {
+        header("Location: ../index.php");
+        exit();
+    }
     $empresa_id = $website['empresa_id'];
 } elseif (isset($_GET['id']) && is_numeric($_GET['id'])) {
     $empresa_id = intval($_GET['id']);
@@ -28,13 +31,27 @@ $stmt->execute();
 $empresa = $stmt->get_result()->fetch_assoc();
 $stmt->close();
 
-if (!$empresa) { header("Location: ../index.php"); exit(); }
+if (!$empresa) {
+    header("Location: ../index.php");
+    exit();
+}
+
+$page = $_GET['page'] ?? '';
+
+if ($page === 'politica-privacidade') {
+    include 'politica_privacidade.php';
+    exit();
+}
 
 if (!$website) {
     $website = [
-        'logotipo' => '', 'capa_empresa' => '',
-        'descricao_empresa' => '', 'link_facebook' => '',
-        'link_instagram' => '', 'link_x' => '', 'url_site' => ''
+        'logotipo' => '',
+        'capa_empresa' => '',
+        'descricao_empresa' => '',
+        'link_facebook' => '',
+        'link_instagram' => '',
+        'link_x' => '',
+        'url_site' => ''
     ];
 }
 
@@ -125,7 +142,7 @@ $tem_conteudo  = $tem_titulo || $tem_subtitulo || $tem_botao;
                 <?php if (!empty($morada_completa)): ?>
                     <div class="about-map-card">
                         <iframe src="https://maps.google.com/maps?q=<?= urlencode($morada_completa); ?>&output=embed"
-                                allowfullscreen loading="lazy"></iframe>
+                            allowfullscreen loading="lazy"></iframe>
                     </div>
                 <?php else: ?>
                     <div class="about-map-placeholder">
@@ -140,81 +157,83 @@ $tem_conteudo  = $tem_titulo || $tem_subtitulo || $tem_botao;
 
 <!-- SERVIÇOS -->
 <?php if (!empty($servicos)): ?>
-<section id="servicos" class="services-section section-padding">
-    <div class="container">
-        <h2 class="section-title">Serviços</h2>
-        <div class="section-line"></div>
-        <?php $servicos_chunks = array_chunk($servicos, 6); $s_pages = count($servicos_chunks); ?>
-        <div class="carousel-outer mt-4">
-            <?php if ($s_pages > 1): ?>
-                <button class="carousel-btn prev" id="svcPrev"><i class="fas fa-chevron-left"></i></button>
-                <button class="carousel-btn next" id="svcNext"><i class="fas fa-chevron-right"></i></button>
-            <?php endif; ?>
-            <div class="carousel-wrapper">
-                <div class="carousel-track" id="svcTrack">
-                    <?php foreach ($servicos_chunks as $chunk): ?>
-                        <div class="carousel-page">
-                            <?php foreach ($chunk as $servico): ?>
-                                <div class="service-card">
-                                    <div class="service-icon"><i class="fas fa-screwdriver-wrench"></i></div>
-                                    <h4><?= htmlspecialchars($servico['titulo_servico'] ?: ($servico['nome_servico'] ?? '')); ?></h4>
-                                    <p><?= nl2br(htmlspecialchars($servico['descricao_servico'] ?? '')); ?></p>
-                                </div>
-                            <?php endforeach; ?>
-                        </div>
-                    <?php endforeach; ?>
+    <section id="servicos" class="services-section section-padding">
+        <div class="container">
+            <h2 class="section-title">Serviços</h2>
+            <div class="section-line"></div>
+            <?php $servicos_chunks = array_chunk($servicos, 6);
+            $s_pages = count($servicos_chunks); ?>
+            <div class="carousel-outer mt-4">
+                <?php if ($s_pages > 1): ?>
+                    <button class="carousel-btn prev" id="svcPrev"><i class="fas fa-chevron-left"></i></button>
+                    <button class="carousel-btn next" id="svcNext"><i class="fas fa-chevron-right"></i></button>
+                <?php endif; ?>
+                <div class="carousel-wrapper">
+                    <div class="carousel-track" id="svcTrack">
+                        <?php foreach ($servicos_chunks as $chunk): ?>
+                            <div class="carousel-page">
+                                <?php foreach ($chunk as $servico): ?>
+                                    <div class="service-card">
+                                        <div class="service-icon"><i class="fas fa-screwdriver-wrench"></i></div>
+                                        <h4><?= htmlspecialchars($servico['titulo_servico'] ?: ($servico['nome_servico'] ?? '')); ?></h4>
+                                        <p><?= nl2br(htmlspecialchars($servico['descricao_servico'] ?? '')); ?></p>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
                 </div>
             </div>
+            <?php if ($s_pages > 1): ?>
+                <div class="carousel-dots" id="svcDots">
+                    <?php for ($d = 0; $d < $s_pages; $d++): ?>
+                        <button class="dot <?= $d === 0 ? 'active' : ''; ?>" data-page="<?= $d ?>"></button>
+                    <?php endfor; ?>
+                </div>
+            <?php endif; ?>
         </div>
-        <?php if ($s_pages > 1): ?>
-            <div class="carousel-dots" id="svcDots">
-                <?php for ($d = 0; $d < $s_pages; $d++): ?>
-                    <button class="dot <?= $d === 0 ? 'active' : ''; ?>" data-page="<?= $d ?>"></button>
-                <?php endfor; ?>
-            </div>
-        <?php endif; ?>
-    </div>
-</section>
+    </section>
 <?php endif; ?>
 
 <!-- PORTFÓLIO -->
 <?php if (!empty($portfolio)): ?>
-<section id="portfolio" class="portfolio-section section-padding" style="<?= $portfolio_style; ?>">
-    <div class="container">
-        <h2 class="section-title">Portfólio</h2>
-        <div class="section-line"></div>
-        <?php $portfolio_chunks = array_chunk($portfolio, 6); $p_pages = count($portfolio_chunks); ?>
-        <div class="carousel-outer mt-4">
-            <?php if ($p_pages > 1): ?>
-                <button class="carousel-btn prev" id="prtPrev"><i class="fas fa-chevron-left"></i></button>
-                <button class="carousel-btn next" id="prtNext"><i class="fas fa-chevron-right"></i></button>
-            <?php endif; ?>
-            <div class="carousel-wrapper">
-                <div class="carousel-track" id="prtTrack">
-                    <?php foreach ($portfolio_chunks as $chunkIndex => $chunk): ?>
-                        <div class="carousel-page">
-                            <?php foreach ($chunk as $i => $item):
-                                $globalIndex = $chunkIndex * 6 + $i; ?>
-                                <div class="portfolio-card" data-index="<?= $globalIndex ?>">
-                                    <img src="<?= htmlspecialchars($item['imagem']); ?>"
-                                         alt="<?= htmlspecialchars($item['descricao_imagem'] ?: 'Imagem de portfólio'); ?>">
-                                    <div class="overlay"><i class="fas fa-magnifying-glass-plus"></i></div>
-                                </div>
-                            <?php endforeach; ?>
-                        </div>
-                    <?php endforeach; ?>
+    <section id="portfolio" class="portfolio-section section-padding" style="<?= $portfolio_style; ?>">
+        <div class="container">
+            <h2 class="section-title">Portfólio</h2>
+            <div class="section-line"></div>
+            <?php $portfolio_chunks = array_chunk($portfolio, 6);
+            $p_pages = count($portfolio_chunks); ?>
+            <div class="carousel-outer mt-4">
+                <?php if ($p_pages > 1): ?>
+                    <button class="carousel-btn prev" id="prtPrev"><i class="fas fa-chevron-left"></i></button>
+                    <button class="carousel-btn next" id="prtNext"><i class="fas fa-chevron-right"></i></button>
+                <?php endif; ?>
+                <div class="carousel-wrapper">
+                    <div class="carousel-track" id="prtTrack">
+                        <?php foreach ($portfolio_chunks as $chunkIndex => $chunk): ?>
+                            <div class="carousel-page">
+                                <?php foreach ($chunk as $i => $item):
+                                    $globalIndex = $chunkIndex * 6 + $i; ?>
+                                    <div class="portfolio-card" data-index="<?= $globalIndex ?>">
+                                        <img src="<?= htmlspecialchars($item['imagem']); ?>"
+                                            alt="<?= htmlspecialchars($item['descricao_imagem'] ?: 'Imagem de portfólio'); ?>">
+                                        <div class="overlay"><i class="fas fa-magnifying-glass-plus"></i></div>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
                 </div>
             </div>
+            <?php if ($p_pages > 1): ?>
+                <div class="carousel-dots" id="prtDots">
+                    <?php for ($d = 0; $d < $p_pages; $d++): ?>
+                        <button class="dot <?= $d === 0 ? 'active' : ''; ?>" data-page="<?= $d ?>"></button>
+                    <?php endfor; ?>
+                </div>
+            <?php endif; ?>
         </div>
-        <?php if ($p_pages > 1): ?>
-            <div class="carousel-dots" id="prtDots">
-                <?php for ($d = 0; $d < $p_pages; $d++): ?>
-                    <button class="dot <?= $d === 0 ? 'active' : ''; ?>" data-page="<?= $d ?>"></button>
-                <?php endfor; ?>
-            </div>
-        <?php endif; ?>
-    </div>
-</section>
+    </section>
 <?php endif; ?>
 
 <?php include 'footer_publico.php'; ?>

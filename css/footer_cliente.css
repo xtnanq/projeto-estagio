@@ -17,7 +17,7 @@
 
 .footer-cols {
     display: grid;
-    grid-template-columns: repeat(3, 1fr); /* 3 colunas iguais */
+    grid-template-columns: repeat(4, 1fr); /* 3 colunas iguais */
     gap: 48px;
     align-items: start;
 }

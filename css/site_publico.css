@@ -1037,3 +1037,44 @@ body {
     font-size: 0.95rem;
     opacity: 0.8;
 }
+/* ══════════════════════════════════════════
+   POLÍTICA PRIVACIDADE
+══════════════════════════════════════════ */
+
+.privacy-content {
+    color: #5b6472;
+    line-height: 1.95;
+    font-size: 1.02rem;
+}
+
+.privacy-content h2 {
+    color: var(--primary);
+    font-size: 1.45rem;
+    font-weight: 800;
+    margin-top: 45px;
+    margin-bottom: 18px;
+    letter-spacing: 1px;
+}
+
+.privacy-content p {
+    margin-bottom: 18px;
+}
+
+.privacy-content ul {
+    margin: 18px 0 24px 20px;
+    padding-left: 10px;
+}
+
+.privacy-content li {
+    margin-bottom: 10px;
+}
+
+.privacy-content a {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.privacy-content a:hover {
+    text-decoration: underline;
+}

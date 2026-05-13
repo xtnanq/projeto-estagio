@@ -15,10 +15,27 @@
                                 <li><a href="/projeto/freebox/?url=<?= htmlspecialchars($website['url_site'] ?? ''); ?>#portfolio">Portfólio</a></li>
                             <?php endif; ?>
                             <li><a href="/projeto/freebox/contato.php?url=<?= htmlspecialchars($website['url_site'] ?? ''); ?>">Contacto</a></li>
-                            <li><a href="https://www.livroreclamacoes.pt/Inicio/" target="_blank">Reclamações</a></li>
+
                         </ul>
                     </div>
+                    <!-- LEGAL -->
+                    <div class="footer-col">
+                        <h6 class="footer-col-title">Legal</h6>
 
+                        <ul>
+                            <li>
+                                <a href="/projeto/freebox/<?= htmlspecialchars($website['url_site'] ?? ''); ?>/politica-privacidade">
+                                    Política de Privacidade
+                                </a>
+                            </li>
+
+                            <li>
+                                <a href="https://www.livroreclamacoes.pt/Inicio/" target="_blank">
+                                    Livro de Reclamações
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
                     <!-- CONTACTO -->
                     <div class="footer-col">
                         <h6 class="footer-col-title">Contacto</h6>
@@ -32,16 +49,17 @@
                             <?php if (!empty($morada_completa)): ?>
                                 <li><span><?= htmlspecialchars($morada_completa); ?></span></li>
                             <?php endif; ?>
+                            <li style="margin-top:15px;">
+                                <a href="/projeto/freebox/formulario.php?url=<?= htmlspecialchars($website['url_site'] ?? ''); ?>"
+                                    class="footer-btn-enviar"
+                                    style="display:inline-flex; text-decoration:none;">
+                                    Enviar Mensagem <i class="fas fa-paper-plane"></i>
+                                </a>
+                            </li>
                         </ul>
                     </div>
 
-                    <!-- FALE CONNOSCO -->
-                    <div class="footer-col">
-                        <h6 class="footer-col-title">Fale Connosco</h6>
-                        <a href="/projeto/freebox/formulario.php?url=<?= htmlspecialchars($website['url_site'] ?? ''); ?>" class="footer-btn-enviar" style="display:inline-block; text-decoration:none;">
-                            Enviar Mensagem <i class="fas fa-paper-plane"></i>
-                        </a>
-                    </div>
+
 
                     <!-- REDES SOCIAIS -->
                     <?php

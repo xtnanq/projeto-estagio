@@ -72,7 +72,7 @@ body {
     min-height: 100vh;
 }
 
-.container-fluid {
+.page-container {
     max-width: 1400px;
     margin: 0 auto;
 }

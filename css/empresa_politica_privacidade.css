@@ -1,0 +1,128 @@
+/* ══════════════════════════════════════════
+   ESTRUTURA DA PÁGINA
+   ══════════════════════════════════════════ */
+html, body {
+    height: 100% !important;
+    margin: 0;
+}
+
+body {
+    display: flex !important;
+    flex-direction: column !important;
+    min-height: 100vh;
+    background-color: #ebf4fd;
+}
+
+/* O conteúdo cresce para empurrar o footer */
+.container-fluid.mt-4 {
+    flex: 1 0 auto;
+    max-width: 1000px;
+    margin: 40px auto !important;
+}
+
+.dashboard-container {
+    background: #ffffff;
+    padding: 40px 60px !important;
+    border-radius: 16px !important;
+    border: 1px solid #e4eaf2;
+}
+
+/* ══════════════════════════════════════════
+   ESTILO DO TEXTO DA POLÍTICA
+   ══════════════════════════════════════════ */
+.privacy-title {
+    color: #1a2332;
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.privacy-line {
+    width: 45px;
+    height: 4px;
+    background: #1a6ff4;
+    margin-bottom: 30px;
+}
+
+.privacy-content h2 {
+    color: #1a2332;
+    font-size: 1.1rem;
+    margin-top: 25px;
+    margin-bottom: 12px;
+}
+
+.privacy-content p, .privacy-content li {
+    color: #64748b;
+    font-size: 0.88rem;
+    line-height: 1.6;
+    margin-bottom: 12px;
+}
+
+/* ══════════════════════════════════════════
+   O TEU FOOTER (ESTILO EXATO)
+   ══════════════════════════════════════════ */
+.public-footer {
+    flex-shrink: 0;
+    background: linear-gradient(135deg, #0d1f3c 0%, #1a3a6b 50%, #1f5b9d 100%);
+    color: rgba(255,255,255,0.55);
+    margin-top: 0;
+    overflow: hidden;
+    width: 100% !important;
+}
+
+.footer-top {
+    padding: 60px 0 40px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.footer-cols {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr 1fr 1.8fr !important;
+    gap: 48px !important;
+    align-items: start;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 32px;
+}
+
+/* Título de cada coluna */
+.footer-col-title {
+    color: white !important;
+    font-size: 0.82rem !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 2.5px !important;
+    margin-bottom: 20px !important;
+    display: block;
+}
+
+/* Lista de links */
+.footer-col ul {
+    list-style: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 11px !important;
+}
+
+.footer-col ul li a,
+.footer-col ul li span {
+    color: rgba(255,255,255,0.45) !important;
+    text-decoration: none !important;
+    font-size: 0.82rem !important;
+    font-weight: 500 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1.5px !important;
+    transition: color 0.2s;
+}
+
+.footer-col ul li a:hover {
+    color: white !important;
+}
+
+/* Ícones dentro dos links */
+.footer-col i {
+    margin-right: 8px;
+    font-size: 0.9rem;
+}

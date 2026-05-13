@@ -91,13 +91,13 @@ include '../includes/header.php';
 
                         <i class="fas fa-house"></i>
 
-                        Dashboard
+                        Freebox
 
                     </h3>
 
                     <p class="text-center text-muted mb-5">
 
-                        Escolhe o que queres configurar na tua empresa.
+                        Plataforma de criação e gestão de websites empresariais.
 
                     </p>
 

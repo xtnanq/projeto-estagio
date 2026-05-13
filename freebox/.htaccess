@@ -1,4 +1,10 @@
 RewriteEngine On
+
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
+
+# Política de privacidade
+RewriteRule ^([a-zA-Z0-9\-]+)/politica-privacidade$ politica_privacidade.php?url=$1 [L,QSA]
+
+# Página principal
 RewriteRule ^([a-zA-Z0-9\-]+)$ index.php?url=$1 [L,QSA]
