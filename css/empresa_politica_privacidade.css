@@ -1,128 +1,118 @@
-/* ══════════════════════════════════════════
-   ESTRUTURA DA PÁGINA
-   ══════════════════════════════════════════ */
-html, body {
-    height: 100% !important;
-    margin: 0;
-}
+    /* ══════════════════════════════════════════
+    CONTEÚDO DA POLÍTICA
+    ══════════════════════════════════════════ */
 
-body {
-    display: flex !important;
-    flex-direction: column !important;
+    .privacy-content {
+        color: #5b6472;
+        line-height: 1.95;
+        font-size: 1.02rem;
+    }
+
+    /* TÍTULOS */
+    .privacy-content h2 {
+        color: var(--primary);
+        font-size: 1.45rem;
+        font-weight: 800;
+        margin-top: 45px;
+        margin-bottom: 18px;
+        letter-spacing: 1px;
+    }
+
+    /* PARÁGRAFOS */
+    .privacy-content p {
+        margin-bottom: 18px;
+    }
+
+    /* LISTAS */
+    .privacy-content ul {
+        margin: 18px 0 24px 20px;
+        padding-left: 10px;
+    }
+
+    .privacy-content li {
+        margin-bottom: 10px;
+    }
+
+    /* LINKS */
+    .privacy-content a {
+        color: var(--primary);
+        text-decoration: none;
+        font-weight: 600;
+        transition: 0.2s ease;
+    }
+
+    .privacy-content a:hover {
+        text-decoration: underline;
+    }
+
+    /* TEXTO EM DESTAQUE */
+    .privacy-content strong {
+        color: #1f2937;
+        font-weight: 700;
+    }
+
+    /* CAIXA DE DESTAQUE */
+    .privacy-highlight {
+        background: #f7fbff;
+        border: 1px solid #dce9f9;
+        border-left: 4px solid var(--primary);
+        border-radius: 14px;
+        padding: 22px 24px;
+        margin-top: 35px;
+    }
+
+    .privacy-highlight p {
+        margin: 0;
+        color: #516070;
+        font-size: 0.96rem;
+    }
+
+    /* DATA / INFO FINAL */
+    .privacy-date {
+        margin-top: 45px;
+        font-size: 0.85rem;
+        color: #94a3b8;
+        border-top: 1px solid #e5edf7;
+        padding-top: 20px;
+    }
+    .privacy-section {
+    background: #f4f7fb;
     min-height: 100vh;
-    background-color: #ebf4fd;
+    padding: 60px 20px;
 }
 
-/* O conteúdo cresce para empurrar o footer */
-.container-fluid.mt-4 {
-    flex: 1 0 auto;
+.privacy-container {
     max-width: 1000px;
-    margin: 40px auto !important;
-}
-
-.dashboard-container {
-    background: #ffffff;
-    padding: 40px 60px !important;
-    border-radius: 16px !important;
-    border: 1px solid #e4eaf2;
-}
-
-/* ══════════════════════════════════════════
-   ESTILO DO TEXTO DA POLÍTICA
-   ══════════════════════════════════════════ */
-.privacy-title {
-    color: #1a2332;
-    font-size: 1.6rem;
-    font-weight: 700;
-    margin-bottom: 8px;
-}
-
-.privacy-line {
-    width: 45px;
-    height: 4px;
-    background: #1a6ff4;
-    margin-bottom: 30px;
-}
-
-.privacy-content h2 {
-    color: #1a2332;
-    font-size: 1.1rem;
-    margin-top: 25px;
-    margin-bottom: 12px;
-}
-
-.privacy-content p, .privacy-content li {
-    color: #64748b;
-    font-size: 0.88rem;
-    line-height: 1.6;
-    margin-bottom: 12px;
-}
-
-/* ══════════════════════════════════════════
-   O TEU FOOTER (ESTILO EXATO)
-   ══════════════════════════════════════════ */
-.public-footer {
-    flex-shrink: 0;
-    background: linear-gradient(135deg, #0d1f3c 0%, #1a3a6b 50%, #1f5b9d 100%);
-    color: rgba(255,255,255,0.55);
-    margin-top: 0;
-    overflow: hidden;
-    width: 100% !important;
-}
-
-.footer-top {
-    padding: 60px 0 40px;
-    border-bottom: 1px solid rgba(255,255,255,0.08);
-}
-
-.footer-cols {
-    display: grid !important;
-    grid-template-columns: 1fr 1fr 1fr 1.8fr !important;
-    gap: 48px !important;
-    align-items: start;
-    max-width: 1200px;
     margin: 0 auto;
-    padding: 0 32px;
+    background: #ffffff;
+    border-radius: 18px;
+    padding: 60px;
+    box-shadow: 0 10px 35px rgba(0,0,0,0.08);
 }
 
-/* Título de cada coluna */
-.footer-col-title {
-    color: white !important;
-    font-size: 0.82rem !important;
-    font-weight: 700 !important;
-    text-transform: uppercase !important;
-    letter-spacing: 2.5px !important;
-    margin-bottom: 20px !important;
-    display: block;
+.privacy-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin-bottom: 12px;
 }
 
-/* Lista de links */
-.footer-col ul {
-    list-style: none !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 11px !important;
+.privacy-subtitle {
+    color: #64748b;
+    font-size: 1rem;
+    margin-bottom: 40px;
+    line-height: 1.7;
 }
 
-.footer-col ul li a,
-.footer-col ul li span {
-    color: rgba(255,255,255,0.45) !important;
-    text-decoration: none !important;
-    font-size: 0.82rem !important;
-    font-weight: 500 !important;
-    text-transform: uppercase !important;
-    letter-spacing: 1.5px !important;
-    transition: color 0.2s;
+.privacy-box {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-left: 5px solid var(--primary, #1f5b9d);
+    padding: 20px 25px;
+    border-radius: 12px;
+    margin: 25px 0;
 }
 
-.footer-col ul li a:hover {
-    color: white !important;
-}
-
-/* Ícones dentro dos links */
-.footer-col i {
-    margin-right: 8px;
-    font-size: 0.9rem;
+.privacy-box strong {
+    color: #0f172a;
 }

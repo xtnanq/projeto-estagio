@@ -90,7 +90,7 @@
                     <p class="mt-3"
                         style="font-size: 0.7rem; color: rgba(255,255,255,0.3);">
 
-                        Resposta média: 48 horas.
+                        Resposta média: 48 horas. (Dias úteis)
                     </p>
                 </div>
 
